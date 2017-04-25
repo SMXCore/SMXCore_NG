@@ -98,10 +98,11 @@ public class MeterKamstrup extends Module {
                 try {
                     sLine = br.readLine();
                 } catch (Exception ex) {
+
                     ReStartProc();
                     continue;
                 }
-                if (iDebug == 1) {
+                if ((iDebug == 1) && (sLine!=null)) {
                     System.out.println(sLine);
                 }
                 lLastRead = System.currentTimeMillis();
@@ -109,9 +110,11 @@ public class MeterKamstrup extends Module {
                     ReStartProc();
                     continue;
                 }
+
                 while (sLine.contains("  ")) {
                     sLine = sLine.replaceAll("  ", " ");
                 }
+
 
                 sLine = sLine.replaceAll(" ", "\t");
                 ssLineVars = sLine.split("\t");
@@ -121,31 +124,26 @@ public class MeterKamstrup extends Module {
                 if ((ssLineVars[0].length() < 1) || (ssLineVars[1].length() < 1) || ("None".equals(ssLineVars[1]))) {
                     continue;
                 }
+
                 if ("Date".equals(ssLineVars[0])) {
-                    if (ssLineVars[1].length() > 5) {
-                        sDate = ssLineVars[1].substring(2, 4) + "/"
-                                + ssLineVars[1].substring(4, 6) + "/"
-                                + "20" + ssLineVars[1].substring(0, 2);
+
+                        sDate = ssLineVars[1];
                         if (sTime.length() > 0) {
-                            pDataSet.put(sPrefix + "MeterDate", sDate + " " + sTime);
-                            pDataSet.put(sPrefix + "MeterDate" + "-ts", sdfDate.format(new Date()));
+                            pDataSet.put(sPrefix + "Date", sDate + " " + sTime);
+                            pDataSet.put(sPrefix + "Date" + "-ts", sdfDate.format(new Date()));
                         }
-                    }
+
                 } else if ("Time".equals(ssLineVars[0])) {
-                    if (ssLineVars[1].length() > 5) {
-                        if (ssLineVars[1].length() < 8) {
-                            ssLineVars[1] = "0" + ssLineVars[1];
-                        }
-                        sTime = ssLineVars[1].substring(0, 2) + ":"
-                                + ssLineVars[1].substring(2, 4) + ":"
-                                + ssLineVars[1].substring(4, 6);
-                        // Params.put("MeterDate", sDate + " " + sTime);
-                    }
+
+                        sTime = ssLineVars[1];
+
                 } else {
                     pDataSet.put(sPrefix + ssLineVars[0], ssLineVars[1]);
                     pDataSet.put(sPrefix + ssLineVars[0] + "-ts",
                             sdfDate.format(new Date()));
+
                 }
+
 
             } catch (Exception e) {
                 if (Debug == 1) {
@@ -154,6 +152,7 @@ public class MeterKamstrup extends Module {
             }
 
         }
+
     }
 
     public int Pause = 0;
@@ -194,7 +193,7 @@ public class MeterKamstrup extends Module {
                 pb.directory(new File(sStartPath));
             }
             pb.redirectErrorStream(true);
-            
+
             proc = pb.start();
             br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
