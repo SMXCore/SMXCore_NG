@@ -1,0 +1,8 @@
+#
+pDataSet = DataSet1
+sPrefix = SMX/LD01/
+
+#PyKamstrup settings
+sCmdLine = /usr/bin/python /home/smx/bin/kamstrup.py --meter_type=362J --serial_port=/dev/ttyUSB0
+#
+iDebug=0

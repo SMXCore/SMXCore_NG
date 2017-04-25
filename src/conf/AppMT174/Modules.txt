@@ -1,0 +1,37 @@
+#
+#	Number of modules (can be greater that the actual number of modules)
+#
+iNoOfModules=10
+#
+#	Module 1 MQTT client 1
+#
+M1-Name=MQTTClient1
+M1-ClassName=modules.MQTTClient
+M1-AttributesFile=MQTTClient1.txt
+#
+#	Module 2 MongoDB client 1
+#
+M2-Name=MongoDBClient1
+M2-ClassName=modules.MongoDBClient
+M2-AttributesFile=MongoDBClient1.txt
+#
+#	Module 3 File Storage 1
+#
+M3-Name=FileStorage1
+M3-ClassName=modules.FileStorage
+M3-AttributesFile=FileStorage1.txt
+#
+#
+#	Module 4 Data Set 1
+#
+M4-Name=DataSet1
+M4-ClassName=modules.DataSet
+M4-AttributesFile=DataSet1.txt
+#
+#
+#	Module 5 Meter IEC62056-21-1
+#
+M5-Name=MeterIEC6205621-1
+M5-ClassName=modules.MeterIEC6205621
+M5-AttributesFile=MeterIEC6205621-1.txt
+#

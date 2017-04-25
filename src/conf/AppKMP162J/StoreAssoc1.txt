@@ -1,0 +1,24 @@
+#	Format
+# Internal attribute = Storage header
+#
+#	Clock
+#
+LD01/Date = LD01/0-0-1-0-0-255/-2
+#
+#	Voltage
+#
+LD01/U1 = LD01/1-1-32-7-0-255/-2
+#
+#	Current
+#
+LD01/I1 = LD01/1-1-31-7-0-255/-2
+#
+#	Active Power
+#
+LD01/P1 = LD01/1-1-36-7-0-255/-2
+#
+#	Active Energy
+#
+LD01/Ap = LD01/1-1-1-8-0-255/-2
+LD01/Am = LD01/1-1-2-8-0-255/-2
+#

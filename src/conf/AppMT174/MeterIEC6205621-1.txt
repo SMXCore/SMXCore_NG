@@ -1,0 +1,22 @@
+#
+pDataSet = DataSet1
+sPrefix = SMX/LD01/
+#
+lPeriod = 10000
+#
+#	Serial Port
+#
+sPortName = /dev/ttyUSB1
+iPortSpeed = 9600
+sPortParam = 7E1
+#
+iReadTimeout = 20000
+iInterCharTimeout = 100 
+iCheckEcho = 1
+#
+sAddress = 63343940
+#
+sDateSep = .
+sTimeSep = :
+#
+iDebug=0

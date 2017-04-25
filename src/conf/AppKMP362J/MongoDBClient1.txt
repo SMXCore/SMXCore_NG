@@ -1,0 +1,19 @@
+#
+pDataSet = DataSet1
+sReadPrefix = SMX/
+sWritePrefix = SMX/
+sIntPrefix = SMX/
+#
+sURI = mongodb://localhost
+sDatabase = SMX
+sCollection = LD01
+#
+lPeriod = 10000
+#
+pReadAssociation = ReadAssoc1.txt
+pWriteAssociation = WriteAssoc1.txt
+#
+sIDName = _id
+sFind = /
+sRepl = .
+#
