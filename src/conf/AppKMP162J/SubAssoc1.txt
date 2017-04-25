@@ -1,0 +1,52 @@
+#	Format
+#  MQTT topic = Internal attribute
+#
+#
+# Real-Time Values
+#
+#
+#	Clock
+#
+LD01/0-0-1-0-0-255/-2 = LD01/Date			
+#
+#	Voltage
+#
+LD01/1-1-32-7-0-255/-2 = LD01/Rec1-U1
+#
+#	Current
+#
+LD01/1-1-31-7-0-255/-2 = LD01/Rec1-I1
+#
+#	Active Power
+#
+LD01/1-1-36-7-0-255/-2 = LD01/Rec1-P1
+#
+#	Active Energy
+#
+LD01/1-1-1-8-0-255/-2 = LD01/Rec1-Ap
+LD01/1-1-2-8-0-255/-2 = LD01/Rec1-Am
+#
+#  Timestamp for Real-Time Values
+#
+#
+#	Clock
+#
+LD01/0-0-1-0-0-255/-5 = LD01/Date-ts			
+#
+#
+#	Voltage
+#
+LD01/1-1-32-7-0-255/-5 = LD01/Rec1-U1-ts
+#
+#	Current
+#
+LD01/1-1-31-7-0-255/-5 = LD01/Rec1-I1-ts
+#
+# 	Active Power
+LD01/1-1-36-7-0-255/-5 = LD01/Rec1-P1-ts
+#
+#	Active Energy
+#
+LD01/1-1-1-8-0-255/-5 = LD01/Rec1-Ap-ts
+LD01/1-1-2-8-0-255/-5 = LD01/Rec1-Am-ts
+#
