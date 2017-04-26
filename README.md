@@ -3,7 +3,7 @@ Open Source software for communication with electricity and other meter types de
 
 ## Requirements
 
-* Java 8 CE (?)
+* Java SE 7 (?)
 
 ## Installation
 Netbeans is currently required. Create a new project in Netbeans by importing the root of the project directory. A build will produce a `dist/` directory which can be distributed. 
