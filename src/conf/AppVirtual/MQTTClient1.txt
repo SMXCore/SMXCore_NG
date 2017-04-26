@@ -7,7 +7,7 @@ sSubPrefix=MQTT/config/RPIXXXX/SMX/
 sIntPrefix = SMX/
 
 # MQTT connection settings
-sBroker=tcp://0.0.0.9:1883
+sBroker=tcp://0.0.0.0:1883
 sUserName=xxxxxxxxx
 sUserPass=xxxxxxxxx
 sClientID=RPIXXXX
