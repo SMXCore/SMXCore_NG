@@ -1,0 +1,17 @@
+#
+#LD01/U1-UM = V
+#LD01/U2-UM = V
+#LD01/U3-UM = V
+#
+#LD01/I1-UM = A
+#LD01/I2-UM = A
+#LD01/I3-UM = A
+#
+#LD01/P1-UM = kW
+#LD01/P2-UM = kW
+#LD01/P3-UM = kW
+#
+#LD01/Q1-UM = kVar
+#LD01/Q2-UM = kVar
+#LD01/Q3-UM = kVar
+#
