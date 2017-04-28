@@ -1,0 +1,19 @@
+#
+pDataSet = DataSet1
+sPubPrefix=RPIXXXX/SMX/
+sSubPrefix=MQTT/config/RPIXXXX/SMX/
+sIntPrefix = SMX/
+#
+sBroker=tcp://0.0.0.0:1883
+sUserName=xxxxxxxxx
+sUserPass=xxxxxxxxx
+sClientID=RPIXXXX
+#
+lPeriod = 10000
+#
+pPubAssociation = PubAssoc1.txt
+pSubAssociation = SubAssoc1.txt
+#
+iPubQos = 1
+iSubQos = 1
+#

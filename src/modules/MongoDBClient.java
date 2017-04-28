@@ -16,6 +16,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import com.mongodb.Block;
 import com.mongodb.client.FindIterable;
 
@@ -34,7 +37,7 @@ public class MongoDBClient extends Module {
 
     @Override
     public void Initialize() {
-
+        
         sURI = PropUtil.GetString(pAttributes, "sURI", "mongodb://localhost");
         sDatabase = PropUtil.GetString(pAttributes, "sDatabase", "SMX");
         sCollection = PropUtil.GetString(pAttributes, "sCollection", "LD01");
@@ -54,9 +57,12 @@ public class MongoDBClient extends Module {
 
         lPeriod = PropUtil.GetLong(pAttributes, "lPeriod", 5000);
 
+        Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
+        mongoLogger.setLevel(Level.SEVERE); 
+        
     }
-    Properties pDataSet = null;
-
+    
+    Properties pDataSet = null;    
     String sWritePrefix = "SMX/";
     String sReadPrefix = "SMX/";
     String sIntPrefix = "SMX/";

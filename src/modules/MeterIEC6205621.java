@@ -498,7 +498,7 @@ public class MeterIEC6205621 extends Module {
 
     int iPar = 0;
     String sWriteMeterDate = "";
-    
+
     String sTemp="";
 
     public void WriteIecVals(String sIec) {
@@ -533,7 +533,17 @@ public class MeterIEC6205621 extends Module {
                     if (ssOBIS.length == 2) {
                         sIecCols[0] = sIecCols[0] + ".0";
                     }
+
                     sIecCols[0] = sIecCols[0].replaceAll(":", "-");
+
+                    // Remove any F value =255
+                    ssOBIS = sIecCols[0].split("\\*");
+                    if (ssOBIS.length == 2) {
+                        if (ssOBIS[1].equals("255")) {
+                            sIecCols[0]=ssOBIS[0];
+                        }
+                    }
+
                     ssOBISdet = i1107u.getObisDet(sIecCols[0], pAssociation);
 
                     if (ssOBISdet == null) {
@@ -553,16 +563,16 @@ public class MeterIEC6205621 extends Module {
                     } else if (ssOBISdet[2].equals("rr")) { //Value
                         pDataSet.put(sPrefix + ssOBISdet[1], Double.toString(Double.parseDouble(sVals[0])
                                 * Double.parseDouble(ssOBISdet[3])));
-                    } else if (ssOBISdet[2].equals("dtf")) { //Date Time 
+                    } else if (ssOBISdet[2].equals("dtf")) { //Date Time
                         dtMeter = sdfDT.parse(sVals[0]);
                         pDataSet.put(sPrefix + ssOBISdet[1], sdfUS.format(dtMeter));
-                    } else if (ssOBISdet[2].equals("df")) { //Date  
+                    } else if (ssOBISdet[2].equals("df")) { //Date
                         dtMeter = sdfD.parse(sVals[0]);
                         pDataSet.put(sPrefix + ssOBISdet[1], sdfUSd.format(dtMeter));
-                    } else if (ssOBISdet[2].equals("tf")) { // Time 
+                    } else if (ssOBISdet[2].equals("tf")) { // Time
                         dtMeter = sdfT.parse(sVals[0]);
                         pDataSet.put(sPrefix + ssOBISdet[1], sdfUSt.format(dtMeter));
-                    }else if (ssOBISdet[2].equals("sh")) { // String hex 
+                    }else if (ssOBISdet[2].equals("sh")) { // String hex
                         sTemp=util.ConvertUtil.HexStr2Str(sVals[0]);;
                         pDataSet.put(sPrefix + ssOBISdet[1], sTemp);
                     } else if (ssOBISdet[2].equals("d")) { //Date

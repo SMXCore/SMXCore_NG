@@ -1,0 +1,25 @@
+# 
+pDataSet = DataSet1
+
+# MQTT PubSub topics
+sPubPrefix=RPIXXXX/SMX/
+sSubPrefix=MQTT/config/RPIXXXX/SMX/
+sIntPrefix = SMX/
+
+# MQTT connection settings
+sBroker=tcp://0.0.0.0:1883
+sUserName=xxxxxxxxx
+sUserPass=xxxxxxxxx
+sClientID=RPIXXXX
+
+#
+lPeriod = 10000
+
+#
+pPubAssociation = PubAssoc1.txt
+pSubAssociation = SubAssoc1.txt
+
+# MQTT QoS Settings
+iPubQos = 1
+iSubQos = 1
+#

@@ -422,17 +422,22 @@ public class GXCommunicate {
         int attributeIndex = 1;
 
         for (attributeIndex = 1; attributeIndex < 10; attributeIndex++) {
-            byte[] data = dlms.read(item.getName(), item.getObjectType(),
-                    attributeIndex)[0];
-            GXReplyData reply = new GXReplyData();
+            try {
+                byte[] data = dlms.read(item.getName(), item.getObjectType(),
+                        attributeIndex)[0];
+                GXReplyData reply = new GXReplyData();
 
-            readDataBlock(data, reply);
-            // Update data type on read.
-            if (item.getDataType(attributeIndex) == DataType.NONE) {
-                item.setDataType(attributeIndex, reply.getValueType());
+                readDataBlock(data, reply);
+                // Update data type on read.
+                if (item.getDataType(attributeIndex) == DataType.NONE) {
+                    item.setDataType(attributeIndex, reply.getValueType());
+                }
+                dlms.updateValue(item, attributeIndex, reply.getValue());
+            } catch (Exception ex) {
+
             }
-            dlms.updateValue(item, attributeIndex, reply.getValue());
         }
+
         return item;
     }
 
@@ -752,10 +757,10 @@ public class GXCommunicate {
             }
 
            // if (it instanceof GXDLMSProfileGeneric) {
-                // Profile generic are read later
-                // because it might take so long time
-                // and this is only a example.
-           //     continue;
+            // Profile generic are read later
+            // because it might take so long time
+            // and this is only a example.
+            //     continue;
             //}
             traceLn(logFile,
                     "-------- Reading " + it.getClass().getSimpleName() + " "
@@ -764,7 +769,7 @@ public class GXCommunicate {
             for (int pos : ((IGXDLMSBase) it).getAttributeIndexToRead()) {
                 try {
                     if (it instanceof GXDLMSProfileGeneric) {
-                        if(pos==2){
+                        if (pos == 2) {
                             continue;
                         }
                     }
@@ -1479,7 +1484,7 @@ public class GXCommunicate {
         GXReplyData reply = new GXReplyData();
         // Get Association view from the meter.
         readDataBlock(dlms.getObjectsRequest(), reply);
-        if(reply.getData().size()==0){
+        if (reply.getData().size() == 0) {
             reply.getData().size(reply.getData().getData().length);
         }
         GXDLMSObjectCollection objects
@@ -1495,13 +1500,13 @@ public class GXCommunicate {
         converter.updateOBISCodeInformation(objects);
         readValues(objects, logFile);
 
-        String s=ObjectsValuesAndTypeToString(objects);
+        String s = ObjectsValuesAndTypeToString(objects);
         System.out.println(s);
         logFile.print(s);
         logFile.flush();
-        
+
         util.GuruxUtil.GXDLMSObjectSaveWithVals(objects, "ObjAsRead.txt");
-        
+
     }
 
     public static String ObjectsValuesAndTypeToString(GXDLMSObjectCollection objects) {
@@ -1518,7 +1523,7 @@ public class GXCommunicate {
             for (i = 0; i < iNoA; i++) {
                 try {
                     sb.append(it.getValues()[i].toString() + "~");
-                    sb.append(it.getValues()[i].getClass().getCanonicalName()+"\r\n");
+                    sb.append(it.getValues()[i].getClass().getCanonicalName() + "\r\n");
                 } catch (Exception e) {
                     //System.out.println(e.getMessage());
                 }

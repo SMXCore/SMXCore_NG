@@ -1,0 +1,6 @@
+#
+LD01/U1-UM = V
+#
+LD01/I1-UM = A
+#
+LD01/P1-UM = kW
