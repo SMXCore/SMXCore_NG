@@ -1,0 +1,37 @@
+#
+pDataSet = DataSet1
+sPrefix = SMX/LD01/
+#
+lPeriod = 1000
+#
+U1 = 235.21
+U2 = 235.21
+U3 = 235.21
+#
+I1 = 5.34
+I2 = 5.34
+I3 = 5.34
+#
+PF1 = 0.97
+PF2 = 0.97
+PF3 = 0.97
+#
+PF = 0.97
+f = 49.97
+#
+Ap = 12345.678
+Am = 23456.678
+Rp = 34567.678
+Rm = 45678.678
+#
+RndPrc = 0.1
+#
+#	No of digits after decimal point
+#  
+DecU = 2
+DecI = 2
+DecPF = 2
+Decf = 2
+DecPQ = 2
+DecAR = 3
+#
