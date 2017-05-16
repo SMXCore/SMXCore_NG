@@ -1,23 +1,53 @@
 # Smart Meter eXtension Core Software (SMXcore)
-Open Source software for communication with electricity and other meter types developed as part of the [Nobel Grid](http://nobelgrid.eu/) project and improved in various other projects.
+Open Source software for communication with electricity and other meter
+types developed as part of the [Nobel Grid](http://nobelgrid.eu/) project
+and improved in various other projects.
 
 ## Requirements
 
-* Java SE 7 (?)
+Run:
+* Java SE JRE 7/8 (?)
 
-## Installation
-Netbeans is currently required. Create a new project in Netbeans by importing the root of the project directory. A build will produce a `dist/` directory which can be distributed. 
+Build:
+* Java SE JDK 7/8
+* Maven
 
-## Running
+## Build and Installation
+The build uses Maven.
 
-Change working directory to the `dist/` directory created above.
+To create a .zip of the jar file with dependencies in sub-folder for
+deployment using Maven execute (Linux):
 
-SMXcore can then be run on the command line using 
+`mvn package`
 
-`java -jar $PATH_TO_SMXCORE/SMXcore.jar Modules.txt`
+The .zip can then be found in the target/ folder.
 
-where `Modules.txt` is a descriptor of modules to load (see below). Additional files describing the module configuration should be placed in the same folder as `Modules.txt`.
+To install to the local repository:
+
+`mvn install`
+
+## Running (Standalone from zip)
+
+Unzip the above created zip.
+
+Example configuration can be found in `src/test/conf`. Copy one of
+these folders or create your own based on them.
+
+Change working directory to the a configuration folder.
+
+SMXcore can then be run on the command line using:
+
+`java -jar ../SMXcore.jar Modules.txt`
+
+where `Modules.txt` is a descriptor of modules to load (see below).
+
+Additional files describing the module configuration should be placed in
+the same folder as `Modules.txt`.
 
 ## Configuration
 
-Example configuration for different applications (App) can be found in `src/conf`. 
+Example configuration for different applications (App) can be found in `src/conf`.
+
+## Develop
+
+The source repository can be imported into Netbeans as a Maven project.
