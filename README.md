@@ -50,4 +50,4 @@ Example configuration for different applications (App) can be found in `src/conf
 
 ## Develop
 
-The source repository can be imported into Netbeans as a Maven project.
+The source repository can be imported into Netbeans (or another IDE) as a Maven project.
