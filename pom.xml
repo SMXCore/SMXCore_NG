@@ -3,8 +3,20 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nobelgrid</groupId>
     <artifactId>SMXcore</artifactId>
-    <version>0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
+    <!-- 
+    This repository is required in order to get the right version of mqtt-client
+    which is not available in official maven repo.
+    -->
+    <repositories>
+        <repository>
+            <id>eclipse</id>
+            <name>Repository for older Eclipse Paho releases</name>
+            <url>https://repo.eclipse.org/content/groups/releases/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories> 
     <dependencies>
         <dependency>
             <groupId>org.gurux</groupId>
@@ -48,8 +60,9 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.paho</groupId>
-            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-            <version>1.0.2</version>
+            <artifactId>mqtt-client</artifactId>
+            <version>0.4.0</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <properties>
@@ -60,26 +73,6 @@
     <name>SMXCore Maven</name>
     <build>
         <plugins>
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/dist/lib
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
--->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <version>3.0.2</version>
