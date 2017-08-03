@@ -6,6 +6,7 @@
 package modules;
 
 import gurux.GXCommunicate;
+import static gurux.GXCommunicate.traceLn;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -16,6 +17,7 @@ import gurux.dlms.GXDateTime;
 import gurux.dlms.enums.Authentication;
 import gurux.dlms.manufacturersettings.GXManufacturer;
 import gurux.dlms.manufacturersettings.GXManufacturerCollection;
+import gurux.dlms.objects.GXDLMSClock;
 import gurux.dlms.objects.GXDLMSObject;
 import gurux.dlms.objects.GXDLMSObjectCollection;
 import gurux.io.Parity;
@@ -24,11 +26,14 @@ import gurux.net.GXNet;
 import gurux.net.enums.NetworkType;
 import gurux.serial.GXSerial;
 import gurux.terminal.GXTerminal;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.Vector;
 import util.FileUtil;
 import util.GuruxUtil;
@@ -39,6 +44,9 @@ import util.PropUtil;
  * @author cristi
  */
 public class MeterDLMSClient extends Module {
+    
+    DateFormat df1 = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    DateFormat df2 = new SimpleDateFormat("MMddHHmmyyyy.ss");
 
     @Override
     public void Initialize() {
@@ -61,6 +69,11 @@ public class MeterDLMSClient extends Module {
 
         iBlockRead = PropUtil.GetInt(pAttributes, "iBlockRead", 0);
         iProfilesRead = PropUtil.GetInt(pAttributes, "iProfilesRead", 0);
+        
+        iSLAM = PropUtil.GetInt(pAttributes, "iSLAM", 0);
+        
+        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
+        df2.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
     Properties pDataSet = null;
     String sPrefix = "";
@@ -79,6 +92,8 @@ public class MeterDLMSClient extends Module {
 
     int iBlockRead = 0;
     int iProfilesRead = 0;
+    
+    int iSLAM = 0;
 
     Thread tMeterCalc = null;
 
@@ -197,8 +212,12 @@ public class MeterDLMSClient extends Module {
                 try {
                    // com.readAndPrintAllObjects(logFile);
                     
-                    
-                    objectDate = objectDate.load(sObjDateFile);
+                   if(sObjDateFile.length() > 0) {
+                       objectDate = objectDate.load(sObjDateFile);
+                   }
+                   else {
+                       objectDate.add(new GXDLMSClock());
+                   }
                     com.readClockAttr(objectDate.get(0));
                     //com.readScalerAndUnits(objectDate, logFile);
                     objects1 = objects1.load(sObj1File);
@@ -246,6 +265,30 @@ public class MeterDLMSClient extends Module {
                     pDataSet.put(sOBISPath + "/" + "-2", s);
                 }
                 GuruxUtil.GXDLMSObjectSaveWithVals(objectDate, "tstObjDSave.txt");
+                
+                //If this is a SLAM, handle time
+                if(iSLAM > 0) {
+                    Calendar c_smx = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                    if(c_smx.get(Calendar.YEAR) < 2015) {
+                        //SMX has not the correct time. Retrieve time from SMM and set SMX
+                        Date d = df1.parse(s);
+                        String strDateTimeToSet = df2.format(d);
+                        Runtime.getRuntime().exec("date -u -s " + strDateTimeToSet);
+                    }
+                    else {
+                        //SMX has a correct time, check if SMM clock differs and set it if necessary
+                        String s_smx = df1.format(c_smx.getTime());
+                        traceLn(logFile, "SMM time " + s);
+                        traceLn(logFile, "SMX time " + s_smx);
+                        if(!s_smx.equals(s)) {
+                            //Set SMM clock
+                            GXDLMSClock clock = new GXDLMSClock();
+                            clock.setTime(new GXDateTime(new Date()));
+                            com.writeObject(clock, 2);
+                        }
+                    }
+                }   
+                    
             }
 
             if (iBlockRead == 1) {
