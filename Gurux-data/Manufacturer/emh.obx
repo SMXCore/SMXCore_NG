@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GXManufacturer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Identification>EMH</Identification>
+  <Name>EMH metering GmbH</Name>
+  <ObisCodes />
+  <StartProtocol>DLMS</StartProtocol>
+  <WebAddress>http://www.emh-metering.de/</WebAddress>
+  <Info />
+  <Settings>
+    <GXAuthentication>
+      <Type>None</Type>
+      <ClientAddress>16</ClientAddress>
+      <ClientID xsi:type="xsd:int">16</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>Low</Type>
+      <ClientAddress>17</ClientAddress>
+      <ClientID xsi:type="xsd:int">17</ClientID>
+    </GXAuthentication>
+  </Settings>
+  <ServerSettings>
+    <GXServerAddress>
+      <HDLCAddress>1</HDLCAddress>
+      <Formula>SN%10000+256</Formula>
+      <PhysicalAddress>0</PhysicalAddress>
+    </GXServerAddress>
+  </ServerSettings>
+</GXManufacturer>

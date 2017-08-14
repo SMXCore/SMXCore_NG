@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GXManufacturer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Identification>ind</Identification>
+  <Name>Indian Standard</Name>
+  <UseLN>true</UseLN>
+  <ObisCodes />
+  <StartProtocol>DLMS</StartProtocol>
+  <Settings>
+    <GXAuthentication>
+      <Type>None</Type>
+      <ClientAddress>16</ClientAddress>
+      <ClientID xsi:type="xsd:int">16</ClientID>
+      <Password />
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>Low</Type>
+      <ClientAddress>32</ClientAddress>
+      <ClientID xsi:type="xsd:int">32</ClientID>
+      <Password />
+    </GXAuthentication>
+    <GXAuthentication>
+      <Selected>true</Selected>
+      <Type>High</Type>
+      <ClientAddress>48</ClientAddress>
+      <ClientID xsi:type="xsd:int">48</ClientID>
+    </GXAuthentication>
+  </Settings>
+  <ServerSettings>
+    <GXServerAddress>
+      <Selected>true</Selected>
+      <HDLCAddress>0</HDLCAddress>
+      <Formula />
+      <PhysicalAddress>1</PhysicalAddress>
+    </GXServerAddress>
+    <GXServerAddress>
+      <HDLCAddress>1</HDLCAddress>
+      <Formula>SN%10000+1000</Formula>
+      <PhysicalAddress>1</PhysicalAddress>
+    </GXServerAddress>
+  </ServerSettings>
+</GXManufacturer>

@@ -6,6 +6,7 @@
 package modules;
 
 import gurux.GXCommunicate;
+import static gurux.GXCommunicate.traceLn;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -16,19 +17,24 @@ import gurux.dlms.GXDateTime;
 import gurux.dlms.enums.Authentication;
 import gurux.dlms.manufacturersettings.GXManufacturer;
 import gurux.dlms.manufacturersettings.GXManufacturerCollection;
+import gurux.dlms.objects.GXDLMSClock;
 import gurux.dlms.objects.GXDLMSObject;
 import gurux.dlms.objects.GXDLMSObjectCollection;
+import gurux.io.BaudRate;
 import gurux.io.Parity;
 import gurux.io.StopBits;
 import gurux.net.GXNet;
 import gurux.net.enums.NetworkType;
 import gurux.serial.GXSerial;
 import gurux.terminal.GXTerminal;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.Vector;
 import util.FileUtil;
 import util.GuruxUtil;
@@ -39,6 +45,9 @@ import util.PropUtil;
  * @author cristi
  */
 public class MeterDLMSClient extends Module {
+    
+    DateFormat df1 = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     @Override
     public void Initialize() {
@@ -61,6 +70,11 @@ public class MeterDLMSClient extends Module {
 
         iBlockRead = PropUtil.GetInt(pAttributes, "iBlockRead", 0);
         iProfilesRead = PropUtil.GetInt(pAttributes, "iProfilesRead", 0);
+        
+        iSLAM = PropUtil.GetInt(pAttributes, "iSLAM", 0);
+        
+        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
+        df2.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
     Properties pDataSet = null;
     String sPrefix = "";
@@ -79,6 +93,8 @@ public class MeterDLMSClient extends Module {
 
     int iBlockRead = 0;
     int iProfilesRead = 0;
+    
+    int iSLAM = 0;
 
     Thread tMeterCalc = null;
 
@@ -178,7 +194,7 @@ public class MeterDLMSClient extends Module {
 
     public void QueryMeter() {
         // TODO code application logic here
-
+        
         try {
             if (com == null) {
                 if (logFile == null) {
@@ -197,8 +213,12 @@ public class MeterDLMSClient extends Module {
                 try {
                    // com.readAndPrintAllObjects(logFile);
                     
-                    
-                    objectDate = objectDate.load(sObjDateFile);
+                   if(sObjDateFile.length() > 0) {
+                       objectDate = objectDate.load(sObjDateFile);
+                   }
+                   else {
+                       objectDate.add(new GXDLMSClock());
+                   }
                     com.readClockAttr(objectDate.get(0));
                     //com.readScalerAndUnits(objectDate, logFile);
                     objects1 = objects1.load(sObj1File);
@@ -210,7 +230,7 @@ public class MeterDLMSClient extends Module {
                     com.readScalerAndUnits(objects2, logFile);
                     objects3 = objects3.load(sObj3File);
                     com.readScalerAndUnits(objects3, logFile);
-
+                    
                     if (iProfilesRead == 1) {
                         vProfilesDetail.clear();
 
@@ -240,12 +260,40 @@ public class MeterDLMSClient extends Module {
             }
             //Read Date
             if (objectDate != null) {
+                Calendar c_smx = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 s = com.readDate(objectDate.get(0), pos);
                 if (s.length() > 1) {
                     sOBISPath = sPrefix + objectDate.get(0).getLogicalName().replace('.', '-');
                     pDataSet.put(sOBISPath + "/" + "-2", s);
                 }
                 GuruxUtil.GXDLMSObjectSaveWithVals(objectDate, "tstObjDSave.txt");
+                
+                //If this is a SLAM, handle time
+                if(iSLAM > 0) {
+                    if(c_smx.get(Calendar.YEAR) < 2015) {
+                        traceLn(logFile, "Setting SMX time...");
+                        //SMX is assumed not to have the correct time. Retrieve time from SMM and set SMX. NTP will perform adjustments afterwards.
+                        Date d = df1.parse(s);
+                        String strDateTimeToSet = df2.format(d);
+                        Runtime.getRuntime().exec("date -u -s " + strDateTimeToSet);
+                    }
+                    else {
+                        //SMX is assumed to have a correct time, check if SMM clock differs and set it if necessary
+                        String s_smx = df1.format(c_smx.getTime());
+                        traceLn(logFile, "SMM time " + s);
+                        traceLn(logFile, "SMX time " + s_smx);
+                        if(!s_smx.equals(s)) {
+                            traceLn(logFile, "Setting SMM time...");
+                            //Set SMM clock. Next second is sent. SMM will apply this time the next time time_sync signal gets activated
+                            GXDLMSClock clock = new GXDLMSClock();
+                            Date now = new Date();
+                            Date nowPlus1Sec = new Date(now.getTime() + 1000);
+                            clock.setTime(new GXDateTime(nowPlus1Sec));
+                            com.writeObject(clock, 2);
+                        }
+                    }
+                }   
+                    
             }
 
             if (iBlockRead == 1) {
@@ -497,12 +545,12 @@ public class MeterDLMSClient extends Module {
             GXSerial serial = (GXSerial) media;
             serial.setPortName(port);
             if (iec) {
-                serial.setBaudRate(300);
+                serial.setBaudRate(BaudRate.BAUD_RATE_300);
                 serial.setDataBits(7);
                 serial.setParity(Parity.EVEN);
                 serial.setStopBits(StopBits.ONE);
             } else {
-                serial.setBaudRate(startBaudRate);
+                serial.setBaudRate(BaudRate.forValue(startBaudRate));
                 serial.setDataBits(8);
                 serial.setParity(Parity.NONE);
                 serial.setStopBits(StopBits.ONE);
