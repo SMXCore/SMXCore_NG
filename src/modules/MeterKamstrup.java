@@ -30,9 +30,10 @@ public class MeterKamstrup extends Module {
         //     lPeriod = PropUtil.GetInt(pAttributes, "lPeriod", 1000);
         sCmdLine = PropUtil.GetString(pAttributes, "sCmdLine", "");
         sStartPath = PropUtil.GetString(pAttributes, "sStartPath", "");
-        iTimeOut = PropUtil.GetInt(pAttributes, "iTimeOut", 10000);
+        iTimeOut = PropUtil.GetInt(pAttributes, "iTimeOut", 30000);
         iPause = PropUtil.GetInt(pAttributes, "iPause", 30000);
         iDebug = PropUtil.GetInt(pAttributes, "iDebug", 0);
+        lPeriod = PropUtil.GetLong(pAttributes, "lPeriod", 5000);
     }
 
 //    Properties pAssociation = new Properties();
@@ -41,20 +42,21 @@ public class MeterKamstrup extends Module {
     String sPrefix = "";
     Thread tLoop = null;
     Thread tWachDog = null;
-    int iTimeOut = 10000;
+    int iTimeOut = 30000;
     int iPause = 30000;
     long lLastRead = 0;
     int iDebug = 0;
-
+    long lPeriod = 0;
+    
     @Override
     public void Start() {
         try {
             tLoop = new Thread(new Runnable() {
 
                 @Override
-                public void run() {
-                    Loop();
-                    // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                public void run() {                
+                    Loop();              
+  // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
             });
             tLoop.start();
@@ -91,9 +93,10 @@ public class MeterKamstrup extends Module {
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     public void Loop() {
-
+        
+        
         while (bStop == 0) {
-            try {
+          try {  
                 Thread.sleep(10);
                 try {
                     sLine = br.readLine();
@@ -115,13 +118,14 @@ public class MeterKamstrup extends Module {
                     sLine = sLine.replaceAll("  ", " ");
                 }
 
-
                 sLine = sLine.replaceAll(" ", "\t");
                 ssLineVars = sLine.split("\t");
                 if (ssLineVars.length < 2) {
+                    
                     continue;
                 }
                 if ((ssLineVars[0].length() < 1) || (ssLineVars[1].length() < 1) || ("None".equals(ssLineVars[1]))) {
+                    
                     continue;
                 }
 
@@ -144,14 +148,14 @@ public class MeterKamstrup extends Module {
 
                 }
 
-
+        
             } catch (Exception e) {
-                if (Debug == 1) {
+                if (iDebug == 1) {
                     System.out.println(e.getMessage());
                 }
             }
-
         }
+        
 
     }
 
@@ -161,7 +165,6 @@ public class MeterKamstrup extends Module {
 
     public int Debug = 0;
 
-    public long lPeriod = 0;
     public long lIniSysTimeMs = 0;
     public long lMemSysTimeMs = 0;
     public long ldt = 0;
@@ -176,6 +179,13 @@ public class MeterKamstrup extends Module {
 
     public void ReStartProc() {
         try {
+            if (lPeriod > 0) {
+                lDelay = lPeriod - (System.currentTimeMillis() % lPeriod);
+                Thread.sleep(lDelay);
+            } else {
+                Thread.sleep(10);
+            }
+            
             if (proc != null) {
                 if (isRunning(proc)) {
                     try {
