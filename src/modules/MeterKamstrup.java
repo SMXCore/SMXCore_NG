@@ -94,7 +94,7 @@ public class MeterKamstrup extends Module {
 
         while (bStop == 0) {
             try {
-                Thread.sleep(10);
+                Thread.sleep(10000);
                 try {
                     sLine = br.readLine();
                 } catch (Exception ex) {
@@ -146,7 +146,7 @@ public class MeterKamstrup extends Module {
 
 
             } catch (Exception e) {
-                if (Debug == 1) {
+                if (iDebug == 1) {
                     System.out.println(e.getMessage());
                 }
             }
