@@ -42,10 +42,10 @@ import util.PropUtil;
 
 /**
  *
- * @author cristi
+ * @author cristi, mihai
  */
 public class MeterDLMSClient extends Module {
-    
+
     DateFormat df1 = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -70,12 +70,30 @@ public class MeterDLMSClient extends Module {
 
         iBlockRead = PropUtil.GetInt(pAttributes, "iBlockRead", 0);
         iProfilesRead = PropUtil.GetInt(pAttributes, "iProfilesRead", 0);
-        
+
         iSLAM = PropUtil.GetInt(pAttributes, "iSLAM", 0);
-        
+
         df1.setTimeZone(TimeZone.getTimeZone("UTC"));
         df2.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        sReadDisableParam = PropUtil.GetString(pAttributes, "sReadDisableParam", "");
+        if (sReadDisableParam.length() < 2) {
+            sReadDisableParam = this.sName + "sReadDisableParam";
+            pDataSet.put(sReadDisableParam, "0");
+        }
+
+        sReadDisabledParam = PropUtil.GetString(pAttributes, "sReadDisabledParam", "");
+        if (sReadDisabledParam.length() < 2) {
+            sReadDisabledParam = this.sName + "sReadDisabledParam";
+            pDataSet.put(sReadDisabledParam, "0");
+        }
     }
+
+    int iReadDisable = 0;
+    int iReadDisabledParam = 1;
+    String sReadDisableParam = "";
+    String sReadDisabledParam = "";
+
     Properties pDataSet = null;
     String sPrefix = "";
     String sCmdLineArgs = "";
@@ -93,7 +111,7 @@ public class MeterDLMSClient extends Module {
 
     int iBlockRead = 0;
     int iProfilesRead = 0;
-    
+
     int iSLAM = 0;
 
     Thread tMeterCalc = null;
@@ -126,6 +144,30 @@ public class MeterDLMSClient extends Module {
     public long ldt = 0;
     public double ddt = 0.0;
     public long lDelay = 0;
+
+    public boolean CheckDisableRead() {
+
+        iReadDisable = PropUtil.GetInt(pDataSet, sReadDisableParam, 0);
+        if (iReadDisable == 0) {
+            pDataSet.put(sReadDisabledParam, "0");
+            return false;
+        }
+        iReadDisabledParam = PropUtil.GetInt(pDataSet, sReadDisabledParam, 0);
+        if (iReadDisabledParam == 1) {
+            return true;
+        }
+
+        try {
+            com.close();
+        } catch (Exception e) {
+            if (Debug == 1) {
+                System.out.println(e.getMessage());
+            }
+        }
+        pDataSet.put(sReadDisabledParam, "1");
+        return true;
+
+    }
 
     public void Calculate() {
 
@@ -160,7 +202,9 @@ public class MeterDLMSClient extends Module {
                     continue;
                 }
                 memPause = Pause;
-
+                if (CheckDisableRead()) {
+                    continue;
+                }
                 QueryMeter();
 
             } catch (Exception e) {
@@ -191,10 +235,12 @@ public class MeterDLMSClient extends Module {
     long iCrtProfilePos = 0;
     long iNewProfilePos = 0;
     String s = "";
+    
+    boolean isInit=false;
 
     public void QueryMeter() {
         // TODO code application logic here
-        
+
         try {
             if (com == null) {
                 if (logFile == null) {
@@ -209,34 +255,47 @@ public class MeterDLMSClient extends Module {
                 if (com == null) {
                     return;
                 }
+                if (CheckDisableRead()) {
+                    return;
+                }
                 com.initializeConnection();
                 try {
-                   // com.readAndPrintAllObjects(logFile);
-                    
-                   if(sObjDateFile.length() > 0) {
-                       objectDate = objectDate.load(sObjDateFile);
-                   }
-                   else {
-                       objectDate.add(new GXDLMSClock());
-                   }
+                    // com.readAndPrintAllObjects(logFile);
+                    if(!isInit){
+                    if (sObjDateFile.length() > 0) {
+                        objectDate = objectDate.load(sObjDateFile);
+                    } else {
+                        objectDate.add(new GXDLMSClock());
+                    }
                     com.readClockAttr(objectDate.get(0));
                     //com.readScalerAndUnits(objectDate, logFile);
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     objects1 = objects1.load(sObj1File);
                     com.readScalerAndUnits(objects1, logFile);
-                    
-                   // GuruxUtil.GXDLMSObjectSaveWithVals(objects1, "tstObjSave.txt");
-                    
+                    if (CheckDisableRead()) {
+                        return;
+                    }
+                    // GuruxUtil.GXDLMSObjectSaveWithVals(objects1, "tstObjSave.txt");
                     objects2 = objects2.load(sObj2File);
                     com.readScalerAndUnits(objects2, logFile);
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     objects3 = objects3.load(sObj3File);
                     com.readScalerAndUnits(objects3, logFile);
-                    
+
                     if (iProfilesRead == 1) {
                         vProfilesDetail.clear();
-
+                        if (CheckDisableRead()) {
+                            return;
+                        }
                         profiles1 = profiles1.load(sProf1File);
                         com.readProfileGenericColumnsString(profiles1, logFile);
-
+                        if (CheckDisableRead()) {
+                            return;
+                        }
                         com.readProfileGenericsAttr(profiles1, logFile);
                         iNoOfProfiles = profiles1.size();
 
@@ -247,11 +306,15 @@ public class MeterDLMSClient extends Module {
                             htProfileDetail.put("ColumnsString", s);
                             FileUtil.SaveToFile(sProfilePath + "/" + it.getLogicalName().replace('.', '-') + ".txt",
                                     s + "\r\n");
+                            if (CheckDisableRead()) {
+                                return;
+                            }
                             com.updateProfileGenericsDetails(htProfileDetail, it, 8, logFile);
                             vProfilesDetail.add(htProfileDetail);
                         }
                         iCrtProfileNo = 1;
-
+                        isInit=true;
+                    }
                         // com.readProfileGenericsLast5Rows(profiles1, logFile);
                     }
                 } catch (Exception exc) {
@@ -260,6 +323,9 @@ public class MeterDLMSClient extends Module {
             }
             //Read Date
             if (objectDate != null) {
+                if (CheckDisableRead()) {
+                    return;
+                }
                 Calendar c_smx = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 s = com.readDate(objectDate.get(0), pos);
                 if (s.length() > 1) {
@@ -267,22 +333,21 @@ public class MeterDLMSClient extends Module {
                     pDataSet.put(sOBISPath + "/" + "-2", s);
                 }
                 GuruxUtil.GXDLMSObjectSaveWithVals(objectDate, "tstObjDSave.txt");
-                
+
                 //If this is a SLAM, handle time
-                if(iSLAM > 0) {
-                    if(c_smx.get(Calendar.YEAR) < 2015) {
+                if (iSLAM > 0) {
+                    if (c_smx.get(Calendar.YEAR) < 2015) {
                         traceLn(logFile, "Setting SMX time...");
                         //SMX is assumed not to have the correct time. Retrieve time from SMM and set SMX. NTP will perform adjustments afterwards.
                         Date d = df1.parse(s);
                         String strDateTimeToSet = df2.format(d);
                         Runtime.getRuntime().exec("date -u -s " + strDateTimeToSet);
-                    }
-                    else {
+                    } else {
                         //SMX is assumed to have a correct time, check if SMM clock differs and set it if necessary
                         String s_smx = df1.format(c_smx.getTime());
                         traceLn(logFile, "SMM time " + s);
                         traceLn(logFile, "SMX time " + s_smx);
-                        if(!s_smx.equals(s)) {
+                        if (!s_smx.equals(s)) {
                             traceLn(logFile, "Setting SMM time...");
                             //Set SMM clock. Next second is sent. SMM will apply this time the next time time_sync signal gets activated
                             GXDLMSClock clock = new GXDLMSClock();
@@ -292,28 +357,34 @@ public class MeterDLMSClient extends Module {
                             com.writeObject(clock, 2);
                         }
                     }
-                }   
-                    
+                }
+
             }
 
             if (iBlockRead == 1) {
                 //com.readAllObjects(logFile);
                 if (objects1 != null) {
-
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     com.readRegisters(objects1, logFile);
 
                     WriteVals(objects1);
                     GuruxUtil.GXDLMSObjectSaveWithVals(objects1, "tstObj1Save.txt");
                 }
                 if (objects2 != null) {
-
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     com.readRegisters(objects2, logFile);
 
                     WriteVals(objects2);
                     GuruxUtil.GXDLMSObjectSaveWithVals(objects2, "tstObj2Save.txt");
                 }
                 if (objects3 != null) {
-
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     com.readRegisters(objects3, logFile);
 
                     WriteVals(objects3);
@@ -321,39 +392,54 @@ public class MeterDLMSClient extends Module {
                 }
             } else {
                 if (objects1 != null) {
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     com.readValues2(objects1, logFile);
                     WriteVals(objects1);
                 }
                 if (objects2 != null) {
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     com.readValues2(objects2, logFile);
                     WriteVals(objects2);
                 }
                 if (objects3 != null) {
+                    if (CheckDisableRead()) {
+                        return;
+                    }
                     com.readValues2(objects3, logFile);
                     WriteVals(objects3);
                 }
             }
             if (iProfilesRead == 1) {
-
+                if (CheckDisableRead()) {
+                    return;
+                }
                 if (++iCrtProfileNo > iNoOfProfiles) {
                     iCrtProfileNo = 1;
                 }
-                it = profiles1.get(iCrtProfileNo - 1);
-                htProfileDetail = vProfilesDetail.elementAt(iCrtProfileNo - 1);
-                iCrtProfilePos = ((Date) htProfileDetail.get("lLastDate")).getTime();
-                com.readProfileGenericsCurrentRows(htProfileDetail, it, 0, logFile);
-                //com.readProfileGenericsLastNRows(it, 10, logFile);
-                //com.readProfileGenericsLast5Rows(profiles1, logFile);
+                try {
+                    it = profiles1.get(iCrtProfileNo - 1);
+                    htProfileDetail = vProfilesDetail.elementAt(iCrtProfileNo - 1);
+                    iCrtProfilePos = ((Date) htProfileDetail.get("lLastDate")).getTime();
+                    com.readProfileGenericsCurrentRows(htProfileDetail, it, 0, logFile);
+                    //com.readProfileGenericsLastNRows(it, 10, logFile);
+                    //com.readProfileGenericsLast5Rows(profiles1, logFile);
 
-                iNewProfilePos = ((Date) htProfileDetail.get("lLastDate")).getTime();
-                if (iCrtProfilePos == iNewProfilePos) {
-                } else {
-                    sOBISPath = sPrefix + it.getLogicalName().replace('.', '-');
-                    pDataSet.put(sOBISPath + "/" + "-2", (String) htProfileDetail.get("sLastRow"));
-                    if (sProfilePath.length() > 1) {
-                        FileUtil.SaveToFile(sProfilePath + "/" + it.getLogicalName().replace('.', '-') + ".txt",
-                                (String) htProfileDetail.get("sLastRow") + "\r\n");
+                    iNewProfilePos = ((Date) htProfileDetail.get("lLastDate")).getTime();
+                    if (iCrtProfilePos == iNewProfilePos) {
+                    } else {
+                        sOBISPath = sPrefix + it.getLogicalName().replace('.', '-');
+                        pDataSet.put(sOBISPath + "/" + "-2", (String) htProfileDetail.get("sLastRow"));
+                        if (sProfilePath.length() > 1) {
+                            FileUtil.SaveToFile(sProfilePath + "/" + it.getLogicalName().replace('.', '-') + ".txt",
+                                    (String) htProfileDetail.get("sLastRow") + "\r\n");
+                        }
                     }
+                } catch (Exception ex3) {
+                    System.out.println(ex3.toString());
                 }
 
             }
@@ -391,6 +477,7 @@ public class MeterDLMSClient extends Module {
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     String sDate = "";
     String sOBISPath = "";
+    Date dtDate;
 
     public void WriteVals(GXDLMSObjectCollection objects) {
         sDate = sdfDate.format(new Date());
@@ -405,10 +492,19 @@ public class MeterDLMSClient extends Module {
             }
             sOBISPath = sPrefix + it.getLogicalName().replace('.', '-');
             pDataSet.put(sOBISPath + "/" + "-5", sDate);
-            try {
-                pDataSet.put(sOBISPath + "/" + "-2", it.getValues()[1].toString());
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            if (it instanceof GXDLMSClock) {
+                try {
+                    dtDate = ((GXDLMSClock) it).getTime().toMeterTime();
+                    pDataSet.put(sOBISPath + "/" + "-2", df1.format(dtDate).toString());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            } else {
+                try {
+                    pDataSet.put(sOBISPath + "/" + "-2", it.getValues()[1].toString());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
             // GXDLMSAttributeSettings gas=it.getAttributes().find(1);
             iNoA = it.getValues().length;
