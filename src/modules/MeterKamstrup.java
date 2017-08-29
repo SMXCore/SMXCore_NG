@@ -30,7 +30,7 @@ public class MeterKamstrup extends Module {
         //     lPeriod = PropUtil.GetInt(pAttributes, "lPeriod", 1000);
         sCmdLine = PropUtil.GetString(pAttributes, "sCmdLine", "");
         sStartPath = PropUtil.GetString(pAttributes, "sStartPath", "");
-        iTimeOut = PropUtil.GetInt(pAttributes, "iTimeOut", 10000);
+        iTimeOut = PropUtil.GetInt(pAttributes, "iTimeOut", 30000);
         iPause = PropUtil.GetInt(pAttributes, "iPause", 30000);
         iDebug = PropUtil.GetInt(pAttributes, "iDebug", 0);
     }
@@ -41,7 +41,7 @@ public class MeterKamstrup extends Module {
     String sPrefix = "";
     Thread tLoop = null;
     Thread tWachDog = null;
-    int iTimeOut = 10000;
+    int iTimeOut = 30000;
     int iPause = 30000;
     long lLastRead = 0;
     int iDebug = 0;
@@ -53,7 +53,12 @@ public class MeterKamstrup extends Module {
 
                 @Override
                 public void run() {
-                    Loop();
+                try {      
+                    Loop();              
+                } catch (Exception e) {
+
+                }
+                   
                     // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
             });
@@ -91,10 +96,11 @@ public class MeterKamstrup extends Module {
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     public void Loop() {
-
+        
+        
         while (bStop == 0) {
-            try {
-                Thread.sleep(10);
+          try {  
+                Thread.sleep(30);
                 try {
                     sLine = br.readLine();
                 } catch (Exception ex) {
@@ -107,6 +113,7 @@ public class MeterKamstrup extends Module {
                 }
                 lLastRead = System.currentTimeMillis();
                 if ((sLine == null) || (sLine.length() < 1)) {
+                    Thread.sleep(10000); // !!! <--- this controls how long between readings
                     ReStartProc();
                     continue;
                 }
@@ -115,13 +122,14 @@ public class MeterKamstrup extends Module {
                     sLine = sLine.replaceAll("  ", " ");
                 }
 
-
                 sLine = sLine.replaceAll(" ", "\t");
                 ssLineVars = sLine.split("\t");
                 if (ssLineVars.length < 2) {
+                    
                     continue;
                 }
                 if ((ssLineVars[0].length() < 1) || (ssLineVars[1].length() < 1) || ("None".equals(ssLineVars[1]))) {
+                    
                     continue;
                 }
 
@@ -144,14 +152,14 @@ public class MeterKamstrup extends Module {
 
                 }
 
-
+        
             } catch (Exception e) {
-                if (Debug == 1) {
+                if (iDebug == 1) {
                     System.out.println(e.getMessage());
                 }
             }
-
         }
+        
 
     }
 
