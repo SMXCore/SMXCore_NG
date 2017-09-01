@@ -8,6 +8,7 @@ package modules;
 import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.Properties;
 import util.PropUtil;
 import java.io.BufferedWriter;
@@ -51,6 +52,7 @@ public class MeterKamstrup extends Module {
     @Override
     public void Start() {
         try {
+            sdfDate.setTimeZone(TimeZone.getDefault());
             tLoop = new Thread(new Runnable() {
 
                 @Override
@@ -91,7 +93,7 @@ public class MeterKamstrup extends Module {
     String sTime = "";
 
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-
+    
     public void Loop() {
         
         
