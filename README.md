@@ -4,6 +4,15 @@ Open Source software for communication with electricity and other meter types de
 ## Requirements
 
 * Java SE 7 (?)
+* gurux.serial 1.16
+* gurux.dlms 1.2.31
+* gurux.net 1.0.9
+* gurux.sms 1.0.6
+* gurux.serial 1.0.16
+* gurux.terminal 1.0.6
+* jssc 2.8.0
+* mongo-java-driver 3.2.2
+* mqtt-client 0.4.0
 
 ## Installation
 Netbeans is currently required. Create a new project in Netbeans by importing the root of the project directory. A build will produce a `dist/` directory which can be distributed. 

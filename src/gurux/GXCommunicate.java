@@ -47,6 +47,7 @@ import gurux.dlms.objects.GXDLMSProfileGeneric;
 import gurux.dlms.objects.GXDLMSRegister;
 import gurux.dlms.objects.IGXDLMSBase;
 import gurux.dlms.objects.enums.SortMethod;
+import gurux.io.BaudRate;
 import gurux.io.Parity;
 import gurux.io.StopBits;
 import gurux.net.GXNet;
@@ -370,7 +371,7 @@ public class GXCommunicate {
                     serial.setDataBits(8);
                     serial.setParity(Parity.NONE);
                     serial.setStopBits(StopBits.ONE);
-                    serial.setBaudRate(bitrate);
+                    serial.setBaudRate(BaudRate.forValue(bitrate));
                     Media.open();
                     serial.setDtrEnable(true);
                     serial.setRtsEnable(true);
@@ -468,7 +469,7 @@ public class GXCommunicate {
         Object o = readObject(item, attributeIndex);
         GXDateTime gxDate;
         Date dtDate;
-        long lOffset = (!this.manufacturer.getIdentification().contains("LGZ1")) ? 3600 * 1000 : 0;
+        long lOffset = (!(this.manufacturer.getIdentification().contains("LGZ1") || this.manufacturer.getIdentification().contains("ETR"))) ? 3600 * 1000 : 0;
         if (o instanceof GXDateTime) {
             gxDate = (GXDateTime) o;
             dtDate = new Date(gxDate.getValue().getTime() - lOffset);
