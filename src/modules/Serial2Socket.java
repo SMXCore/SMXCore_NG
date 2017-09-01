@@ -18,7 +18,7 @@ import util.iec1107util;
 
 /**
  *
- * @author cristi
+ * @author cristi, mihai
  */
 public class Serial2Socket extends Module {
 
