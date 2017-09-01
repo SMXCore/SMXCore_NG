@@ -34,9 +34,9 @@ public class ATemplateModule extends Module {
 
     Properties pAssociation = new Properties();
 
-    Properties pDataSet = null;
-    String sPrefix = "";
-    Thread tLoop = null;
+    Properties pDataSet = null; // The data set of the real time database
+    String sPrefix = ""; // The module's prefix, prefixed to the name of values in the data set
+    Thread tLoop = null; // The thread that we are running on
 
     @Override
     public void Start() {
