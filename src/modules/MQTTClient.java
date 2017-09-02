@@ -13,7 +13,7 @@ import util.PropUtil;
 
 /**
  *
- * @author cristi
+ * @author cristi, vlad
  */
 public class MQTTClient extends Module {
 
@@ -168,11 +168,57 @@ public class MQTTClient extends Module {
                             return;
                         }
                     }
-                    sSubAssocAttr = pSubAssociation.getProperty(topic);
+                    sSubAssocAttr = pSubAssociation.getProperty(topic).trim();
                     if (sSubAssocAttr == null) {
                         return;
                     }
-                    pDataSet.put(sSubAssocAttr, msg.toString());
+                    if(sSubAssocAttr.contains("[")) {
+                        String[] sSAA = sSubAssocAttr.split("\\[");
+                        sSAA[0] = sSAA[0].trim();
+                        sSAA[1] = sSAA[1].trim();
+                        sSAA[1] = sSAA[1].substring(0, sSAA[1].length() - 1);
+                        String[] req = sSAA[1].split(",");
+                        for(int i = 0; i < req.length; i++) {
+                            req[i] = req[i].trim();
+                        }
+                        String smsg = msg.toString().trim();
+                        if(smsg.startsWith("[")) {
+                            smsg = smsg.substring(1, smsg.length() - 1);
+                            String[] ms = smsg.split(",");
+                            for(int i = 0; i < ms.length; i++) {
+                                ms[i] = ms[i].trim();
+                            }
+                            for(int i = 0; i < req.length; i++) {
+                                if(i < ms.length) {
+                                    if(req[i].startsWith("\"") && ms[i].startsWith("\"")) {
+                                        ms[i] = ms[i].substring(1, ms[i].length() - 1);
+                                    }
+                                    if(req[i].startsWith("\"")) {
+                                        req[i] = req[i].substring(1, req[i].length() - 1);
+                                    }
+                                    if(sSAA[0].equals("")) {
+                                        pDataSet.put(req[i], ms[i]);
+                                    } else {
+                                        pDataSet.put(sSAA[0] + "/" + req[i], ms[i]);
+                                    }
+                                } else {
+                                    if(sSAA[0].equals("")) {
+                                        pDataSet.put(req[i], ms[i]);
+                                    } else {
+                                        pDataSet.put(sSAA[0] + "/" + req[i], "");
+                                    }
+                                }
+                            }
+                        } else {
+                            if(sSAA[0].equals("")) {
+                                pDataSet.put(req[0] + "/" + "ERR", msg.toString());
+                            } else {
+                                pDataSet.put(sSAA[0], msg.toString());
+                            }
+                        }
+                    } else {
+                        pDataSet.put(sSubAssocAttr, msg.toString());
+                    }
 
                     //System.out.println("Recived:" + sTopic);
                     //System.out.println("Recived:" + new String(msg.getPayload()));
