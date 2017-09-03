@@ -97,5 +97,9 @@ public class ModulesManager {
     public Object getSharedObject(String sObjectName) {
         return htSharedObjects.get(sObjectName);
     }
+    
+    public Module getModuleDebug(String sModuleName) {
+        return htModulesData.get(sModuleName);
+    }
 
 }

@@ -32,7 +32,7 @@ public class FileStorage extends Module {
         sSeparator = PropUtil.GetString(pAttributes, "sSeparator", "\t");
 
     }
-
+    
     int iCommpress;
     int iMove;
 
@@ -80,8 +80,14 @@ public class FileStorage extends Module {
                 }
                 if (lMemSysTimeMs == 0) {
                     lMemSysTimeMs = System.currentTimeMillis();
-
                 }
+                if(bReinitialize) {
+                    pStoreAssociation = new Properties();
+                    Initialize();
+                    bReinitialize = false;
+                    bwStorage = null;
+                }
+                     
                 dCrtDate = new Date();
                 sDate = sdfLogDate.format(dCrtDate);
 

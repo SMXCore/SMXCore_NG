@@ -74,13 +74,28 @@ public class DataSetAnl extends Module {
     
     void processCommand(String line) {
         try {
-            if(line.equals("listAll")) {
+            String[] args = line.split(" ");
+            if(args[0].equals("listAll")) {
                 printToFile("DataSet1: ");
                 list(pDataSet, file);
                 file.flush();
+            } else if(args[0].equals("reload")) {
+//                System.out.println("Reloading " + args[1]);
+                Module m = (Module) mmManager.getModuleDebug(args[1]);
+                if(args.length > 2) {
+//                    System.out.println("From " + args[2]);
+                    PropUtil.LoadFromFile(m.pAttributes, args[2]);
+//                    System.out.println("Success ");
+                } else {
+//                    System.out.println("From " + m.sAttributesFile);
+                    PropUtil.LoadFromFile(m.pAttributes,  m.sAttributesFile);
+//                    System.out.println("Success ");
+                }
+                printToFile("Reload success (no exception thrown)");
+                m.bReinitialize = true;
             }
         } catch(Exception e) {
-            
+            e.printStackTrace(file);
         }
     }
     

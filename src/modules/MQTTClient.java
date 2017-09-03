@@ -77,6 +77,13 @@ public class MQTTClient extends Module {
 
                         //  continue;
                     }
+                    if(bReinitialize) {
+                        MQTTDisconnect();
+                        pPubAssociation = new Properties();
+                        pSubAssociation = new Properties();
+                        Initialize();
+                    }
+                    
                     if (iConnected == 0) {
                         MQTTConnect();
                     }
@@ -230,6 +237,7 @@ public class MQTTClient extends Module {
                     // Params.put("sLastSentMsgDate", sdfLogDate.format(new Date()));
                 }
 
+                @Override
                 public void connectionLost(Throwable arg0) {
                     // TODO Auto-generated method stub
                     MQTTDisconnect();

@@ -13,10 +13,11 @@ import java.util.Properties;
  */
 public class Module extends Thread{
 
-    Properties pAttributes = new Properties(); // The attributes of the current module, loaded from a file.
+    volatile Properties pAttributes = new Properties(); // The attributes of the current module, loaded from a file.
     String sAttributesFile=""; // The file it is loaded from
     String sName = ""; // The name of the instance of the module
     ModulesManager mmManager=null; // The module manager
+    volatile boolean bReinitialize = false;
 
     public void setAttributes(Properties pSetAttributes) {
         pAttributes = pSetAttributes;
