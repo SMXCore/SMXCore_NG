@@ -5,11 +5,19 @@
  */
 package modules;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import util.PropUtil;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.Json;
 
 /**
  *
@@ -61,7 +69,50 @@ public class MQTTClient extends Module {
     String sInternalAttr;
     String sMQTTAttr;
 
+    String greatestCommonPrefix(String a, String b) {
+        int minLength = Math.min(a.length(), b.length());
+        for(int i = 0; i < minLength; i++) {
+            if(a.charAt(i) != b.charAt(i))  {
+                return a.substring(0, i);
+            }
+        }
+        return a.substring(0, minLength);
+    }
+    
+    @SuppressWarnings("empty-statement")
+    String getNextSubObject(int start, String thing) {
+        int i;
+        for(i = start; i != thing.length() && thing.charAt(i) != '/'; i++);
+        if(i != thing.length()) {
+            return thing.substring(start, i + 1);
+        } else {
+            return thing.substring(start, i);
+        }
+    }
+    
+    JsonObject makeObjects(String prefix, String[] things) {
+        JsonObjectBuilder b = Json.createObjectBuilder();
+        int last = 0;
+        for(int i = 1; i <= things.length; i++) {
+            if(i == things.length || !getNextSubObject(prefix.length(), things[last]).equals(getNextSubObject(prefix.length(), things[i]))) {
+                String next = getNextSubObject(prefix.length(), things[last]);
+                System.out.println(next);
+                if(next.charAt(next.length() - 1) == '/') {
+                    System.out.println("!");
+                    b.add(next.substring(0, next.length() - 1), makeObjects(prefix + next, Arrays.copyOfRange(things, last, i)));
+                } else {
+                    b.add(next, pDataSet.getProperty(things[last], ""));
+                }
+                last = i;
+            }
+        }
+        return b.build();
+    }
+    
     public void MQTTPublishLoop() {
+//        String[] test = {"SMX/LD01/v1/value", "SMX/LD01/v1/unit", "SMX/LD01/v2/value", "SMX/LD01/v3/value"};
+//        String s = makeObjects("SMX/LD01/", test).toString();
+//        System.out.println(s);
         try {
             while (bStop == 0) {
                 try {
@@ -99,7 +150,30 @@ public class MQTTClient extends Module {
                             sInternalAttr = (String) eKeys.nextElement();
                             sMQTTAttr = sPubPrefix + (String) pPubAssociation.getProperty(sInternalAttr, "");
                             if (sMQTTAttr.length() > sPubPrefix.length()) {
-                                sValue = (String) pDataSet.getProperty(sIntPrefix + sInternalAttr, "");
+                                String reg = "^" + sIntPrefix + sInternalAttr;
+                                reg = reg.replaceAll("/", "\\/");
+                                Enumeration eKeys2 = pDataSet.keys();
+                                List<String> a = new ArrayList();
+                                while(eKeys2.hasMoreElements()) {
+                                    String crt = (String) eKeys2.nextElement();
+                                    if(crt.matches(reg)) {
+                                        a.add(crt);
+                                    }
+                                }
+                                String[] list = (String[]) a.toArray();
+                                Arrays.sort(list);
+                                if(list.length == 0) {
+                                    sValue = "";
+                                } else if(list.length == 1) {
+                                    sValue = (String) pDataSet.getProperty(list[0], "");
+                                } else {
+                                    String pref = list[0];
+                                    for(int i = 1; i < list.length; i++) {
+                                        pref = greatestCommonPrefix(list[1], pref);
+                                    }
+                                    JsonObject j = makeObjects(pref, list);
+                                    sValue = j.toString();
+                                }
 
                                 mqttMessage = new MqttMessage(sValue.getBytes());
                                 mqttMessage.setQos(iPubQos);

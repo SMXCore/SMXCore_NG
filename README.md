@@ -15,6 +15,8 @@ Open Source software for communication with electricity and other meter types de
 * mqtt-client 0.4.0
 * pi4j-core.jar 1.1
 * pi4j-gpio-extension.jar 1.1
+* javax-json 1.1
+* javax-json-api 1.1
 
 ## Installation
 Netbeans is currently required. Create a new project in Netbeans by importing the root of the project directory. A build will produce a `dist/` directory which can be distributed. 
