@@ -150,7 +150,7 @@ public class MQTTClient extends Module {
                             sInternalAttr = (String) eKeys.nextElement();
                             sMQTTAttr = sPubPrefix + (String) pPubAssociation.getProperty(sInternalAttr, "");
                             if (sMQTTAttr.length() > sPubPrefix.length()) {
-                                String reg = "^" + sIntPrefix + sInternalAttr;
+                                String reg = "^" + sInternalAttr;
                                 reg = reg.replaceAll("/", "\\/");
                                 Enumeration eKeys2 = pDataSet.keys();
                                 List<String> a = new ArrayList();
@@ -160,17 +160,24 @@ public class MQTTClient extends Module {
                                         a.add(crt);
                                     }
                                 }
-                                String[] list = (String[]) a.toArray();
+                                String[] list = new String[a.size()];
+                                list = a.toArray(list);
                                 Arrays.sort(list);
                                 if(list.length == 0) {
                                     sValue = "";
                                 } else if(list.length == 1) {
+                                    System.out.println("Only found one");
                                     sValue = (String) pDataSet.getProperty(list[0], "");
                                 } else {
+                                    System.out.println("Found more than one");
                                     String pref = list[0];
                                     for(int i = 1; i < list.length; i++) {
-                                        pref = greatestCommonPrefix(list[1], pref);
+                                        pref = greatestCommonPrefix(list[i], pref);
                                     }
+                                    int i;
+                                    for(i = pref.length() - 1; i > 0 && pref.charAt(i) != '/'; i--);
+                                    pref = pref.substring(0, i + 1);
+                                    System.out.println(pref);
                                     JsonObject j = makeObjects(pref, list);
                                     sValue = j.toString();
                                 }
@@ -207,7 +214,7 @@ public class MQTTClient extends Module {
     public int memPause = 0;
     public int bStop = 0;
 
-    public int Debug = 0;
+    public int Debug = 1;
 
     public long lPeriod = 0;
     public long lIniSysTimeMs = 0;
