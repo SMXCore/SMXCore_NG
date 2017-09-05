@@ -96,9 +96,9 @@ public class MQTTClient extends Module {
         for(int i = 1; i <= things.length; i++) {
             if(i == things.length || !getNextSubObject(prefix.length(), things[last]).equals(getNextSubObject(prefix.length(), things[i]))) {
                 String next = getNextSubObject(prefix.length(), things[last]);
-                System.out.println(next);
+//                System.out.println(next);
                 if(next.charAt(next.length() - 1) == '/') {
-                    System.out.println("!");
+//                    System.out.println("!");
                     b.add(next.substring(0, next.length() - 1), makeObjects(prefix + next, Arrays.copyOfRange(things, last, i)));
                 } else {
                     b.add(next, pDataSet.getProperty(things[last], ""));
