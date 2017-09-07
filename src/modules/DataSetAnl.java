@@ -91,7 +91,7 @@ public class DataSetAnl extends Module {
                     PropUtil.LoadFromFile(m.pAttributes,  m.sAttributesFile);
 //                    System.out.println("Success ");
                 }
-                printToFile("Reload success (no exception thrown)");
+                printToFile("Reload success (no exception thrown) in module " + args[1]);
                 m.bReinitialize = true;
             }
         } catch(Exception e) {

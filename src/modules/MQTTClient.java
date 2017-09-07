@@ -122,11 +122,11 @@ public class MQTTClient extends Module {
                         JsonString ss = (JsonString) value;
                         assoc.isClassic = true;
                         if(!isPublish) {
-                            assoc.internalName = ss.toString();
+                            assoc.internalName = ss.getString();
                             assoc.mqttTopic = name;
                         } else {
                             assoc.internalName = name;
-                            assoc.mqttTopic = ss.toString();
+                            assoc.mqttTopic = ss.getString();
                         }
                     } else if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject ass = (JsonObject) value;
@@ -252,9 +252,13 @@ public class MQTTClient extends Module {
                             if (sMQTTAttr.length() > sPubPrefix.length()) {
                                 String reg = "";
                                 if(e.isClassic) {
-                                    reg = "^" + sInternalAttr + ".*$";
+                                    reg = "^" + sIntPrefix + sInternalAttr + ".*$";
                                 } else {
-                                    reg = sInternalAttr;
+                                    if(reg.startsWith("^")) {
+                                        reg = "^" + sIntPrefix + sInternalAttr.substring(1);
+                                    } else {
+                                        reg = sIntPrefix + sInternalAttr;
+                                    }
                                 }
                                 reg = reg.replaceAll("/", "\\/");
                                 Enumeration eKeys2 = pDataSet.keys();
@@ -271,10 +275,10 @@ public class MQTTClient extends Module {
                                 if(list.length == 0) {
                                     sValue = "";
                                 } else if(list.length == 1) {
-                                    System.out.println("Only found one");
+//                                    System.out.println("Only found one");
                                     sValue = (String) pDataSet.getProperty(list[0], "");
                                 } else {
-                                    System.out.println("Found more than one");
+//                                    System.out.println("Found more than one");
                                     String pref = list[0];
                                     for(int i = 1; i < list.length; i++) {
                                         pref = greatestCommonPrefix(list[i], pref);
@@ -282,7 +286,7 @@ public class MQTTClient extends Module {
                                     int i;
                                     for(i = pref.length() - 1; i > 0 && pref.charAt(i) != '/'; i--);
                                     pref = pref.substring(0, i + 1);
-                                    System.out.println(pref);
+//                                    System.out.println(pref);
                                     JsonObject j = makeObjects(pref, list);
                                     sValue = j.toString();
                                 }
@@ -381,6 +385,9 @@ public class MQTTClient extends Module {
                             String[] ms = smsg.split(",");
                             for(int i = 0; i < ms.length; i++) {
                                 ms[i] = ms[i].trim();
+                                if(ms[i].endsWith("]")) {
+                                    ms[i] = ms[i].substring(0, ms[i].length() - 1);
+                                }
                             }
                             for(int i = 0; i < req.length; i++) {
                                 if(i < ms.length) {
@@ -391,15 +398,15 @@ public class MQTTClient extends Module {
                                         req[i] = req[i].substring(1, req[i].length() - 1);
                                     }
                                     if(sSAA[0].equals("")) {
-                                        pDataSet.put(req[i], ms[i]);
+                                        pDataSet.put(sIntPrefix + req[i], ms[i]);
                                     } else {
-                                        pDataSet.put(sSAA[0] + "/" + req[i], ms[i]);
+                                        pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i], ms[i]);
                                     }
                                 } else {
                                     if(sSAA[0].equals("")) {
-                                        pDataSet.put(req[i], ms[i]);
+                                        pDataSet.put(sIntPrefix + req[i], ms[i]);
                                     } else {
-                                        pDataSet.put(sSAA[0] + "/" + req[i], "");
+                                        pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i], "");
                                     }
                                 }
                             }
