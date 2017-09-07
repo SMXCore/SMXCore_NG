@@ -5,12 +5,16 @@
  */
 package modules;
 
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -18,6 +22,10 @@ import util.PropUtil;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 /**
  *
@@ -25,15 +33,27 @@ import javax.json.Json;
  */
 public class MQTTClient extends Module {
 
+    private class Association {
+        String mqttTopic;
+        String internalName;
+        boolean isClassic; // Backwards compatibility mode
+    }
+    
     @Override
     public void Initialize() {
         sBroker = PropUtil.GetString(pAttributes, "sBroker", "tcp://localhost:18159");
         sUserName = PropUtil.GetString(pAttributes, "sUserName", "");
         sUserPass = PropUtil.GetString(pAttributes, "sUserPass", "");
         sClientID = PropUtil.GetString(pAttributes, "sClientID", "");
+        SubAssoc = new HashMap();
 
-        PropUtil.LoadFromFile(pPubAssociation, PropUtil.GetString(pAttributes, "pPubAssociation", ""));
-        PropUtil.LoadFromFile(pSubAssociation, PropUtil.GetString(pAttributes, "pSubAssociation", ""));
+       // PropUtil.LoadFromFile(pPubAssociation, PropUtil.GetString(pAttributes, "pPubAssociation", ""));
+       // PropUtil.LoadFromFile(pSubAssociation, PropUtil.GetString(pAttributes, "pSubAssociation", ""));
+        ArrayList<Association> SubAssocs = loadAssoc(PropUtil.GetString(pAttributes, "pSubAssociation", ""), false);
+        for(Association a: SubAssocs) {
+            SubAssoc.put(a.mqttTopic, a);
+        }
+        PubAssoc = loadAssoc(PropUtil.GetString(pAttributes, "pPubAssociation", ""), true);
 
         pDataSet = mmManager.getSharedData(PropUtil.GetString(pAttributes, "pDataSet", sName));
 
@@ -50,6 +70,84 @@ public class MQTTClient extends Module {
         lPeriod = PropUtil.GetLong(pAttributes, "lPeriod", 5000);
 
     }
+    
+    ArrayList<Association> loadAssoc(String file, boolean isPublish) {
+        if(file.endsWith("json")) {
+            return loadAssocJson(file, isPublish);
+        } else {
+            return loadAssocTxtXml(file, isPublish);
+        }
+    }
+    
+    ArrayList<Association> loadAssocTxtXml(String file, boolean isPublish) {
+        Properties prop = new Properties();
+        PropUtil.LoadFromFile(prop, file);
+        eKeys = prop.keys();
+        ArrayList<Association> list = new ArrayList();
+        while (eKeys.hasMoreElements()) {
+            try {
+                String e = (String) eKeys.nextElement();
+                Association assoc = new Association();
+                assoc.isClassic = true;
+                if(isPublish) {
+                    assoc.internalName = e;
+                    assoc.mqttTopic = sPubPrefix + (String) prop.getProperty(e, "");
+                } else {
+                    assoc.internalName = sPubPrefix + (String) prop.getProperty(e, "");
+                    assoc.mqttTopic = e;
+                }
+                list.add(assoc);
+            }  catch (Exception ex) {
+                if (Debug == 1) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        }
+        return list;
+    }
+    
+    ArrayList<Association> loadAssocJson(String file, boolean isPublish) {
+        ArrayList<Association> list = new ArrayList();
+        try {
+            JsonReader jsr = Json.createReader(new FileInputStream(file));
+            JsonObject jso = jsr.readObject();
+            Iterator it = jso.entrySet().iterator();
+            while(it.hasNext()) {
+                try {
+                    Map.Entry crt = (Map.Entry) it.next();
+                    String name = (String) crt.getKey();
+                    Association assoc = new Association();
+                    JsonValue value = (JsonValue) crt.getValue();
+                    if(value.getValueType() == JsonValue.ValueType.STRING) {
+                        JsonString ss = (JsonString) value;
+                        assoc.isClassic = true;
+                        if(!isPublish) {
+                            assoc.internalName = ss.toString();
+                            assoc.mqttTopic = name;
+                        } else {
+                            assoc.internalName = name;
+                            assoc.mqttTopic = ss.toString();
+                        }
+                    } else if(value.getValueType() == JsonValue.ValueType.OBJECT) {
+                        JsonObject ass = (JsonObject) value;
+                        assoc.isClassic = ass.getBoolean("isClassic", false);
+                        assoc.internalName = ass.getString("internalName", name);
+                        assoc.mqttTopic = ass.getString("mqttTopic");
+                    }
+                    list.add(assoc);
+                } catch(Exception ex) {
+                    if (Debug == 1) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+            }
+        } catch(Exception ex) {
+            if (Debug == 1) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        return list;
+    }
 
     String sSubTopics = "";
     String[] ssSubTopics = null;
@@ -60,8 +158,11 @@ public class MQTTClient extends Module {
     String sSubPrefix = "SMX/";
     String sIntPrefix = "SMX/";
 
-    Properties pPubAssociation = new Properties();
-    Properties pSubAssociation = new Properties();
+    //Properties pPubAssociation = new Properties();
+    //Properties pSubAssociation = new Properties();
+    
+    ArrayList<Association> PubAssoc = new ArrayList();
+    HashMap<String, Association> SubAssoc;
 
     String sKey;
     String sValue;
@@ -130,8 +231,8 @@ public class MQTTClient extends Module {
                     }
                     if(bReinitialize) {
                         MQTTDisconnect();
-                        pPubAssociation = new Properties();
-                        pSubAssociation = new Properties();
+                        //pPubAssociation = new Properties();
+                        //pSubAssociation = new Properties();
                         Initialize();
                     }
                     
@@ -141,16 +242,20 @@ public class MQTTClient extends Module {
                     if (iConnected == 0) {
                         continue;
                     }
-                    eKeys = pPubAssociation.keys();
-                    while (eKeys.hasMoreElements()) {
+                    for(Association e: PubAssoc) {
                         try {
                            // if (iConnected == 0) {
                            //     break;
                            // }
-                            sInternalAttr = (String) eKeys.nextElement();
-                            sMQTTAttr = sPubPrefix + (String) pPubAssociation.getProperty(sInternalAttr, "");
+                            sInternalAttr = e.internalName;
+                            sMQTTAttr = sPubPrefix + e.mqttTopic;
                             if (sMQTTAttr.length() > sPubPrefix.length()) {
-                                String reg = "^" + sInternalAttr;
+                                String reg = "";
+                                if(e.isClassic) {
+                                    reg = "^" + sInternalAttr + ".*$";
+                                } else {
+                                    reg = sInternalAttr;
+                                }
                                 reg = reg.replaceAll("/", "\\/");
                                 Enumeration eKeys2 = pDataSet.keys();
                                 List<String> a = new ArrayList();
@@ -251,12 +356,13 @@ public class MQTTClient extends Module {
 
                     if (sSubPrefix.length() > 0) {
                         if (topic.startsWith(sSubPrefix)) {
-                            topic = topic.substring(sSubPrefix.length());
+                            topic = topic.substring(sSubPrefix.length());   
                         } else {
                             return;
                         }
                     }
-                    sSubAssocAttr = pSubAssociation.getProperty(topic).trim();
+                    Association assoc = SubAssoc.get(topic);
+                    sSubAssocAttr = assoc.internalName;
                     if (sSubAssocAttr == null) {
                         return;
                     }
@@ -342,9 +448,11 @@ public class MQTTClient extends Module {
              System.out.println(ex.getMessage());
              }
              }*/
-            eKeys = pSubAssociation.keys();
-            while (eKeys.hasMoreElements()) {
-                sTopic = (String) eKeys.nextElement();
+            Iterator it = SubAssoc.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry crt = (Map.Entry) it.next();
+                Association assoc = (Association) crt.getValue();
+                sTopic = assoc.mqttTopic;
                 mqttClient.subscribe(sSubPrefix + sTopic, iSubQos);
                 //System.out.println(sKey + " : " + sValue);
             }
