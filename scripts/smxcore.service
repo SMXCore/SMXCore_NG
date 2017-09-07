@@ -1,0 +1,16 @@
+[Unit]
+Description=SMXCore Main Service
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/smx/data/SMXcore/App1
+ExecStart=/usr/bin/java -jar ../SMXcore.jar Modules.txt
+Restart=on-failure
+User=smx
+SuccessExitStatus=143
+TimeoutStopSec=1
+
+[Install]
+WantedBy=multi-user.target
