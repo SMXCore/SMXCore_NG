@@ -8,13 +8,24 @@ package modules;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import util.PropUtil;
+import smxcore.LogFormatter;
+import java.util.logging.Logger;
+import sun.util.logging.PlatformLogger;
 
 /**
  *
  * @author cristi
  */
 public class ModulesManager {
+        
+    static private FileHandler logFile;
+    static private Formatter logFormatter;
 
     public void LoadModules() {
         int iNoOfModules = 0;
@@ -25,6 +36,28 @@ public class ModulesManager {
         Properties pModuleAttributes = new Properties();
         Hashtable<String, Class> htClasses = new Hashtable<String, Class>();
         Class cClass = null;
+        Logger logger = Logger.getLogger("modules");
+        
+        if(PropUtil.GetInt(pAttributes, "enableConsoleLog", 0) == 0) {
+            Logger rootLogger = Logger.getLogger("");
+            Handler[] handlers = rootLogger.getHandlers();
+            if (handlers[0] instanceof ConsoleHandler) {
+                rootLogger.removeHandler(handlers[0]);
+            }
+        }
+        
+        logger.setLevel(Level.parse(PropUtil.GetString(pAttributes, "logLevel", "WARNING")));
+        if(PropUtil.GetInt(pAttributes, "enableFileLog", 0) != 0) {
+            try {
+                logFile = new FileHandler(PropUtil.GetString(pAttributes, "logFile", "Log/Log.txt"), PropUtil.GetInt(pAttributes, "maxBytes", 10485760), PropUtil.GetInt(pAttributes, "maxFiles", 1), true);
+                logFormatter = new LogFormatter();
+                logFile.setFormatter(logFormatter);
+                logger.addHandler(logFile);
+            } catch(Exception ex) {
+                System.out.println(ex);
+            }
+        }
+        
         try {
             iNoOfModules = PropUtil.GetInt(pAttributes, "iNoOfModules", 0);
             for (int i = 0; i <= iNoOfModules; i++) {
@@ -48,6 +81,10 @@ public class ModulesManager {
                     }
                     mModule.sName=sModuleName;
                     mModule.mmManager=this;
+                    mModule.logger = Logger.getLogger(sClassName + "." + sModuleName);
+                    if(!pAttributes.getProperty(sAttributePrefix + "LogLevel", "").equals("")) {
+                        mModule.logger.setLevel(Level.parse(pAttributes.getProperty(sAttributePrefix + "LogLevel", "WARNING")));
+                    }
                     mModule.Initialize();
                     htModulesData.put(sModuleName, mModule);
                     vModulesQueue.add(mModule);
