@@ -42,27 +42,35 @@ public class MQTTClient extends Module {
     @Override
     public void Initialize() {
         sBroker = PropUtil.GetString(pAttributes, "sBroker", "tcp://localhost:18159");
+        logger.config("MQTT Broker is at " + sBroker);
         sUserName = PropUtil.GetString(pAttributes, "sUserName", "");
         sUserPass = PropUtil.GetString(pAttributes, "sUserPass", "");
         sClientID = PropUtil.GetString(pAttributes, "sClientID", "");
+        logger.config("Connecting to MQTT Broker with client ID" + sClientID);
         SubAssoc = new HashMap();
 
        // PropUtil.LoadFromFile(pPubAssociation, PropUtil.GetString(pAttributes, "pPubAssociation", ""));
        // PropUtil.LoadFromFile(pSubAssociation, PropUtil.GetString(pAttributes, "pSubAssociation", ""));
+        logger.config("Loading subscribe associations");
         ArrayList<Association> SubAssocs = loadAssoc(PropUtil.GetString(pAttributes, "pSubAssociation", ""), false);
         for(Association a: SubAssocs) {
             SubAssoc.put(a.mqttTopic, a);
         }
+        logger.config("Loading public associations");
         PubAssoc = loadAssoc(PropUtil.GetString(pAttributes, "pPubAssociation", ""), true);
 
         pDataSet = mmManager.getSharedData(PropUtil.GetString(pAttributes, "pDataSet", sName));
+        logger.config("Using dataset" + pDataSet);
 
         sPubPrefix = PropUtil.GetString(pAttributes, "sPubPrefix", "SMX/");
         sSubPrefix = PropUtil.GetString(pAttributes, "sSubPrefix", "SMX/");
         sIntPrefix = PropUtil.GetString(pAttributes, "sIntPrefix", "SMX/");
+        logger.config("Publication prefix: \"" + sPubPrefix + "\"");
+        logger.config("Subscription prefix: \"" + sSubPrefix + "\"");
+        logger.config("Internal prefix: \"" + sIntPrefix + "\"");
 
-        sSubTopics = PropUtil.GetString(pAttributes, "sSubTopics", "");
-        ssSubTopics = sSubTopics.split(",");
+//        sSubTopics = PropUtil.GetString(pAttributes, "sSubTopics", "");
+//        ssSubTopics = sSubTopics.split(",");
 
         iPubQos = PropUtil.GetInt(pAttributes, "iReadQos", 1);
         iSubQos = PropUtil.GetInt(pAttributes, "iSubQos", 1);
@@ -73,8 +81,10 @@ public class MQTTClient extends Module {
     
     ArrayList<Association> loadAssoc(String file, boolean isPublish) {
         if(file.endsWith("json")) {
+            logger.config("MQTT Association config file «" + file + "» is a json");
             return loadAssocJson(file, isPublish);
         } else {
+            logger.config("MQTT Association config file «" + file + "» is plain text or XML");
             return loadAssocTxtXml(file, isPublish);
         }
     }
@@ -93,14 +103,16 @@ public class MQTTClient extends Module {
                     assoc.internalName = e;
                     assoc.mqttTopic = sPubPrefix + (String) prop.getProperty(e, "");
                 } else {
-                    assoc.internalName = sPubPrefix + (String) prop.getProperty(e, "");
-                    assoc.mqttTopic = e;
+                    assoc.internalName = (String) prop.getProperty(e, "");
+                    assoc.mqttTopic = sSubPrefix + e;
                 }
+                logger.config("Added association between internal name " + assoc.internalName + " and mqtt topic " + assoc.mqttTopic + " running with classic mode: " + assoc.isClassic);
                 list.add(assoc);
             }  catch (Exception ex) {
-                if (Debug == 1) {
-                    System.out.println(ex.getMessage());
-                }
+//                if (Debug == 1) {
+                logger.warning(ex.getMessage());
+                    //System.out.println(ex.getMessage());
+//                }
             }
         }
         return list;
@@ -135,22 +147,25 @@ public class MQTTClient extends Module {
                         assoc.mqttTopic = ass.getString("mqttTopic");
                     }
                     list.add(assoc);
+                    logger.config("Added association between internal name " + assoc.internalName + " and mqtt topic " + assoc.mqttTopic + " running with classic mode: " + assoc.isClassic);
                 } catch(Exception ex) {
-                    if (Debug == 1) {
-                        System.out.println(ex.getMessage());
-                    }
+//                    if (Debug == 1) {
+//                        System.out.println(ex.getMessage());
+//                    }
+                    logger.warning(ex.getMessage());
                 }
             }
         } catch(Exception ex) {
-            if (Debug == 1) {
-                System.out.println(ex.getMessage());
-            }
+//            if (Debug == 1) {
+//                System.out.println(ex.getMessage());
+//            }
+            logger.warning(ex.getMessage());
         }
         return list;
     }
 
-    String sSubTopics = "";
-    String[] ssSubTopics = null;
+//    String sSubTopics = "";
+//    String[] ssSubTopics = null;
 
     Properties pDataSet = null;
 
@@ -194,6 +209,7 @@ public class MQTTClient extends Module {
     JsonObject makeObjects(String prefix, String[] things) {
         JsonObjectBuilder b = Json.createObjectBuilder();
         int last = 0;
+        logger.finer("Making an object from prefix " + prefix + " from a string array of " + things.length + " objects");
         for(int i = 1; i <= things.length; i++) {
             if(i == things.length || !getNextSubObject(prefix.length(), things[last]).equals(getNextSubObject(prefix.length(), things[i]))) {
                 String next = getNextSubObject(prefix.length(), things[last]);
@@ -202,6 +218,7 @@ public class MQTTClient extends Module {
 //                    System.out.println("!");
                     b.add(next.substring(0, next.length() - 1), makeObjects(prefix + next, Arrays.copyOfRange(things, last, i)));
                 } else {
+                    logger.finer("Found simple value: " + things[last]);
                     b.add(next, pDataSet.getProperty(things[last], ""));
                 }
                 last = i;
@@ -230,6 +247,7 @@ public class MQTTClient extends Module {
                         //  continue;
                     }
                     if(bReinitialize) {
+                        logger.info("Received reinitialization command");
                         MQTTDisconnect();
                         //pPubAssociation = new Properties();
                         //pSubAssociation = new Properties();
@@ -237,9 +255,11 @@ public class MQTTClient extends Module {
                     }
                     
                     if (iConnected == 0) {
+                        logger.info("Connecting or reconnecting to the MQTT Broker");
                         MQTTConnect();
                     }
                     if (iConnected == 0) {
+                        logger.warning("Failed to connect to the MQTT Broker - skipping loop step");
                         continue;
                     }
                     for(Association e: PubAssoc) {
@@ -261,12 +281,14 @@ public class MQTTClient extends Module {
                                     }
                                 }
                                 reg = reg.replaceAll("/", "\\/");
+                                logger.fine("Publishing to broker topic " + sMQTTAttr + " with regex rule " + reg);
                                 Enumeration eKeys2 = pDataSet.keys();
                                 List<String> a = new ArrayList();
                                 while(eKeys2.hasMoreElements()) {
                                     String crt = (String) eKeys2.nextElement();
                                     if(crt.matches(reg)) {
                                         a.add(crt);
+                                        logger.finer("Matched topic " + sMQTTAttr + " with element " + crt);
                                     }
                                 }
                                 String[] list = new String[a.size()];
@@ -302,16 +324,18 @@ public class MQTTClient extends Module {
 
                             //MQTTDisconnect();
                             iConnected = 0;
-                            if (Debug == 1) {
-                                System.out.println(ex.getMessage());
-                            }
+//                            if (Debug == 1) {
+//                                System.out.println(ex.getMessage());
+//                            }
+                            logger.warning(ex.getMessage());
                         }
                     }
 
                 } catch (Exception e) {
-                    if (Debug == 1) {
-                        System.out.println(e.getMessage());
-                    }
+//                    if (Debug == 1) {
+//                        System.out.println(e.getMessage());
+//                    }
+                    logger.warning(e.getMessage());
                 }
 
             }
@@ -361,11 +385,15 @@ public class MQTTClient extends Module {
                     if (sSubPrefix.length() > 0) {
                         if (topic.startsWith(sSubPrefix)) {
                             topic = topic.substring(sSubPrefix.length());   
+                            logger.finer("Stripped prefix " + sSubPrefix + " from topic " + topic);
                         } else {
                             return;
                         }
                     }
                     Association assoc = SubAssoc.get(topic);
+                    if (assoc == null) {
+                        return;
+                    }
                     sSubAssocAttr = assoc.internalName;
                     if (sSubAssocAttr == null) {
                         return;
@@ -389,6 +417,7 @@ public class MQTTClient extends Module {
                                     ms[i] = ms[i].substring(0, ms[i].length() - 1);
                                 }
                             }
+                            logger.finer("Found json array of " + req.length + " elements (real found: " + ms.length + ")");
                             for(int i = 0; i < req.length; i++) {
                                 if(i < ms.length) {
                                     if(req[i].startsWith("\"") && ms[i].startsWith("\"")) {
@@ -399,26 +428,33 @@ public class MQTTClient extends Module {
                                     }
                                     if(sSAA[0].equals("")) {
                                         pDataSet.put(sIntPrefix + req[i], ms[i]);
+                                        logger.finest("Set " + sIntPrefix + req[i] + " to " + ms[i]);
                                     } else {
+                                        logger.finest("Set " + sIntPrefix + sSAA[0] + "/" + req[i] + " to " + ms[i]);
                                         pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i], ms[i]);
                                     }
                                 } else {
                                     if(sSAA[0].equals("")) {
-                                        pDataSet.put(sIntPrefix + req[i], ms[i]);
+                                        logger.finest("Did not get a value for json array at index " + i + "(" + sIntPrefix + req[i] + ")");
+                                        pDataSet.put(sIntPrefix + req[i], "");
                                     } else {
+                                        logger.finest("Did not get a value for json array at index " + i + "(" + sIntPrefix + sSAA[0] + "/" + req[i] + ")");
                                         pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i], "");
                                     }
                                 }
                             }
                         } else {
                             if(sSAA[0].equals("")) {
-                                pDataSet.put(req[0] + "/" + "ERR", msg.toString());
+                                logger.info("Expected array, got value for unnamed array with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
+                                pDataSet.put(sIntPrefix + req[0] + "/" + "ERR", msg.toString());
                             } else {
-                                pDataSet.put(sSAA[0], msg.toString());
+                                logger.info("Expected array, got value for array" + sIntPrefix + sSAA[0] + "with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
+                                pDataSet.put(sIntPrefix + sSAA[0], msg.toString());
                             }
                         }
                     } else {
-                        pDataSet.put(sSubAssocAttr, msg.toString());
+                        logger.finer("Got value" + msg.toString() + " for " + sSubAssocAttr + " as topic " + topic);
+                        pDataSet.put(sIntPrefix + sSubAssocAttr, msg.toString());
                     }
 
                     //System.out.println("Recived:" + sTopic);
@@ -440,6 +476,7 @@ public class MQTTClient extends Module {
 
             connOpts.setCleanSession(true);
             if (sUserName.length() > 0) {
+                logger.info("Received new credentials for MQTT Broker");
                 connOpts.setUserName(sUserName);
                 connOpts.setPassword(sUserPass.toCharArray());
             }
@@ -472,12 +509,13 @@ public class MQTTClient extends Module {
 
     public void MQTTDisconnect() {
         try {
+            logger.info("Disconnected from MQTT Broker");
             iConnected = 0;
             mqttClient.disconnect();
             mqttClient.close();
             mqttClient = null;
         } catch (Exception e) {
-            
+            logger.warning(e.getMessage());
         }
     }
 
