@@ -392,6 +392,7 @@ public class MQTTClient extends Module {
                     }
                     Association assoc = SubAssoc.get(topic);
                     if (assoc == null) {
+                        logger.info("Got topic " + topic + " that was not subscribed - problem in MQTT broker?");
                         return;
                     }
                     sSubAssocAttr = assoc.internalName;
@@ -445,10 +446,10 @@ public class MQTTClient extends Module {
                             }
                         } else {
                             if(sSAA[0].equals("")) {
-                                logger.info("Expected array, got value for unnamed array with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
+                                logger.info("Expected array, got value " + msg.toString() + " for unnamed array with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
                                 pDataSet.put(sIntPrefix + req[0] + "/" + "ERR", msg.toString());
                             } else {
-                                logger.info("Expected array, got value for array" + sIntPrefix + sSAA[0] + "with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
+                                logger.info("Expected array, got value " + msg.toString() + " for array " + sIntPrefix + sSAA[0] + " with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
                                 pDataSet.put(sIntPrefix + sSAA[0], msg.toString());
                             }
                         }
