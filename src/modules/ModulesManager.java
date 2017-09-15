@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import util.PropUtil;
 import smxcore.LogFormatter;
 import java.util.logging.Logger;
-import sun.util.logging.PlatformLogger;
+//import sun.util.logging.PlatformLogger;
 
 /**
  *
