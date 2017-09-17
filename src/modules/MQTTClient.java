@@ -243,7 +243,8 @@ public class MQTTClient extends Module {
                     JsonValue value = (JsonValue) crt.getValue();
                     if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject objj = (JsonObject) value;
-                        decomposeObject(prefix + '/' + name, obj);
+                        decomposeObject(prefix + '/' + name, objj);
+                        logger.finest("Found inner object " + prefix + '/' + name);
                     } else {
                         String ss = "";
                         if(value.getValueType() == JsonValue.ValueType.STRING) {
@@ -262,8 +263,9 @@ public class MQTTClient extends Module {
                             ss = value.toString();
                         }
                         pDataSet.put(prefix + '/' + name, ss);
+                        logger.finest("Found value for " + prefix + '/' + name + ": " + ss);
                     }
-                    logger.finest("Decomposed object ");
+                    logger.finest("Decomposed object " + prefix);
                 } catch(Exception ex) {
                     logger.warning(ex.getMessage());
                 }
@@ -428,6 +430,7 @@ public class MQTTClient extends Module {
                 public void messageArrived(String topic, MqttMessage msg)
                         throws Exception {
 
+                    logger.fine("Message arrived on topic " + topic + " with message " + msg);
                     if (sSubPrefix.length() > 0) {
                         if (topic.startsWith(sSubPrefix)) {
                             topic = topic.substring(sSubPrefix.length());   
@@ -443,6 +446,7 @@ public class MQTTClient extends Module {
                     }
                     sSubAssocAttr = assoc.internalName;
                     if (sSubAssocAttr == null) {
+                        logger.info("Got topic " + topic + " that was not subscribed - problem in MQTT broker?");
                         return;
                     }
                     if(sSubAssocAttr.contains("[")) {
@@ -503,6 +507,7 @@ public class MQTTClient extends Module {
                         JsonReader jsonReader = Json.createReader(new StringReader(msg.toString()));
                         JsonObject object = jsonReader.readObject();
                         jsonReader.close();
+                        logger.fine("Found json object");
                         decomposeObject(sIntPrefix + sSubAssocAttr, object);
                     } else {
                         logger.finer("Got value" + msg.toString() + " for " + sSubAssocAttr + " as topic " + topic);
@@ -550,6 +555,7 @@ public class MQTTClient extends Module {
                 Association assoc = (Association) crt.getValue();
                 sTopic = assoc.mqttTopic;
                 mqttClient.subscribe(sSubPrefix + sTopic, iSubQos);
+                logger.config("Subscribed to topic " + sSubPrefix + sTopic);
                 //System.out.println(sKey + " : " + sValue);
             }
 
