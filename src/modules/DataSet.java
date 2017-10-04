@@ -76,6 +76,8 @@ public class DataSet extends Module {
                 pDataSet.put(sSYSPrefix + "SysDateTimeUTC", sdfUTC.format(dt));
                 pDataSet.put(sSYSPrefix + "SysDate", sdfD.format(dt));
                 pDataSet.put(sSYSPrefix + "SysTime", sdfT.format(dt));
+                
+                pDataSet.put(sSYSPrefix + "ProcPID", ManagementFactory.getRuntimeMXBean().getName());
 
                 pDataSet.put(sSYSPrefix + "SysCpuLoad", Double.toString(osBean.getSystemCpuLoad() * 100));
                 pDataSet.put(sSYSPrefix + "SysMemoryLoad", Double.toString(
