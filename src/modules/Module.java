@@ -27,6 +27,10 @@ public class Module extends Thread{
     public void setAttributes(Properties pSetAttributes) {
         pAttributes = pSetAttributes;
     }
+    
+    public void receiveEvent(String key, String value, Date date) {
+        
+    }
 
     public void Initialize() {
         
