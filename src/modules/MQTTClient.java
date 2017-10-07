@@ -8,9 +8,11 @@ package modules;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -120,6 +122,49 @@ public class MQTTClient extends Module {
             }
         }
         return list;
+    }
+    
+    @Override
+    public void receiveEvent(String key, String value, Date date) {
+        for(Association e: PubAssoc) {
+        try {
+           // if (iConnected == 0) {
+           //     break;
+           // }
+            sInternalAttr = e.internalName;
+            sMQTTAttr = sPubPrefix + e.mqttTopic;
+            if (sMQTTAttr.length() > sPubPrefix.length()) {
+                String reg = "";
+                if(e.isClassic) {
+                    reg = "^" + sIntPrefix + sInternalAttr + ".*$";
+                } else {
+                    if(reg.startsWith("^")) {
+                        reg = "^" + sIntPrefix + sInternalAttr.substring(1);
+                    } else {
+                        reg = sIntPrefix + sInternalAttr;
+                    }
+                }
+                if(key.matches(reg)) {
+                    mqttMessage = new MqttMessage(value.getBytes());
+                    mqttMessage.setQos(iPubQos);
+
+                    mqttClient.publish(sMQTTAttr, mqttMessage);
+                    DateFormat df = DateFormat.getDateInstance();
+                    
+                    logger.finer("Event with date " + df.format(new Date()) + " matched topic " + sMQTTAttr + " with element " + key);
+                }
+
+            }
+        } catch (Exception ex) {
+
+            //MQTTDisconnect();
+            iConnected = 0;
+//                            if (Debug == 1) {
+//                                System.out.println(ex.getMessage());
+//                            }
+            logger.warning(ex.getMessage());
+        }
+    }
     }
     
     ArrayList<Association> loadAssocJson(String file, boolean isPublish) {
