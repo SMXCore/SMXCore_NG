@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import util.EventProperties;
 import util.PropUtil;
 
 /**
@@ -29,8 +30,13 @@ public class DataSetEventHandler extends Module {
             try {
                 String e = (String) eKeys.nextElement();
                 String val = (String) pAssociation.getProperty(e, "");
-                Module m = (Module) mmManager.getModuleDebug(val);
-                listeners.add(m);
+                if(e != "DataSet") {
+                    Module m = (Module) mmManager.getModuleDebug(val);
+                    listeners.add(m);
+                } else {
+                    EventProperties ep = (EventProperties) mmManager.getSharedData(val);
+                    ep.setDseh(this);
+                }
             }  catch (Exception ex) {
                 logger.warning(ex.getMessage());
             }
@@ -38,6 +44,7 @@ public class DataSetEventHandler extends Module {
     }
     
     public void ThrowEvent(String key, String value, Date date) {
+        logger.fine("Thrown event with key " + key + " and value " + value);
         for(Module l: listeners) {
             l.receiveEvent(key, value, date);
         }

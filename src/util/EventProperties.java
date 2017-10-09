@@ -22,4 +22,8 @@ public class EventProperties extends Properties {
         }
         return super.put(key, value);
     }
+    
+    public void setDseh(DataSetEventHandler ds) {
+        dseh = ds;
+    }
 }

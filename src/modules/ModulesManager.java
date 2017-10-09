@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import util.PropUtil;
 import smxcore.LogFormatter;
 import java.util.logging.Logger;
+import util.EventProperties;
 //import sun.util.logging.PlatformLogger;
 
 /**
@@ -33,7 +34,7 @@ public class ModulesManager {
         String sClassName = "";
         String sAttributePrefix = "";
         Module mModule = null;
-        Properties pModuleAttributes = new Properties();
+        Properties pModuleAttributes = new EventProperties();
         Hashtable<String, Class> htClasses = new Hashtable<String, Class>();
         Class cClass = null;
         Logger logger = Logger.getLogger("modules");
@@ -121,7 +122,7 @@ public class ModulesManager {
     public Properties getSharedData(String sDataName) {
         Properties pTmp = htSharedData.get(sDataName);
         if (pTmp == null) {
-            pTmp = new Properties();
+            pTmp = new EventProperties();
             htSharedData.put(sDataName, pTmp);
         }
         return pTmp;

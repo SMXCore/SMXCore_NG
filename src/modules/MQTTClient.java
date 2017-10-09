@@ -126,6 +126,7 @@ public class MQTTClient extends Module {
     
     @Override
     public void receiveEvent(String key, String value, Date date) {
+        logger.finest("MQTT Receive Event and attempt publish");
         for(Association e: PubAssoc) {
         try {
            // if (iConnected == 0) {
