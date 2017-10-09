@@ -24,16 +24,21 @@ public class DataSetEventHandler extends Module {
     Enumeration eKeys;
     
     public void Initialize() {
-        PropUtil.LoadFromFile(pAssociation, PropUtil.GetString(pAttributes, "pAssociation", ""));
-        eKeys = pAssociation.keys();
+//        PropUtil.LoadFromFile(pAssociation, PropUtil.GetString(pAttributes, "pAssociation", ""));
+        eKeys = pAttributes.keys();
+//        System.out.println(PropUtil.GetString(pAttributes, "pAssociation", ""));
+        logger.config("Initializing a DSEH");
         while (eKeys.hasMoreElements()) {
             try {
                 String e = (String) eKeys.nextElement();
-                String val = (String) pAssociation.getProperty(e, "");
-                if(e != "DataSet") {
+                String val = (String) pAttributes.getProperty(e, "");
+                logger.config(e + " = " + val);
+                if(!e.equals("DataSet")) {
+                    logger.config("Adding " + val + " as listener");
                     Module m = (Module) mmManager.getModuleDebug(val);
                     listeners.add(m);
                 } else {
+                    logger.config("With dataset " + val);
                     EventProperties ep = (EventProperties) mmManager.getSharedData(val);
                     ep.setDseh(this);
                 }

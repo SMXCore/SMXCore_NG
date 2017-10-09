@@ -107,10 +107,10 @@ public class MQTTClient extends Module {
                 assoc.readJson = false;
                 if(isPublish) {
                     assoc.internalName = e;
-                    assoc.mqttTopic = sPubPrefix + (String) prop.getProperty(e, "");
+                    assoc.mqttTopic = (String) prop.getProperty(e, "");
                 } else {
                     assoc.internalName = (String) prop.getProperty(e, "");
-                    assoc.mqttTopic = sSubPrefix + e;
+                    assoc.mqttTopic = e;
                 }
                 logger.config("Added association between internal name " + assoc.internalName + " and mqtt topic " + assoc.mqttTopic + " running with classic mode: " + assoc.isClassic);
                 list.add(assoc);
@@ -126,46 +126,53 @@ public class MQTTClient extends Module {
     
     @Override
     public void receiveEvent(String key, String value, Date date) {
-        logger.finest("MQTT Receive Event and attempt publish");
+        logger.finest("MQTT Receive Event and attempt publish " + key);
         for(Association e: PubAssoc) {
-        try {
-           // if (iConnected == 0) {
-           //     break;
-           // }
-            sInternalAttr = e.internalName;
-            sMQTTAttr = sPubPrefix + e.mqttTopic;
-            if (sMQTTAttr.length() > sPubPrefix.length()) {
-                String reg = "";
-                if(e.isClassic) {
-                    reg = "^" + sIntPrefix + sInternalAttr + ".*$";
-                } else {
-                    if(reg.startsWith("^")) {
-                        reg = "^" + sIntPrefix + sInternalAttr.substring(1);
+            try {
+               // if (iConnected == 0) {
+               //     break;
+               // }
+                sInternalAttr = e.internalName;
+                sMQTTAttr = sPubPrefix + e.mqttTopic;
+                if (sMQTTAttr.length() > sPubPrefix.length()) {
+                    String reg = "";
+                    if(e.isClassic) {
+                        reg = "^" + sIntPrefix + sInternalAttr + ".*$";
                     } else {
-                        reg = sIntPrefix + sInternalAttr;
+                        if(reg.startsWith("^")) {
+                            reg = "^" + sIntPrefix + sInternalAttr.substring(1);
+                        } else {
+                            reg = sIntPrefix + sInternalAttr;
+                        }
                     }
-                }
-                if(key.matches(reg)) {
-                    mqttMessage = new MqttMessage(value.getBytes());
-                    mqttMessage.setQos(iPubQos);
+                    logger.finest(reg + " as regex, e = " + key );
+                    logger.finest("" + key.matches(reg));
+                    if(key.matches(reg)) {
+                        logger.finest("Matched!");
+                        mqttMessage = new MqttMessage(value.getBytes());
+                        logger.finest("2");
+                        mqttMessage.setQos(iPubQos);
+                        logger.finest("3" + mqttMessage);
 
-                    mqttClient.publish(sMQTTAttr, mqttMessage);
-                    DateFormat df = DateFormat.getDateInstance();
-                    
-                    logger.finer("Event with date " + df.format(new Date()) + " matched topic " + sMQTTAttr + " with element " + key);
-                }
+                        mqttClient.publish(sMQTTAttr, mqttMessage); // Doesn't work - needs to be on the same thread? Probably!
+                        logger.finest("4");
+                        DateFormat df = DateFormat.getDateInstance();
+                        logger.finest("5");
 
+                        logger.finer("Event with date " + df.format(new Date()) + " matched topic " + sMQTTAttr + " with element " + key);
+                    }
+
+                }
+            } catch (Exception ex) {
+
+                //MQTTDisconnect();
+                iConnected = 0;
+    //                            if (Debug == 1) {
+    //                                System.out.println(ex.getMessage());
+    //                            }
+                logger.warning(ex.getMessage());
             }
-        } catch (Exception ex) {
-
-            //MQTTDisconnect();
-            iConnected = 0;
-//                            if (Debug == 1) {
-//                                System.out.println(ex.getMessage());
-//                            }
-            logger.warning(ex.getMessage());
         }
-    }
     }
     
     ArrayList<Association> loadAssocJson(String file, boolean isPublish) {
