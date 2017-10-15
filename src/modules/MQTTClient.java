@@ -6,6 +6,7 @@
 package modules;
 
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -37,6 +39,7 @@ public class MQTTClient extends Module {
         String mqttTopic;
         String internalName;
         boolean isClassic; // Backwards compatibility mode
+        boolean readJson;
     }
     
     @Override
@@ -99,6 +102,7 @@ public class MQTTClient extends Module {
                 String e = (String) eKeys.nextElement();
                 Association assoc = new Association();
                 assoc.isClassic = true;
+                assoc.readJson = false;
                 if(isPublish) {
                     assoc.internalName = e;
                     assoc.mqttTopic = sPubPrefix + (String) prop.getProperty(e, "");
@@ -133,6 +137,7 @@ public class MQTTClient extends Module {
                     if(value.getValueType() == JsonValue.ValueType.STRING) {
                         JsonString ss = (JsonString) value;
                         assoc.isClassic = true;
+                        assoc.readJson = false;
                         if(!isPublish) {
                             assoc.internalName = ss.getString();
                             assoc.mqttTopic = name;
@@ -143,6 +148,7 @@ public class MQTTClient extends Module {
                     } else if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject ass = (JsonObject) value;
                         assoc.isClassic = ass.getBoolean("isClassic", false);
+                        assoc.readJson = ass.getBoolean("readJson", false);
                         assoc.internalName = ass.getString("internalName", name);
                         assoc.mqttTopic = ass.getString("mqttTopic");
                     }
@@ -225,6 +231,48 @@ public class MQTTClient extends Module {
             }
         }
         return b.build();
+    }
+    
+    void decomposeObject(String prefix, JsonObject obj) {
+        try {
+            Iterator it = obj.entrySet().iterator();
+            while(it.hasNext()) {
+                try {                    
+                    Map.Entry crt = (Map.Entry) it.next();
+                    String name = (String) crt.getKey();
+                    JsonValue value = (JsonValue) crt.getValue();
+                    if(value.getValueType() == JsonValue.ValueType.OBJECT) {
+                        JsonObject objj = (JsonObject) value;
+                        decomposeObject(prefix + '/' + name, objj);
+                        logger.finest("Found inner object " + prefix + '/' + name);
+                    } else {
+                        String ss = "";
+                        if(value.getValueType() == JsonValue.ValueType.STRING) {
+                            JsonString s = (JsonString) value;
+                            ss = s.getString();
+                        } else if(value.getValueType() == JsonValue.ValueType.NUMBER) {
+                            JsonNumber n = (JsonNumber) value;
+                            if(n.isIntegral()) {
+                                long nr = n.longValue();
+                                ss = String.valueOf(nr);
+                            } else {
+                                double nr = n.doubleValue();
+                                ss = String.valueOf(nr);
+                            }
+                        } else {
+                            ss = value.toString();
+                        }
+                        pDataSet.put(prefix + '/' + name, ss);
+                        logger.finest("Found value for " + prefix + '/' + name + ": " + ss);
+                    }
+                    logger.finest("Decomposed object " + prefix);
+                } catch(Exception ex) {
+                    logger.warning(ex.getMessage());
+                }
+            }
+        } catch(Exception ex) {
+            logger.warning(ex.getMessage());
+        }
     }
     
     public void MQTTPublishLoop() {
@@ -382,6 +430,7 @@ public class MQTTClient extends Module {
                 public void messageArrived(String topic, MqttMessage msg)
                         throws Exception {
 
+                    logger.fine("Message arrived on topic " + topic + " with message " + msg);
                     if (sSubPrefix.length() > 0) {
                         if (topic.startsWith(sSubPrefix)) {
                             topic = topic.substring(sSubPrefix.length());   
@@ -392,10 +441,12 @@ public class MQTTClient extends Module {
                     }
                     Association assoc = SubAssoc.get(topic);
                     if (assoc == null) {
+                        logger.info("Got topic " + topic + " that was not subscribed - problem in MQTT broker?");
                         return;
                     }
                     sSubAssocAttr = assoc.internalName;
                     if (sSubAssocAttr == null) {
+                        logger.info("Got topic " + topic + " that was not subscribed - problem in MQTT broker?");
                         return;
                     }
                     if(sSubAssocAttr.contains("[")) {
@@ -445,13 +496,19 @@ public class MQTTClient extends Module {
                             }
                         } else {
                             if(sSAA[0].equals("")) {
-                                logger.info("Expected array, got value for unnamed array with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
+                                logger.info("Expected array, got value " + msg.toString() + " for unnamed array with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
                                 pDataSet.put(sIntPrefix + req[0] + "/" + "ERR", msg.toString());
                             } else {
-                                logger.info("Expected array, got value for array" + sIntPrefix + sSAA[0] + "with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
+                                logger.info("Expected array, got value " + msg.toString() + " for array " + sIntPrefix + sSAA[0] + " with topic " + topic); // Should this be Warning, info or Fine/Finer/Finest?
                                 pDataSet.put(sIntPrefix + sSAA[0], msg.toString());
                             }
                         }
+                    } else if(assoc.readJson) {
+                        JsonReader jsonReader = Json.createReader(new StringReader(msg.toString()));
+                        JsonObject object = jsonReader.readObject();
+                        jsonReader.close();
+                        logger.fine("Found json object");
+                        decomposeObject(sIntPrefix + sSubAssocAttr, object);
                     } else {
                         logger.finer("Got value" + msg.toString() + " for " + sSubAssocAttr + " as topic " + topic);
                         pDataSet.put(sIntPrefix + sSubAssocAttr, msg.toString());
@@ -498,6 +555,7 @@ public class MQTTClient extends Module {
                 Association assoc = (Association) crt.getValue();
                 sTopic = assoc.mqttTopic;
                 mqttClient.subscribe(sSubPrefix + sTopic, iSubQos);
+                logger.config("Subscribed to topic " + sSubPrefix + sTopic);
                 //System.out.println(sKey + " : " + sValue);
             }
 
