@@ -6,13 +6,23 @@
 package modules;
 
 import com.sun.management.OperatingSystemMXBean;
+import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import javax.json.Json;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import util.PropUtil;
 
 /**
@@ -21,15 +31,83 @@ import util.PropUtil;
  */
 public class DataSet extends Module {
 
+    void decomposeObject(String prefix, JsonObject obj) {
+//        System.out.println(":" + prefix);
+        try {
+            Iterator it = obj.entrySet().iterator();
+            while(it.hasNext()) {
+                try {                    
+                    Map.Entry crt = (Map.Entry) it.next();
+                    String name = (String) crt.getKey();
+//                    System.out.println(name);
+                    JsonValue value = (JsonValue) crt.getValue();
+                    if(value.getValueType() == JsonValue.ValueType.OBJECT) {
+                        JsonObject objj = (JsonObject) value;
+                        if(prefix.equals("")) {
+                            decomposeObject(name, objj);
+                        } else {
+                            decomposeObject(prefix + '/' + name, objj);
+                        }
+                        logger.finest("Found inner object " + prefix + '/' + name);
+                    } else {
+                        String ss = "";
+                        if(value.getValueType() == JsonValue.ValueType.STRING) {
+                            JsonString s = (JsonString) value;
+                            ss = s.getString();
+                        } else if(value.getValueType() == JsonValue.ValueType.NUMBER) {
+                            JsonNumber n = (JsonNumber) value;
+                            if(n.isIntegral()) {
+                                long nr = n.longValue();
+                                ss = String.valueOf(nr);
+                            } else {
+                                double nr = n.doubleValue();
+                                ss = String.valueOf(nr);
+                            }
+                        } else {
+                            ss = value.toString();
+                        }
+                        if(prefix.equals("")) {
+                            pDataSet.put(name, ss);
+                            logger.finest("Found value for " + name + ": " + ss);
+                        } else {
+                            pDataSet.put(prefix + '/' + name, ss);
+                            logger.finest("Found value for " + prefix + '/' + name + ": " + ss);
+                        }
+                    }
+                    logger.finest("Decomposed object " + prefix);
+                } catch(Exception ex) {
+                    logger.warning(ex.getMessage());
+                }
+            }
+        } catch(Exception ex) {
+            logger.warning(ex.getMessage());
+        }
+    }
+    
     @Override
     public void Initialize() {
         pDataSet = mmManager.getSharedData(sName);
-        PropUtil.LoadFromFile(pDataSet, sAttributesFile);
+        if(sAttributesFile.endsWith("json")) {
+            try {
+                JsonReader jsr = Json.createReader(new FileInputStream(sAttributesFile));
+                JsonObject jso = jsr.readObject();
+                decomposeObject("", jso);
+            } catch(Exception ex) {
+                logger.warning(ex.getMessage());
+            }
+        } else {
+            PropUtil.LoadFromFile(pDataSet, sAttributesFile);
+        }
         sSYSPrefix = PropUtil.GetString(pAttributes, "sSYSPrefix", "");
     }
     Properties pDataSet = null;
     String sSYSPrefix = "";
     Thread tLoop = null;
+    
+    @Override
+    public void LoadConfig() {
+        // We don't do anything and instead offload it all to Initialize()
+    }
 
     @Override
     public void Start() {

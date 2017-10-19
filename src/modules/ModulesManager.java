@@ -75,7 +75,8 @@ public class ModulesManager {
                     mModule = (Module) cClass.newInstance();
                     mModule.pAttributes.clear();
                     mModule.sAttributesFile=pAttributes.getProperty(sAttributePrefix + "AttributesFile", "");
-                    PropUtil.LoadFromFile(mModule.pAttributes,  mModule.sAttributesFile);
+//                    PropUtil.LoadFromFile(mModule.pAttributes,  mModule.sAttributesFile);
+                    mModule.LoadConfig();
                     if (mModule.pAttributes == null) {
                         continue;
                     }

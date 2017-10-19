@@ -25,12 +25,7 @@ public class ATemplateModule extends Module {
         PropUtil.LoadFromFile(pAssociation, PropUtil.GetString(pAttributes, "pAssociation", ""));
         sPrefix = PropUtil.GetString(pAttributes, "sPrefix", "");
         lPeriod = PropUtil.GetInt(pAttributes, "lPeriod", 1000);
-
-
-
     }
-
-
 
     Properties pAssociation = new Properties();
 
@@ -70,7 +65,6 @@ public class ATemplateModule extends Module {
                 }
                 if (lMemSysTimeMs == 0) {
                     lMemSysTimeMs = System.currentTimeMillis();
-
                 }
 
                 lIniSysTimeMs = System.currentTimeMillis();
