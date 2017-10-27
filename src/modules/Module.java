@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
+import util.PropUtil;
 
 /**
  *
@@ -38,6 +39,14 @@ public class Module extends Thread{
 
     public void QueueTime() {
 
+    }
+    
+    public void LoadConfig() {
+        LoadTxtConfig();
+    }
+    
+    void LoadTxtConfig() {
+        PropUtil.LoadFromFile(pAttributes,  sAttributesFile);
     }
     
 }
