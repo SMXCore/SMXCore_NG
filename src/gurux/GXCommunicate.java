@@ -184,7 +184,7 @@ public class GXCommunicate {
         p.setWaitTime(WaitTime);
         synchronized (Media.getSynchronous()) {
             while (!succeeded) {
-                writeTrace("<- " + now() + "\t" + GXCommon.bytesToHex(data));
+                writeTrace("DLMS_S01<- " + now() + "\t" + GXCommon.bytesToHex(data));
                 Media.send(data, null);
                 if (p.getEop() == null) {
                     p.setCount(1);
@@ -221,12 +221,12 @@ public class GXCommunicate {
                     }
                 }
             } catch (Exception e) {
-                writeTrace("-> " + now() + "\t"
+                writeTrace("DLMS_R01-> " + now() + "\t"
                         + GXCommon.bytesToHex(p.getReply()));
                 throw e;
             }
         }
-        writeTrace("-> " + now() + "\t" + GXCommon.bytesToHex(p.getReply()));
+        writeTrace("DLMS_R02-> " + now() + "\t" + GXCommon.bytesToHex(p.getReply()));
         if (reply.getError() != 0) {
             if (reply.getError() == ErrorCode.REJECTED.getValue()) {
                 Thread.sleep(1000);
@@ -286,13 +286,13 @@ public class GXCommunicate {
                 String replyStr;
                 synchronized (Media.getSynchronous()) {
                     data = "/?!\r\n";
-                    writeTrace("<- " + now() + "\t"
+                    writeTrace("DLMS_S02<- " + now() + "\t"
                             + GXCommon.bytesToHex(data.getBytes("ASCII")));
                     Media.send(data, null);
                     if (!Media.receive(p)) {
                         throw new Exception("Invalid meter type.");
                     }
-                    writeTrace("->" + now() + "\t"
+                    writeTrace("DLMS_R03->" + now() + "\t"
                             + GXCommon.bytesToHex(p.getReply()));
                     // If echo is used.
                     replyStr = new String(p.getReply());
@@ -301,7 +301,7 @@ public class GXCommunicate {
                         if (!Media.receive(p)) {
                             throw new Exception("Invalid meter type.");
                         }
-                        writeTrace("-> " + now() + "\t"
+                        writeTrace("DLMS_R04-> " + now() + "\t"
                                 + GXCommon.bytesToHex(p.getReply()));
                         replyStr = new String(p.getReply());
                     }
@@ -359,10 +359,10 @@ public class GXCommunicate {
                 p.setReply(null);
                 synchronized (Media.getSynchronous()) {
                     Media.send(tmp, null);
-                    writeTrace("<- " + now() + "\t" + GXCommon.bytesToHex(tmp));
+                    writeTrace("DLMS_S01<- " + now() + "\t" + GXCommon.bytesToHex(tmp));
                     p.setWaitTime(100);
                     if (Media.receive(p)) {
-                        writeTrace("-> " + now() + "\t"
+                        writeTrace("DLMS_R05-> " + now() + "\t"
                                 + GXCommon.bytesToHex(p.getReply()));
                     }
                     Media.close();

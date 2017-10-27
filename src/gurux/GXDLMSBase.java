@@ -441,7 +441,7 @@ public class GXDLMSBase extends GXDLMSSecureServer
      */
     public void Initialize(int port) throws Exception {
         media = new gurux.net.GXNet(NetworkType.TCP, port);
-        media.setTrace(TraceLevel.VERBOSE);
+        media.setTrace(TraceLevel.INFO);//.WARNING);//.VERBOSE);
         media.addListener(this);
         media.open();
         ///////////////////////////////////////////////////////////////////////
