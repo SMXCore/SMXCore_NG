@@ -90,10 +90,11 @@ public class MeterDLMSClient extends Module {
         }
 
         //insert in database metadata related to the Modbus module 
-        //String sTSDate;
-        //sTSDate = sdf.format(new Date());
-        //pDataSet.put("Module/MeterDLMSClient/"+sName+"/StartDateTime", sTSDate); // DateTime
-        String s1 = "DLMS";//sCmdLineArgs;
+        String sTSDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        sTSDate = sdf.format(new Date());
+        pDataSet.put("Module/MeterDLMSClient/"+sName+"/StartDateTime", sTSDate); // DateTime
+        String s1;
         s1 = sCmdLineArgs; pDataSet.put("Module/MeterDLMSClient/"+sName+"/sCmdLineArgs", s1); // 
     }
 

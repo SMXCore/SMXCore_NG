@@ -33,7 +33,7 @@ public class FileStorage extends Module {
 
         //insert in database metadata related to the Modbus module 
         String sTSDate;
-        sTSDate = sdf.format(new Date());
+        sTSDate = sdfLogDate.format(new Date());
         pDataSet.put("Module/FileStorage/"+sName+"/StartDateTime", sTSDate); // DateTime
         String s1;
         s1 = String.valueOf(lPeriod); pDataSet.put("Module/FileStorage/"+sName+"/lPeriod", s1); // 

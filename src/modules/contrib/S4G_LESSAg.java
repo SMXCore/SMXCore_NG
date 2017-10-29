@@ -27,6 +27,12 @@ public class S4G_LESSAg extends Module {
         PropUtil.LoadFromFile(pAssociation, PropUtil.GetString(pAttributes, "pAssociation", ""));
         sPrefix = PropUtil.GetString(pAttributes, "sPrefix", "");
         lPeriod = PropUtil.GetInt(pAttributes, "lPeriod", 1000);
+
+        //insert in database metadata related to the Modbus module 
+        String sTSDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        sTSDate = sdf.format(new Date());
+        pDataSet.put("Module/S4G_LESSAg/"+sName+"/StartDateTime", sTSDate); // DateTime
     }
 
     Properties pAssociation = new Properties();
