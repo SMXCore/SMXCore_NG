@@ -5,6 +5,7 @@
  */
 package modules;
 
+
 import gurux.GXCommunicate;
 import static gurux.GXCommunicate.traceLn;
 import java.io.BufferedWriter;
@@ -87,6 +88,13 @@ public class MeterDLMSClient extends Module {
             sReadDisabledParam = this.sName + "sReadDisabledParam";
             pDataSet.put(sReadDisabledParam, "0");
         }
+
+        //insert in database metadata related to the Modbus module 
+        //String sTSDate;
+        //sTSDate = sdf.format(new Date());
+        //pDataSet.put("Module/MeterDLMSClient/"+sName+"/StartDateTime", sTSDate); // DateTime
+        String s1 = "DLMS";//sCmdLineArgs;
+        s1 = sCmdLineArgs; pDataSet.put("Module/MeterDLMSClient/"+sName+"/sCmdLineArgs", s1); // 
     }
 
     int iReadDisable = 0;

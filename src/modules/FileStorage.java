@@ -15,7 +15,7 @@ import java.util.Enumeration;
 
 /**
  *
- * @author cristi
+ * @author cristi, mihai
  */
 public class FileStorage extends Module {
 
@@ -31,6 +31,15 @@ public class FileStorage extends Module {
         sFileExt = PropUtil.GetString(pAttributes, "sFileExt", "");
         sSeparator = PropUtil.GetString(pAttributes, "sSeparator", "\t");
 
+        //insert in database metadata related to the Modbus module 
+        String sTSDate;
+        sTSDate = sdf.format(new Date());
+        pDataSet.put("Module/FileStorage/"+sName+"/StartDateTime", sTSDate); // DateTime
+        String s1;
+        s1 = String.valueOf(lPeriod); pDataSet.put("Module/FileStorage/"+sName+"/lPeriod", s1); // 
+        //s1 = sPrefix; 
+        pDataSet.put("Module/FileStorage/"+sName+"/sPrefix", sPrefix); // 
+        pDataSet.put("Module/FileStorage/"+sName+"/sFileName", sFileName); // 
     }
     
     int iCommpress;

@@ -27,7 +27,7 @@ import util.PropUtil;
 
 /**
  *
- * @author cristi
+ * @author cristi, mihai, vlad
  */
 public class DataSet extends Module {
 
@@ -99,6 +99,12 @@ public class DataSet extends Module {
             PropUtil.LoadFromFile(pDataSet, sAttributesFile);
         }
         sSYSPrefix = PropUtil.GetString(pAttributes, "sSYSPrefix", "");
+
+        //String sTSDate;
+        //sTSDate = sdf.format(new Date());
+        //pDataSet.put("Module/DataSet/"+sName+"/StartDateTime", sTSDate); // DateTime
+        String s1;
+        s1 = sName; pDataSet.put("Module/DataSet/"+sName+"/sName", s1); // 
     }
     Properties pDataSet = null;
     String sSYSPrefix = "";

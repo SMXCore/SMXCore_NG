@@ -5,12 +5,14 @@
  */
 package modules;
 
+import java.text.SimpleDateFormat;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,6 +82,12 @@ public class MQTTClient extends Module {
 
         lPeriod = PropUtil.GetLong(pAttributes, "lPeriod", 5000);
 
+        //insert in database metadata related to the Modbus module 
+        //String sTSDate;
+        //sTSDate = sdf.format(new Date());
+        //pDataSet.put("Module/FileStorage/"+sName+"/StartDateTime", sTSDate); // DateTime
+        String s1;
+        s1 = String.valueOf(lPeriod); pDataSet.put("Module/MQTTClient/"+sName+"/lPeriod", s1); // 
     }
     
     ArrayList<Association> loadAssoc(String file, boolean isPublish) {

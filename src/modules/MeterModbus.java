@@ -43,12 +43,12 @@ public class MeterModbus extends Module {
         //insert in database metadata related to the Modbus module 
         String sTSDate;
         sTSDate = sdf.format(new Date());
-        pDataSet.put("Module/MeterModbus/StartDateTime", sTSDate); // DateTime
+        pDataSet.put("Module/MeterModbus/"+sName+"/StartDateTime", sTSDate); // DateTime
         String s1;
         if(ModbusType==0) s1="RS485"; else s1 = "TCP"; 
-        pDataSet.put("Module/MeterModbus/ModbusType", s1); // ModbusType
-        s1 = sPrefix; pDataSet.put("Module/MeterModbus/sPrefix", s1); // 
-        s1 = String.valueOf(lPeriod); pDataSet.put("Module/MeterModbus/lPeriod", s1); // 
+        pDataSet.put("Module/MeterModbus/"+sName+"/ModbusType", s1); // ModbusType
+        s1 = sPrefix; pDataSet.put("Module/MeterModbus/"+sName+"/sPrefix", s1); // 
+        s1 = String.valueOf(lPeriod); pDataSet.put("Module/MeterModbus/"+sName+"/lPeriod", s1); // 
         /*
         */
     }
