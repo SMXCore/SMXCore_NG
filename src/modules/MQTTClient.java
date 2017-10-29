@@ -56,13 +56,6 @@ public class MQTTClient extends Module {
 
        // PropUtil.LoadFromFile(pPubAssociation, PropUtil.GetString(pAttributes, "pPubAssociation", ""));
        // PropUtil.LoadFromFile(pSubAssociation, PropUtil.GetString(pAttributes, "pSubAssociation", ""));
-        logger.config("Loading subscribe associations");
-        ArrayList<Association> SubAssocs = loadAssoc(PropUtil.GetString(pAttributes, "pSubAssociation", ""), false);
-        for(Association a: SubAssocs) {
-            SubAssoc.put(a.mqttTopic, a);
-        }
-        logger.config("Loading public associations");
-        PubAssoc = loadAssoc(PropUtil.GetString(pAttributes, "pPubAssociation", ""), true);
 
         pDataSet = mmManager.getSharedData(PropUtil.GetString(pAttributes, "pDataSet", sName));
         logger.config("Using dataset" + pDataSet);
@@ -73,6 +66,14 @@ public class MQTTClient extends Module {
         logger.config("Publication prefix: \"" + sPubPrefix + "\"");
         logger.config("Subscription prefix: \"" + sSubPrefix + "\"");
         logger.config("Internal prefix: \"" + sIntPrefix + "\"");
+        
+        logger.config("Loading subscribe associations");
+        ArrayList<Association> SubAssocs = loadAssoc(PropUtil.GetString(pAttributes, "pSubAssociation", ""), false);
+        for(Association a: SubAssocs) {
+            SubAssoc.put(a.mqttTopic, a);
+        }
+        logger.config("Loading public associations");
+        PubAssoc = loadAssoc(PropUtil.GetString(pAttributes, "pPubAssociation", ""), true);
 
 //        sSubTopics = PropUtil.GetString(pAttributes, "sSubTopics", "");
 //        ssSubTopics = sSubTopics.split(",");
