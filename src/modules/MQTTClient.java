@@ -114,10 +114,10 @@ public class MQTTClient extends Module {
                 assoc.readJson = false;
                 if(isPublish) {
                     assoc.internalName = e;
-                    assoc.mqttTopic = sPubPrefix + (String) prop.getProperty(e, "");
+                    assoc.mqttTopic = (String) prop.getProperty(e, "");
                 } else {
                     assoc.internalName = (String) prop.getProperty(e, "");
-                    assoc.mqttTopic = sSubPrefix + e;
+                    assoc.mqttTopic = e;
                 }
                 logger.config("Added association between internal name " + assoc.internalName + " and mqtt topic " + assoc.mqttTopic + " running with classic mode: " + assoc.isClassic);
                 list.add(assoc);
