@@ -178,7 +178,7 @@ public class MQTTClient extends Module {
                             assoc.tsCfg = new TimestampCfg();
                             assoc.tsCfg.only_once = ts.getBoolean("only-once", false);
                             assoc.tsCfg.ts_suffix = ts.getString("timestamp-suffix", "/timestamp");
-                            assoc.tsCfg.val_suffix = ts.getString("timestamp-suffix", "/value");
+                            assoc.tsCfg.val_suffix = ts.getString("value-suffix", "/value");
                             assoc.tsCfg.ts_type = ts.getString("timestamp-type", "US-style SMXCore Timestamp"); // mm/dd/yyyy hh:mm:ss
                             //tipuri:
                             // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
@@ -508,6 +508,7 @@ public class MQTTClient extends Module {
                     String added = "";
                     if(sep_value) {
                         added = assoc.tsCfg.val_suffix;
+                        System.out.println(added);
                     }
                     if(sSubAssocAttr.contains("[")) {
                         String[] sSAA = sSubAssocAttr.split("\\[");
