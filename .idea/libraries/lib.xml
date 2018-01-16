@@ -1,0 +1,23 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/lib/jssc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/gurux.sms-1.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/gurux.net-1.0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/mqtt-client-0.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/gurux.dlms-1.2.27.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/mongo-java-driver-3.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/gurux.terminal-1.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/gurux.common-1.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/javax.json-api-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/pi4j-gpio-extension.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/json-20140107.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/gurux.serial-1.0.16.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/jssc-2.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/javax.json-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/pi4j-core.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

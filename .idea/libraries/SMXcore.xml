@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SMXcore">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/SMXcore.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

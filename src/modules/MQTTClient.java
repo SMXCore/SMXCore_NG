@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,11 +38,20 @@ import javax.json.JsonValue;
  */
 public class MQTTClient extends Module {
 
+    private class TimestampCfg {
+        boolean only_once;
+        String ts_suffix;
+        String val_suffix;
+        String ts_type;
+    }
+    
     private class Association {
         String mqttTopic;
         String internalName;
         boolean isClassic; // Backwards compatibility mode
         boolean readJson;
+        boolean hasTsCfg;
+        TimestampCfg tsCfg;
     }
     
     @Override
@@ -112,6 +122,7 @@ public class MQTTClient extends Module {
                 Association assoc = new Association();
                 assoc.isClassic = true;
                 assoc.readJson = false;
+                assoc.hasTsCfg = true;
                 if(isPublish) {
                     assoc.internalName = e;
                     assoc.mqttTopic = (String) prop.getProperty(e, "");
@@ -147,6 +158,7 @@ public class MQTTClient extends Module {
                         JsonString ss = (JsonString) value;
                         assoc.isClassic = true;
                         assoc.readJson = false;
+                        assoc.hasTsCfg = false;
                         if(!isPublish) {
                             assoc.internalName = ss.getString();
                             assoc.mqttTopic = name;
@@ -160,6 +172,19 @@ public class MQTTClient extends Module {
                         assoc.readJson = ass.getBoolean("readJson", false);
                         assoc.internalName = ass.getString("internalName", name);
                         assoc.mqttTopic = ass.getString("mqttTopic");
+                        JsonObject ts = ass.getJsonObject("timestamp");
+                        if(ts != null) {
+                            assoc.hasTsCfg = true;
+                            assoc.tsCfg = new TimestampCfg();
+                            assoc.tsCfg.only_once = ts.getBoolean("only-once", false);
+                            assoc.tsCfg.ts_suffix = ts.getString("timestamp-suffix", "/timestamp");
+                            assoc.tsCfg.val_suffix = ts.getString("timestamp-suffix", "/value");
+                            assoc.tsCfg.ts_type = ts.getString("timestamp-type", "US-style SMXCore Timestamp"); // mm/dd/yyyy hh:mm:ss
+                            //tipuri:
+                            // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
+                            // UNIX: sssssssss (since 1970)
+                            // ISO 8601: yyyy-mm-ddThh:mm:ssZ
+                        } else assoc.hasTsCfg = false;
                     }
                     list.add(assoc);
                     logger.config("Added association between internal name " + assoc.internalName + " and mqtt topic " + assoc.mqttTopic + " running with classic mode: " + assoc.isClassic);
@@ -438,11 +463,13 @@ public class MQTTClient extends Module {
                 @Override
                 public void messageArrived(String topic, MqttMessage msg)
                         throws Exception {
+                    
+                    Date date = new Date();
 
                     logger.fine("Message arrived on topic " + topic + " with message " + msg);
                     if (sSubPrefix.length() > 0) {
                         if (topic.startsWith(sSubPrefix)) {
-                            topic = topic.substring(sSubPrefix.length());   
+                            topic = topic.substring(sSubPrefix.length());
                             logger.finer("Stripped prefix " + sSubPrefix + " from topic " + topic);
                         } else {
                             return;
@@ -458,6 +485,30 @@ public class MQTTClient extends Module {
                         logger.info("Got topic " + topic + " that was not subscribed - problem in MQTT broker?");
                         return;
                     }
+                    String timestamp = "";
+                    if(assoc.hasTsCfg) {
+                        //tipuri:
+                        // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
+                        // UNIX: sssssssss (since 1970)
+                        // ISO 8601: yyyy-mm-ddThh:mm:ssZ
+                        if(assoc.tsCfg.ts_type.equals("US-style SMXCore Timestamp")) {
+                            DateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+                            timestamp = df.format(date);
+                        } else if(assoc.tsCfg.ts_type.equals("UNIX")) {
+                            long unixTime = System.currentTimeMillis() / 1000L;
+                            timestamp = String.valueOf(unixTime);
+                        } else if(assoc.tsCfg.ts_type.equals("ISO 8601")) {
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-ddThh:mm:ss\\Z");
+                            timestamp = df.format(date);
+                        } else {
+                            timestamp = "Invalid dateformat: " + assoc.tsCfg.ts_type;
+                        }
+                    }
+                    boolean sep_value = assoc.hasTsCfg && assoc.tsCfg.only_once;
+                    String added = "";
+                    if(sep_value) {
+                        added = assoc.tsCfg.val_suffix;
+                    }
                     if(sSubAssocAttr.contains("[")) {
                         String[] sSAA = sSubAssocAttr.split("\\[");
                         sSAA[0] = sSAA[0].trim();
@@ -466,6 +517,9 @@ public class MQTTClient extends Module {
                         String[] req = sSAA[1].split(",");
                         for(int i = 0; i < req.length; i++) {
                             req[i] = req[i].trim();
+                        }
+                        if(assoc.hasTsCfg && assoc.tsCfg.only_once) {
+                            pDataSet.put(sIntPrefix + sSAA[0] + assoc.tsCfg.ts_suffix, timestamp);
                         }
                         String smsg = msg.toString().trim();
                         if(smsg.startsWith("[")) {
@@ -487,19 +541,22 @@ public class MQTTClient extends Module {
                                         req[i] = req[i].substring(1, req[i].length() - 1);
                                     }
                                     if(sSAA[0].equals("")) {
-                                        pDataSet.put(sIntPrefix + req[i], ms[i]);
-                                        logger.finest("Set " + sIntPrefix + req[i] + " to " + ms[i]);
+                                        pDataSet.put(sIntPrefix + req[i] + added, ms[i]);
+                                        logger.finest("Set " + sIntPrefix + req[i] + added + " to " + ms[i]);
                                     } else {
-                                        logger.finest("Set " + sIntPrefix + sSAA[0] + "/" + req[i] + " to " + ms[i]);
+                                        logger.finest("Set " + sIntPrefix + sSAA[0] + "/" + req[i] + added + " to " + ms[i]);
                                         pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i], ms[i]);
+                                    }
+                                    if(assoc.hasTsCfg && !assoc.tsCfg.only_once) {
+                                        pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i] + assoc.tsCfg.ts_suffix, timestamp);
                                     }
                                 } else {
                                     if(sSAA[0].equals("")) {
-                                        logger.finest("Did not get a value for json array at index " + i + "(" + sIntPrefix + req[i] + ")");
-                                        pDataSet.put(sIntPrefix + req[i], "");
+                                        logger.finest("Did not get a value for json array at index " + i + "(" + sIntPrefix + req[i] + added + ")");
+                                        pDataSet.put(sIntPrefix + req[i] + added, "");
                                     } else {
-                                        logger.finest("Did not get a value for json array at index " + i + "(" + sIntPrefix + sSAA[0] + "/" + req[i] + ")");
-                                        pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i], "");
+                                        logger.finest("Did not get a value for json array at index " + i + "(" + sIntPrefix + sSAA[0] + added + "/" + req[i] + ")");
+                                        pDataSet.put(sIntPrefix + sSAA[0] + "/" + req[i] + added, "");
                                     }
                                 }
                             }
@@ -520,7 +577,10 @@ public class MQTTClient extends Module {
                         decomposeObject(sIntPrefix + sSubAssocAttr, object);
                     } else {
                         logger.finer("Got value" + msg.toString() + " for " + sSubAssocAttr + " as topic " + topic);
-                        pDataSet.put(sIntPrefix + sSubAssocAttr, msg.toString());
+                        pDataSet.put(sIntPrefix + sSubAssocAttr + added, msg.toString());
+                        if(assoc.hasTsCfg && !assoc.tsCfg.only_once) {
+                            pDataSet.put(sIntPrefix + sSubAssocAttr + assoc.tsCfg.ts_suffix, timestamp);
+                        }
                     }
 
                     //System.out.println("Recived:" + sTopic);
