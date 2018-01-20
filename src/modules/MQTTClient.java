@@ -519,9 +519,6 @@ public class MQTTClient extends Module {
                         for(int i = 0; i < req.length; i++) {
                             req[i] = req[i].trim();
                         }
-                        if(assoc.hasTsCfg && assoc.tsCfg.only_once) {
-                            pDataSet.put(sIntPrefix + sSAA[0] + assoc.tsCfg.ts_suffix, timestamp);
-                        }
                         String smsg = msg.toString().trim();
                         if(smsg.startsWith("[")) {
                             smsg = smsg.substring(1, smsg.length() - 1);
@@ -570,12 +567,18 @@ public class MQTTClient extends Module {
                                 pDataSet.put(sIntPrefix + sSAA[0], msg.toString());
                             }
                         }
+                        if(assoc.hasTsCfg && assoc.tsCfg.only_once) {
+                            pDataSet.put(sIntPrefix + sSAA[0] + assoc.tsCfg.ts_suffix, timestamp);
+                        }
                     } else if(assoc.readJson) {
                         JsonReader jsonReader = Json.createReader(new StringReader(msg.toString()));
                         JsonObject object = jsonReader.readObject();
                         jsonReader.close();
                         logger.fine("Found json object");
                         decomposeObject(sIntPrefix + sSubAssocAttr, object);
+                        if(assoc.hasTsCfg && assoc.tsCfg.only_once) {
+                            pDataSet.put(sIntPrefix + sSubAssocAttr + assoc.tsCfg.ts_suffix, timestamp);
+                        }
                     } else {
                         logger.finer("Got value" + msg.toString() + " for " + sSubAssocAttr + " as topic " + topic);
                         pDataSet.put(sIntPrefix + sSubAssocAttr + added, msg.toString());

@@ -292,7 +292,7 @@ Byte 12	is the lsb of number of bytes to read or write: for example 2
                     //Thread.sleep(200);
                     outToServer.flush();
 
-                    Thread.sleep(200);
+                    Thread.sleep(300);
                     iRec = inFromServer.read(bRec);
                     if (iDebug == 1) System.out.println("Modb_In="+util.ConvertUtil.ByteStr2HexStr(bRec, 0, iRec));
                     bRecOK = true;
