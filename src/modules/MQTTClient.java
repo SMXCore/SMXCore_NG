@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import util.PropUtil;
@@ -45,6 +47,11 @@ public class MQTTClient extends Module {
         String ts_type;
     }
     
+    class ReplaceDescriptor {
+        Pattern pattern;
+        String replacement;
+    }
+    
     private class Association {
         String mqttTopic;
         String internalName;
@@ -52,6 +59,7 @@ public class MQTTClient extends Module {
         boolean readJson;
         boolean hasTsCfg;
         TimestampCfg tsCfg;
+        ArrayList<ReplaceDescriptor> replace_list;
     }
     
     @Override
@@ -123,6 +131,7 @@ public class MQTTClient extends Module {
                 assoc.isClassic = true;
                 assoc.readJson = false;
                 assoc.hasTsCfg = true;
+                assoc.replace_list = new ArrayList();
                 if(isPublish) {
                     assoc.internalName = e;
                     assoc.mqttTopic = (String) prop.getProperty(e, "");
@@ -154,6 +163,7 @@ public class MQTTClient extends Module {
                     String name = (String) crt.getKey();
                     Association assoc = new Association();
                     JsonValue value = (JsonValue) crt.getValue();
+                    assoc.replace_list = new ArrayList();
                     if(value.getValueType() == JsonValue.ValueType.STRING) {
                         JsonString ss = (JsonString) value;
                         assoc.isClassic = true;
@@ -169,7 +179,7 @@ public class MQTTClient extends Module {
                     } else if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject ass = (JsonObject) value;
                         assoc.isClassic = ass.getBoolean("isClassic", false);
-                        assoc.readJson = ass.getBoolean("readJson", false);
+                        assoc.readJson = ass.getBoolean("TreatAsJsonObject", ass.getBoolean("readJson", false));
                         assoc.internalName = ass.getString("internalName", name);
                         assoc.mqttTopic = ass.getString("mqttTopic");
                         JsonObject ts = ass.getJsonObject("timestamp");
@@ -185,6 +195,16 @@ public class MQTTClient extends Module {
                             // UNIX: sssssssss (since 1970)
                             // ISO 8601: yyyy-mm-ddThh:mm:ssZ
                         } else assoc.hasTsCfg = false;
+                        JsonArray replace_list = ass.getJsonArray("replace_list");
+                        if(replace_list != null) {
+                            for(int i = 0; i < replace_list.size(); i++) {
+                                JsonArray descriptor = replace_list.getJsonArray(i);
+                                ReplaceDescriptor rd = new ReplaceDescriptor();
+                                String pat = descriptor.getString(0);
+                                rd.pattern = Pattern.compile(pat);
+                                rd.replacement = descriptor.getString(1);
+                            }
+                        }
                     }
                     list.add(assoc);
                     logger.config("Added association between internal name " + assoc.internalName + " and mqtt topic " + assoc.mqttTopic + " running with classic mode: " + assoc.isClassic);
@@ -267,7 +287,7 @@ public class MQTTClient extends Module {
         return b.build();
     }
     
-    void decomposeObject(String prefix, JsonObject obj) {
+    void decomposeObject(String prefix, JsonObject obj, ArrayList<ReplaceDescriptor> replace_list) {
         try {
             Iterator it = obj.entrySet().iterator();
             while(it.hasNext()) {
@@ -277,7 +297,7 @@ public class MQTTClient extends Module {
                     JsonValue value = (JsonValue) crt.getValue();
                     if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject objj = (JsonObject) value;
-                        decomposeObject(prefix + '/' + name, objj);
+                        decomposeObject(prefix + '/' + name, objj, replace_list);
                         logger.finest("Found inner object " + prefix + '/' + name);
                     } else {
                         String ss = "";
@@ -296,8 +316,13 @@ public class MQTTClient extends Module {
                         } else {
                             ss = value.toString();
                         }
-                        pDataSet.put(prefix + '/' + name, ss);
-                        logger.finest("Found value for " + prefix + '/' + name + ": " + ss);
+                        String internal_name = prefix + '/' + name;
+                        for(int i = 0; i < replace_list.size(); i++) {
+                            Matcher match = replace_list.get(i).pattern.matcher(internal_name);
+                            internal_name = match.replaceAll(replace_list.get(i).replacement);
+                        }
+                        pDataSet.put(internal_name, ss);
+                        logger.finest("Found value for " + internal_name + ": " + ss);
                     }
                     logger.finest("Decomposed object " + prefix);
                 } catch(Exception ex) {
@@ -575,7 +600,7 @@ public class MQTTClient extends Module {
                         JsonObject object = jsonReader.readObject();
                         jsonReader.close();
                         logger.fine("Found json object");
-                        decomposeObject(sIntPrefix + sSubAssocAttr, object);
+                        decomposeObject(sIntPrefix + sSubAssocAttr, object, assoc.replace_list);
                         if(assoc.hasTsCfg && assoc.tsCfg.only_once) {
                             pDataSet.put(sIntPrefix + sSubAssocAttr + assoc.tsCfg.ts_suffix, timestamp);
                         }

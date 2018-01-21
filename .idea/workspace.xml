@@ -1,136 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dbb28665-7f33-4b95-b648-d2eddc5cec6e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/ace.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/ace.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/acg.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/acg.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/acw.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/acw.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/edm.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/edm.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/egm.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/egm.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/ele.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/ele.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/emh.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/emh.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/etr.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/etr.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/files.xml" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/files.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/grx.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/grx.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/hly.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/hly.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/hxe.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/hxe.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/ind.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/ind.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/isk.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/isk.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/jce.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/jce.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/kam.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/kam.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/lgz.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/lgz.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/mel.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/mel.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/smg.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/smg.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/tis.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/tis.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/xmx.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/xmx.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gurux-data/Manufacturer/ziv.obx" afterPath="$PROJECT_DIR$/Gurux-data/Manufacturer/ziv.obx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LICENSE" afterPath="$PROJECT_DIR$/LICENSE" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.xml" afterPath="$PROJECT_DIR$/build.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/manifest.mf" afterPath="$PROJECT_DIR$/manifest.mf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nbproject/build-impl.xml" afterPath="$PROJECT_DIR$/nbproject/build-impl.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nbproject/genfiles.properties" afterPath="$PROJECT_DIR$/nbproject/genfiles.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nbproject/private/private.properties" afterPath="$PROJECT_DIR$/nbproject/private/private.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nbproject/private/private.xml" afterPath="$PROJECT_DIR$/nbproject/private/private.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nbproject/project.properties" afterPath="$PROJECT_DIR$/nbproject/project.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nbproject/project.xml" afterPath="$PROJECT_DIR$/nbproject/project.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/SMXcore.bat" afterPath="$PROJECT_DIR$/scripts/SMXcore.bat" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/SMXcore.sh" afterPath="$PROJECT_DIR$/scripts/SMXcore.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/smxcore.service" afterPath="$PROJECT_DIR$/scripts/smxcore.service" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server.xml" afterPath="$PROJECT_DIR$/server.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/DataSet1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/DataSet1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/FileStorage1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/FileStorage1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/FileStorage2.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/FileStorage2.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/MQTTClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/MQTTClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/MeterKamstrup1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/MeterKamstrup1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/Modules.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/Modules.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/MongoDBClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/MongoDBClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/PubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/PubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/ReadAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/ReadAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/StoreAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/StoreAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/SubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/SubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP162J/WriteAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP162J/WriteAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/DataSet1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/DataSet1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/FileStorage1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/FileStorage1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/FileStorage2.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/FileStorage2.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/MQTTClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/MQTTClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/MeterKamstrup1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/MeterKamstrup1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/Modules.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/Modules.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/MongoDBClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/MongoDBClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/PubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/PubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/ReadAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/ReadAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/StoreAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/StoreAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/SubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/SubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppKMP362J/WriteAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppKMP362J/WriteAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/DataSet1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/DataSet1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/FileStorage1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/FileStorage1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/MQTTClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/MQTTClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/MeterIEC6205621-1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/MeterIEC6205621-1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/Modules.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/Modules.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/MongoDBClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/MongoDBClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/PubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/PubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/ReadAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/ReadAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/StoreAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/StoreAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/SubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/SubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppLGE230/WriteAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppLGE230/WriteAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/DataSet1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/DataSet1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/FileStorage1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/FileStorage1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/MQTTClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/MQTTClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/MeterIEC6205621-1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/MeterIEC6205621-1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/Modules.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/Modules.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/MongoDBClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/MongoDBClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/PubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/PubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/ReadAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/ReadAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/StoreAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/StoreAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/SubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/SubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppMT174/WriteAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppMT174/WriteAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/DataSet1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/DataSet1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/FileStorage1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/FileStorage1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/MQTTClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/MQTTClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/MeterVirtual1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/MeterVirtual1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/Modules.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/Modules.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/MongoDBClient1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/MongoDBClient1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/PubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/PubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/ReadAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/ReadAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/StoreAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/StoreAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/SubAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/SubAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/AppVirtual/WriteAssoc1.txt" afterPath="$PROJECT_DIR$/src/conf/AppVirtual/WriteAssoc1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gurux/GXCommunicate.java" afterPath="$PROJECT_DIR$/src/gurux/GXCommunicate.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gurux/GXDLMSBase.java" afterPath="$PROJECT_DIR$/src/gurux/GXDLMSBase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/ATemplateModule.java" afterPath="$PROJECT_DIR$/src/modules/ATemplateModule.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/DataSet.java" afterPath="$PROJECT_DIR$/src/modules/DataSet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/DataSetAnl.java" afterPath="$PROJECT_DIR$/src/modules/DataSetAnl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/FileStorage.java" afterPath="$PROJECT_DIR$/src/modules/FileStorage.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MQTTClient.java" afterPath="$PROJECT_DIR$/src/modules/MQTTClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterDLMSServer.java" afterPath="$PROJECT_DIR$/src/modules/MeterDLMSServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterIEC6205621.java" afterPath="$PROJECT_DIR$/src/modules/MeterIEC6205621.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterIEC8705102.java" afterPath="$PROJECT_DIR$/src/modules/MeterIEC8705102.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterKamstrup.java" afterPath="$PROJECT_DIR$/src/modules/MeterKamstrup.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterModbus.java" afterPath="$PROJECT_DIR$/src/modules/MeterModbus.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterPQ.java" afterPath="$PROJECT_DIR$/src/modules/MeterPQ.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterVirtual.java" afterPath="$PROJECT_DIR$/src/modules/MeterVirtual.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MeterVirtualLP.java" afterPath="$PROJECT_DIR$/src/modules/MeterVirtualLP.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/Module.java" afterPath="$PROJECT_DIR$/src/modules/Module.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/ModulesManager.java" afterPath="$PROJECT_DIR$/src/modules/ModulesManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/MongoDBClient.java" afterPath="$PROJECT_DIR$/src/modules/MongoDBClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/RunProccess.java" afterPath="$PROJECT_DIR$/src/modules/RunProccess.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/SMXGPIO_RPi.java" afterPath="$PROJECT_DIR$/src/modules/SMXGPIO_RPi.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/Serial2Socket.java" afterPath="$PROJECT_DIR$/src/modules/Serial2Socket.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/Serial2SocketAndSerial.java" afterPath="$PROJECT_DIR$/src/modules/Serial2SocketAndSerial.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/smxcore/LogFormatter.java" afterPath="$PROJECT_DIR$/src/smxcore/LogFormatter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/smxcore/SMXcore.java" afterPath="$PROJECT_DIR$/src/smxcore/SMXcore.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/ByteSocketServer.java" afterPath="$PROJECT_DIR$/src/util/ByteSocketServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/ConvertUtil.java" afterPath="$PROJECT_DIR$/src/util/ConvertUtil.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/FileUtil.java" afterPath="$PROJECT_DIR$/src/util/FileUtil.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/GuruxUtil.java" afterPath="$PROJECT_DIR$/src/util/GuruxUtil.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/PropUtil.java" afterPath="$PROJECT_DIR$/src/util/PropUtil.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/StringSocketServer.java" afterPath="$PROJECT_DIR$/src/util/StringSocketServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/ZipFiles.java" afterPath="$PROJECT_DIR$/src/util/ZipFiles.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/iec1107util.java" afterPath="$PROJECT_DIR$/src/util/iec1107util.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/util/iec8705102util.java" afterPath="$PROJECT_DIR$/src/util/iec8705102util.java" />
-    </list>
+    <list default="true" id="dbb28665-7f33-4b95-b648-d2eddc5cec6e" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -145,15 +16,13 @@
     <fileColor scope="Non-Project Files (Material Palenight)" color="2f2e43" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="MQTTClient.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/modules/MQTTClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2250">
-              <caret line="147" column="38" lean-forward="false" selection-start-line="147" selection-start-column="38" selection-end-line="147" selection-end-column="38" />
-              <folding>
-                <element signature="e#0#23630#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="560">
+              <caret line="64" column="33" lean-forward="true" selection-start-line="64" selection-start-column="33" selection-end-line="64" selection-end-column="33" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -196,9 +65,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -206,22 +72,14 @@
               <item name="SMXCore" type="b2602c69:ProjectViewProjectNode" />
               <item name="SMXCore" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="SMXCore" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SMXCore" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="SMXCore" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SMXCore" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -322,8 +180,16 @@
       <listeners />
     </configuration>
   </component>
+  <component name="SbtLocalSettings">
+    <option name="externalProjectsViewState">
+      <projects_view />
+    </option>
+  </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -336,34 +202,36 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Cargo" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Tasks" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1390625" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Cargo" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -376,11 +244,17 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/modules/MQTTClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2250">
-          <caret line="147" column="38" lean-forward="false" selection-start-line="147" selection-start-column="38" selection-end-line="147" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#23630#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/MQTTClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="560">
+          <caret line="64" column="33" lean-forward="true" selection-start-line="64" selection-start-column="33" selection-end-line="64" selection-end-column="33" />
+          <folding />
         </state>
       </provider>
     </entry>
