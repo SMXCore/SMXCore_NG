@@ -517,13 +517,13 @@ public class MQTTClient extends Module {
                         // UNIX: sssssssss (since 1970)
                         // ISO 8601: yyyy-mm-ddThh:mm:ssZ
                         if(assoc.tsCfg.ts_type.equals("US-style SMXCore Timestamp")) {
-                            DateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+                            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                             timestamp = df.format(date);
                         } else if(assoc.tsCfg.ts_type.equals("UNIX")) {
                             long unixTime = System.currentTimeMillis() / 1000L;
                             timestamp = String.valueOf(unixTime);
                         } else if(assoc.tsCfg.ts_type.equals("ISO 8601")) {
-                            DateFormat df = new SimpleDateFormat("yyyy-MM-ddThh:mm:ss\\Z");
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
                             timestamp = df.format(date);
                         } else {
                             timestamp = "Invalid dateformat: " + assoc.tsCfg.ts_type;

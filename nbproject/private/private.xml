@@ -2,6 +2,15 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/F:/Project/SMXCore/src/modules/MQTTClient.java</file>
+            <file>file:/F:/Project/SMXCore/src/modules/ATemplateModule.java</file>
+            <file>file:/F:/Project/SMXCore/src/modules/contrib/ProConSt.java</file>
+            <file>file:/F:/Project/SMXCore/src/modules/DataSet.java</file>
+            <file>file:/F:/Project/SMXCore/src/modules/DataSetAnl.java</file>
+            <file>file:/F:/Project/SMXCore/src/modules/ModulesManager.java</file>
+            <file>file:/F:/Project/SMXCore/src/modules/Module.java</file>
+            <file>file:/F:/Project/SMXCore/src/modules/FileStorage.java</file>
+        </group>
     </open-files>
 </project-private>
