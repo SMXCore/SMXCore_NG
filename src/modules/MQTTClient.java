@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -20,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.paho.client.mqttv3.*;
@@ -45,6 +47,7 @@ public class MQTTClient extends Module {
         String ts_suffix;
         String val_suffix;
         String ts_type;
+        String timezone;
     }
     
     class ReplaceDescriptor {
@@ -190,6 +193,7 @@ public class MQTTClient extends Module {
                             assoc.tsCfg.ts_suffix = ts.getString("timestamp-suffix", "/timestamp");
                             assoc.tsCfg.val_suffix = ts.getString("value-suffix", "/value");
                             assoc.tsCfg.ts_type = ts.getString("timestamp-type", "US-style SMXCore Timestamp"); // mm/dd/yyyy hh:mm:ss
+                            assoc.tsCfg.timezone = ts.getString("timezone", "Local");
                             //tipuri:
                             // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
                             // UNIX: sssssssss (since 1970)
@@ -512,18 +516,27 @@ public class MQTTClient extends Module {
                     }
                     String timestamp = "";
                     if(assoc.hasTsCfg) {
+                        TimeZone timezone;
+                        if(assoc.tsCfg.timezone.equals("Local")) {
+                            Calendar c = Calendar.getInstance();
+                            timezone = c.getTimeZone();
+                        } else {
+                            timezone = TimeZone.getTimeZone(assoc.tsCfg.timezone);
+                        }
                         //tipuri:
                         // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
                         // UNIX: sssssssss (since 1970)
                         // ISO 8601: yyyy-mm-ddThh:mm:ssZ
                         if(assoc.tsCfg.ts_type.equals("US-style SMXCore Timestamp")) {
                             DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                            df.setTimeZone(timezone);
                             timestamp = df.format(date);
                         } else if(assoc.tsCfg.ts_type.equals("UNIX")) {
                             long unixTime = System.currentTimeMillis() / 1000L;
                             timestamp = String.valueOf(unixTime);
                         } else if(assoc.tsCfg.ts_type.equals("ISO 8601")) {
                             DateFormat df = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
+                            df.setTimeZone(timezone);
                             timestamp = df.format(date);
                         } else {
                             timestamp = "Invalid dateformat: " + assoc.tsCfg.ts_type;
