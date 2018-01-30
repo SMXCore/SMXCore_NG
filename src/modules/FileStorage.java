@@ -10,8 +10,19 @@ import java.util.Date;
 import java.util.Properties;
 import util.PropUtil;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Pattern;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 /**
  *
@@ -22,7 +33,8 @@ public class FileStorage extends Module {
     @Override
     public void Initialize() {
         pDataSet = mmManager.getSharedData(PropUtil.GetString(pAttributes, "pDataSet", sName));
-        PropUtil.LoadFromFile(pStoreAssociation, PropUtil.GetString(pAttributes, "pStoreAssociation", ""));
+        //PropUtil.LoadFromFile(pStoreAssociation, PropUtil.GetString(pAttributes, "pStoreAssociation", ""));
+        LoadAssoc(PropUtil.GetString(pAttributes, "pStoreAssociation", ""));
         sPrefix = PropUtil.GetString(pAttributes, "sPrefix", "");
         lPeriod = PropUtil.GetInt(pAttributes, "lPeriod", 1000);
         iCommpress = PropUtil.GetInt(pAttributes, "iCommpress ", 1);
@@ -50,6 +62,53 @@ public class FileStorage extends Module {
     Properties pDataSet = null;
     String sPrefix = "";
     Thread tStoreLoop = null;
+    
+    public void LoadAssoc(String file) {
+        if(file.endsWith("json")) {
+            LoadJsonAssoc(file);
+        } else {
+            LoadTxtAssoc(file);
+        }
+    }
+    
+    void LoadTxtAssoc(String file) {
+        PropUtil.LoadFromFile(pStoreAssociation,  file);
+    }
+    
+    void LoadJsonAssoc(String file) {
+        try {
+            JsonReader jsr = Json.createReader(new FileInputStream(file));
+            JsonObject jso = jsr.readObject();
+            Iterator it = jso.entrySet().iterator();
+            if(pStoreAssociation == null) {
+                pStoreAssociation = new Properties();
+            }
+            while(it.hasNext()) {
+                try {
+                    Map.Entry crt = (Map.Entry) it.next();
+                    String name = (String) crt.getKey();
+                    JsonValue value = (JsonValue) crt.getValue();
+                    if(value.getValueType() == JsonValue.ValueType.STRING) {
+                        JsonString ss = (JsonString) value;
+                        String fss = ss.getString();
+                        pStoreAssociation.put(name, fss);
+                    } else if(value.getValueType() == JsonValue.ValueType.OBJECT) {
+                        JsonObject ass = (JsonObject) value;
+                    }
+                } catch(Exception ex) {
+//                    if (Debug == 1) {
+//                        System.out.println(ex.getMessage());
+//                    }
+                    logger.warning(ex.getMessage());
+                }
+            }
+        } catch(Exception ex) {
+//            if (Debug == 1) {
+//                System.out.println(ex.getMessage());
+//            }
+            logger.warning(ex.getMessage());
+        }
+    }
 
     @Override
     public void Start() {
