@@ -469,7 +469,7 @@ public class Serial2SocketAndSerial extends Module {
 
             if (iDebug == 1) {
                 if (sSSBridgeMessage.length() + sRec.length() > 0) {
-                    System.out.println("Msg: " + sRec);
+                    System.out.println("Msg(iDebug=1): " + sRec+"\n");
                 }
             }
             if (sRec.length() > 0) {
