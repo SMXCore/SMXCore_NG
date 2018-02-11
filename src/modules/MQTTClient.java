@@ -267,7 +267,7 @@ public class MQTTClient extends Module {
                                     assoc.list_apply_order.add("rescale");
                                 }
                             } catch(Exception ex) {
-                                
+                                logger.warning(ex.getMessage());
                             }
                         }
                     }
