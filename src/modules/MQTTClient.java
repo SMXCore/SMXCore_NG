@@ -472,6 +472,27 @@ public class MQTTClient extends Module {
                                     }
                                 }
                                 ValueNameCouple[] list = new ValueNameCouple[a.size()];
+                                for(int ijk = 0; ijk < e.list_apply_order.size(); ijk++) {
+                                    if(e.list_apply_order.get(ijk).equals("replace")) {
+                                        for(int k = 0; k < e.replace_list.size(); k++) {
+                                            for(int ik = 0; ik < a.size(); ik++) {
+                                                Matcher match = e.replace_list.get(k).pattern.matcher(a.get(ik).name);
+                                                a.get(ik).name = match.replaceAll(e.replace_list.get(k).replacement);
+                                            }
+                                        }
+                                    } else if(e.list_apply_order.get(ijk).equals("rescale")) {
+                                        for(int k = 0; k < e.rescale_list.size(); k++) {
+                                            for(int ik = 0; ik < a.size(); ik++) {
+                                                Matcher match = e.rescale_list.get(k).pattern.matcher(a.get(ik).name);
+                                                if(match.matches()) {
+                                                    double value = Double.parseDouble(a.get(ik).value);
+                                                    value *= e.rescale_list.get(k).multiplier;
+                                                    a.get(ik).value = String.valueOf(value);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                                 list = a.toArray(list);
                                 Arrays.sort(list);
                                 if(list.length == 0) {
