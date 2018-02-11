@@ -5,6 +5,7 @@
  */
 package modules;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.io.FileInputStream;
 import java.io.StringReader;
@@ -21,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +57,22 @@ public class MQTTClient extends Module {
         String replacement;
     }
     
+    class RescaleDescriptor {
+        Pattern pattern;
+        double multiplier;
+    }
+    
+    class addItemDescriptor {
+        String item;
+        String value;
+    }
+    
+    class UnitRescaleDescriptor {
+        Pattern unit_pattern;
+        Pattern value_pattern;
+        String new_unit;
+    }
+    
     private class Association {
         String mqttTopic;
         String internalName;
@@ -63,6 +81,8 @@ public class MQTTClient extends Module {
         boolean hasTsCfg;
         TimestampCfg tsCfg;
         ArrayList<ReplaceDescriptor> replace_list;
+        ArrayList<RescaleDescriptor> rescale_list;
+        ArrayList<String> list_apply_order;
     }
     
     @Override
@@ -135,6 +155,7 @@ public class MQTTClient extends Module {
                 assoc.readJson = false;
                 assoc.hasTsCfg = true;
                 assoc.replace_list = new ArrayList();
+                assoc.rescale_list = new ArrayList();
                 if(isPublish) {
                     assoc.internalName = e;
                     assoc.mqttTopic = (String) prop.getProperty(e, "");
@@ -157,7 +178,22 @@ public class MQTTClient extends Module {
     ArrayList<Association> loadAssocJson(String file, boolean isPublish) {
         ArrayList<Association> list = new ArrayList();
         try {
-            JsonReader jsr = Json.createReader(new FileInputStream(file));
+            String file_content = new Scanner(new File(file)).useDelimiter("\\Z").next();
+            // comment processing
+            
+            String comment_pattern = "(^|\\n)(#|//)[^\\n]*(\\n|$)";
+            int max_iterations = 1000;
+            int ijk = 0;
+            while(true) {
+                ijk++;
+                String new_file_content = file_content.replaceAll(comment_pattern, "\n");
+                if(new_file_content.equals(file_content) || ijk == max_iterations) {
+                    break;
+                } else file_content = new_file_content;
+            }
+            System.out.println(file_content);
+            
+            JsonReader jsr = Json.createReader(new StringReader(file_content));
             JsonObject jso = jsr.readObject();
             Iterator it = jso.entrySet().iterator();
             while(it.hasNext()) {
@@ -167,6 +203,7 @@ public class MQTTClient extends Module {
                     Association assoc = new Association();
                     JsonValue value = (JsonValue) crt.getValue();
                     assoc.replace_list = new ArrayList();
+                    assoc.rescale_list = new ArrayList();
                     if(value.getValueType() == JsonValue.ValueType.STRING) {
                         JsonString ss = (JsonString) value;
                         assoc.isClassic = true;
@@ -199,14 +236,38 @@ public class MQTTClient extends Module {
                             // UNIX: sssssssss (since 1970)
                             // ISO 8601: yyyy-mm-ddThh:mm:ssZ
                         } else assoc.hasTsCfg = false;
-                        JsonArray replace_list = ass.getJsonArray("replace_list");
-                        if(replace_list != null) {
-                            for(int i = 0; i < replace_list.size(); i++) {
-                                JsonArray descriptor = replace_list.getJsonArray(i);
-                                ReplaceDescriptor rd = new ReplaceDescriptor();
-                                String pat = descriptor.getString(0);
-                                rd.pattern = Pattern.compile(pat);
-                                rd.replacement = descriptor.getString(1);
+                        
+                        Iterator it2 = ass.entrySet().iterator();
+                        while(it2.hasNext()) {
+                            try {
+                                Map.Entry crt2 = (Map.Entry) it2.next();
+                                String name2 = (String) crt2.getKey();
+                                JsonValue value2 = (JsonValue) crt2.getValue();
+                                if(name2.equals("replace_list") || name2.equals("renameRules")) {
+                                    JsonArray replace_list = value2.asJsonArray();
+                                    for(int i = 0; i < replace_list.size(); i++) {
+                                        JsonArray descriptor = replace_list.getJsonArray(i);
+                                        ReplaceDescriptor rd = new ReplaceDescriptor();
+                                        String pat = descriptor.getString(0);
+                                        rd.pattern = Pattern.compile(pat);
+                                        rd.replacement = descriptor.getString(1);
+                                        assoc.replace_list.add(rd);
+                                    }
+                                    assoc.list_apply_order.add("replace");
+                                } else if(name2.equals("rescale_list") || name2.equals("rescaleRules")) {
+                                    JsonArray replace_list = value2.asJsonArray();
+                                    for(int i = 0; i < replace_list.size(); i++) {
+                                        JsonArray descriptor = replace_list.getJsonArray(i);
+                                        RescaleDescriptor rd = new RescaleDescriptor();
+                                        String pat = descriptor.getString(0);
+                                        rd.pattern = Pattern.compile(pat);
+                                        rd.multiplier = descriptor.getJsonNumber(1).doubleValue();
+                                        assoc.rescale_list.add(rd);
+                                    }
+                                    assoc.list_apply_order.add("rescale");
+                                }
+                            } catch(Exception ex) {
+                                
                             }
                         }
                     }
@@ -270,20 +331,25 @@ public class MQTTClient extends Module {
         }
     }
     
-    JsonObject makeObjects(String prefix, String[] things) {
+    class ValueNameCouple {
+        String name;
+        String value;
+    }
+    
+    JsonObject makeObjects(String prefix, ValueNameCouple[] things) {
         JsonObjectBuilder b = Json.createObjectBuilder();
         int last = 0;
         logger.finer("Making an object from prefix " + prefix + " from a string array of " + things.length + " objects");
         for(int i = 1; i <= things.length; i++) {
-            if(i == things.length || !getNextSubObject(prefix.length(), things[last]).equals(getNextSubObject(prefix.length(), things[i]))) {
-                String next = getNextSubObject(prefix.length(), things[last]);
+            if(i == things.length || !getNextSubObject(prefix.length(), things[last].name).equals(getNextSubObject(prefix.length(), things[i].name))) {
+                String next = getNextSubObject(prefix.length(), things[last].name);
 //                System.out.println(next);
                 if(next.charAt(next.length() - 1) == '/') {
 //                    System.out.println("!");
                     b.add(next.substring(0, next.length() - 1), makeObjects(prefix + next, Arrays.copyOfRange(things, last, i)));
                 } else {
                     logger.finer("Found simple value: " + things[last]);
-                    b.add(next, pDataSet.getProperty(things[last], ""));
+                    b.add(next, things[last].value);
                 }
                 last = i;
             }
@@ -291,7 +357,7 @@ public class MQTTClient extends Module {
         return b.build();
     }
     
-    void decomposeObject(String prefix, JsonObject obj, ArrayList<ReplaceDescriptor> replace_list) {
+    void decomposeObject(String prefix, JsonObject obj, Association assoc) {
         try {
             Iterator it = obj.entrySet().iterator();
             while(it.hasNext()) {
@@ -301,7 +367,7 @@ public class MQTTClient extends Module {
                     JsonValue value = (JsonValue) crt.getValue();
                     if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject objj = (JsonObject) value;
-                        decomposeObject(prefix + '/' + name, objj, replace_list);
+                        decomposeObject(prefix + '/' + name, objj, assoc);
                         logger.finest("Found inner object " + prefix + '/' + name);
                     } else {
                         String ss = "";
@@ -321,9 +387,9 @@ public class MQTTClient extends Module {
                             ss = value.toString();
                         }
                         String internal_name = prefix + '/' + name;
-                        for(int i = 0; i < replace_list.size(); i++) {
-                            Matcher match = replace_list.get(i).pattern.matcher(internal_name);
-                            internal_name = match.replaceAll(replace_list.get(i).replacement);
+                        for(int i = 0; i < assoc.replace_list.size(); i++) {
+                            Matcher match = assoc.replace_list.get(i).pattern.matcher(internal_name);
+                            internal_name = match.replaceAll(assoc.replace_list.get(i).replacement);
                         }
                         pDataSet.put(internal_name, ss);
                         logger.finest("Found value for " + internal_name + ": " + ss);
@@ -394,27 +460,30 @@ public class MQTTClient extends Module {
                                 reg = reg.replaceAll("/", "\\/");
                                 logger.fine("Publishing to broker topic " + sMQTTAttr + " with regex rule " + reg);
                                 Enumeration eKeys2 = pDataSet.keys();
-                                List<String> a = new ArrayList();
+                                List<ValueNameCouple> a = new ArrayList();
                                 while(eKeys2.hasMoreElements()) {
                                     String crt = (String) eKeys2.nextElement();
+                                    ValueNameCouple coup = new ValueNameCouple();
                                     if(crt.matches(reg)) {
-                                        a.add(crt);
+                                        coup.name = crt;
+                                        coup.value = (String) pDataSet.getProperty(coup.name, "");
+                                        a.add(coup);
                                         logger.finer("Matched topic " + sMQTTAttr + " with element " + crt);
                                     }
                                 }
-                                String[] list = new String[a.size()];
+                                ValueNameCouple[] list = new ValueNameCouple[a.size()];
                                 list = a.toArray(list);
                                 Arrays.sort(list);
                                 if(list.length == 0) {
                                     sValue = "";
                                 } else if(list.length == 1) {
 //                                    System.out.println("Only found one");
-                                    sValue = (String) pDataSet.getProperty(list[0], "");
+                                    sValue = list[0].value;
                                 } else {
 //                                    System.out.println("Found more than one");
-                                    String pref = list[0];
+                                    String pref = list[0].name;
                                     for(int i = 1; i < list.length; i++) {
-                                        pref = greatestCommonPrefix(list[i], pref);
+                                        pref = greatestCommonPrefix(list[i].name, pref);
                                     }
                                     int i;
                                     for(i = pref.length() - 1; i > 0 && pref.charAt(i) != '/'; i--);
@@ -613,7 +682,7 @@ public class MQTTClient extends Module {
                         JsonObject object = jsonReader.readObject();
                         jsonReader.close();
                         logger.fine("Found json object");
-                        decomposeObject(sIntPrefix + sSubAssocAttr, object, assoc.replace_list);
+                        decomposeObject(sIntPrefix + sSubAssocAttr, object, assoc);
                         if(assoc.hasTsCfg && assoc.tsCfg.only_once) {
                             pDataSet.put(sIntPrefix + sSubAssocAttr + assoc.tsCfg.ts_suffix, timestamp);
                         }
