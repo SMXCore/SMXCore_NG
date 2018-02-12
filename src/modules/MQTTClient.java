@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -471,7 +472,6 @@ public class MQTTClient extends Module {
                                         logger.finer("Matched topic " + sMQTTAttr + " with element " + crt);
                                     }
                                 }
-                                ValueNameCouple[] list = new ValueNameCouple[a.size()];
                                 for(int ijk = 0; ijk < e.list_apply_order.size(); ijk++) {
                                     if(e.list_apply_order.get(ijk).equals("replace")) {
                                         for(int k = 0; k < e.replace_list.size(); k++) {
@@ -493,8 +493,15 @@ public class MQTTClient extends Module {
                                         }
                                     }
                                 }
+                                ValueNameCouple[] list = new ValueNameCouple[a.size()];
                                 list = a.toArray(list);
-                                Arrays.sort(list);
+                                Arrays.sort(list, new Comparator<ValueNameCouple>() {
+                                    @Override
+                                    public int compare(ValueNameCouple lhs, ValueNameCouple rhs) {
+                                        // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                                        return lhs.name.compareTo(rhs.name);
+                                    }
+                                });
                                 if(list.length == 0) {
                                     sValue = "";
                                 } else if(list.length == 1) {

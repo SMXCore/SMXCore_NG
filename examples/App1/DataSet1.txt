@@ -21,4 +21,4 @@ LD01/f-UM = Hz
 Data/I1/value = 512
 Data/I1/unit = mA
 Data/U1/value = 219.34
-Data/I1/unit = V
+Data/U1/unit = V
