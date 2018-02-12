@@ -21,5 +21,6 @@ LD01/I2-UM=A
 SysDateTime=02/11/2018 17:59:55
 LD01/Q3-UM=kVar
 Module/MQTTClient/MQTTClient1/lPeriod=2000
+Module/MQTTClient/MQTTClient1/SubBytesCount=21475
 LD01/I3-UM=A
 LD01/P1-UM=kW
