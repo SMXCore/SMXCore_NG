@@ -204,6 +204,7 @@ public class MQTTClient extends Module {
                     JsonValue value = (JsonValue) crt.getValue();
                     assoc.replace_list = new ArrayList();
                     assoc.rescale_list = new ArrayList();
+                    assoc.list_apply_order = new ArrayList();
                     if(value.getValueType() == JsonValue.ValueType.STRING) {
                         JsonString ss = (JsonString) value;
                         assoc.isClassic = true;
@@ -420,7 +421,6 @@ public class MQTTClient extends Module {
                     }
                     if (lMemSysTimeMs == 0) {
                         lMemSysTimeMs = System.currentTimeMillis();
-
                         //  continue;
                     }
                     if(bReinitialize) {
