@@ -63,14 +63,14 @@ public class MQTTClient extends Module {
         double multiplier;
     }
     
-    class addItemDescriptor {
+    class AddItemDescriptor {
         String item;
         String value;
     }
     
     class UnitRescaleDescriptor {
         Pattern unit_pattern;
-        Pattern value_pattern;
+        String value_pattern;
         String new_unit;
     }
     
@@ -83,7 +83,9 @@ public class MQTTClient extends Module {
         TimestampCfg tsCfg;
         ArrayList<ReplaceDescriptor> replace_list;
         ArrayList<RescaleDescriptor> rescale_list;
+        ArrayList<AddItemDescriptor> add_item_list;
         ArrayList<String> list_apply_order;
+        Date begin, end;
     }
     
     @Override
@@ -205,6 +207,7 @@ public class MQTTClient extends Module {
                     JsonValue value = (JsonValue) crt.getValue();
                     assoc.replace_list = new ArrayList();
                     assoc.rescale_list = new ArrayList();
+                    assoc.add_item_list = new ArrayList();
                     assoc.list_apply_order = new ArrayList();
                     if(value.getValueType() == JsonValue.ValueType.STRING) {
                         JsonString ss = (JsonString) value;
@@ -222,8 +225,19 @@ public class MQTTClient extends Module {
                         JsonObject ass = (JsonObject) value;
                         assoc.isClassic = ass.getBoolean("isClassic", false);
                         assoc.readJson = ass.getBoolean("TreatAsJsonObject", ass.getBoolean("readJson", false));
-                        assoc.internalName = ass.getString("internalName", name);
+                        assoc.internalName = ass.getString("internalName", ass.getString("regexSelection", name));
                         assoc.mqttTopic = ass.getString("mqttTopic");
+                        
+                        String begindate = ass.getString("begin", "");
+                        String enddate = ass.getString("end", "");
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        if(!begindate.equals("")) {
+                            assoc.begin = formatter.parse(begindate);
+                        }
+                        if(!begindate.equals("")) {
+                            assoc.end = formatter.parse(enddate);
+                        }
+                        
                         JsonObject ts = ass.getJsonObject("timestamp");
                         if(ts != null) {
                             assoc.hasTsCfg = true;
@@ -267,6 +281,16 @@ public class MQTTClient extends Module {
                                         assoc.rescale_list.add(rd);
                                     }
                                     assoc.list_apply_order.add("rescale");
+                                } else if(name2.equals("additem_list") || name2.equals("addItemRules")) {
+                                    JsonArray replace_list = value2.asJsonArray();
+                                    for(int i = 0; i < replace_list.size(); i++) {
+                                        JsonArray descriptor = replace_list.getJsonArray(i);
+                                        AddItemDescriptor rd = new AddItemDescriptor();
+                                        rd.item = descriptor.getString(0);
+                                        rd.value = descriptor.getString(1);
+                                        assoc.add_item_list.add(rd);
+                                    }
+                                    assoc.list_apply_order.add("additem");
                                 }
                             } catch(Exception ex) {
                                 logger.warning(ex.getMessage());
@@ -491,6 +515,22 @@ public class MQTTClient extends Module {
                                                 }
                                             }
                                         }
+                                    } else if(e.list_apply_order.get(ijk).equals("additem")) {
+                                        for(int k = 0; k < e.add_item_list.size(); k++) {
+                                            boolean found = false;
+                                            for(int ik = 0; ik < a.size(); ik++) {
+                                                if(a.get(ik).name.equals(e.add_item_list.get(k).item)) {
+                                                    found = true;
+                                                    a.get(ik).value = e.add_item_list.get(k).value;
+                                                }
+                                            }
+                                            if(!found) {
+                                                ValueNameCouple e2 = new ValueNameCouple();
+                                                e2.name = e.add_item_list.get(k).item;
+                                                e2.value = e.add_item_list.get(k).value;
+                                                a.add(e2);
+                                            }
+                                        }
                                     }
                                 }
                                 ValueNameCouple[] list = new ValueNameCouple[a.size()];
@@ -520,11 +560,13 @@ public class MQTTClient extends Module {
                                     JsonObject j = makeObjects(pref, list);
                                     sValue = j.toString();
                                 }
+                                Date now = new Date();
+                                if((e.begin == null || now.after(e.begin)) && (e.end == null || now.before(e.end))) {
+                                    mqttMessage = new MqttMessage(sValue.getBytes());
+                                    mqttMessage.setQos(iPubQos);
 
-                                mqttMessage = new MqttMessage(sValue.getBytes());
-                                mqttMessage.setQos(iPubQos);
-
-                                mqttClient.publish(sMQTTAttr, mqttMessage);
+                                    mqttClient.publish(sMQTTAttr, mqttMessage);
+                                }
                                 iConnected = 1;
 
                             }
