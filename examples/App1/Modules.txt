@@ -9,7 +9,8 @@ logLevel=CONFIG
 #
 M1-Name=MQTTClient1
 M1-ClassName=modules.MQTTClient
-M1-AttributesFile=MQTTClient1.txt
+#M1-AttributesFile=MQTTClient1.txt
+M1-AttributesFile=MQTTClient1-V2.1.json
 #
 #	Module 4 File Storage 1
 #

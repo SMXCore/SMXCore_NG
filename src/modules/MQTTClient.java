@@ -140,20 +140,24 @@ public class MQTTClient extends Module {
         JsonObject connection = jso.getJsonObject("connection");
         pAttributes.put("pDataSet", jso.getString("dataSet", ""));
         pAttributes.put("lPeriod", jso.getInt("period", 5000));
-        if(prefix != null) {
-            pAttributes.put("sBroker", prefix.getString("broker", "tcp://localhost:18159"));
-            JsonObject credentials = prefix.getJsonObject("credentials");
+        if(connection != null) {
+            pAttributes.put("sBroker", connection.getString("broker", "tcp://localhost:18159"));
+            JsonObject credentials = connection.getJsonObject("credentials");
             if(credentials != null) {
                 pAttributes.put("sUserName", credentials.getString("username", ""));
                 pAttributes.put("sUserPass", credentials.getString("password", ""));
                 pAttributes.put("sClientID", credentials.getString("clientID", ""));
             }
-            JsonObject qos = prefix.getJsonObject("qos");
+            JsonObject qos = connection.getJsonObject("qos");
             if(qos != null) {
-                pAttributes.put("sPubPrefix", qos.getString("publish", ""));
-                pAttributes.put("sSubPrefix", qos.getString("subscribe", ""));
-                pAttributes.put("sIntPrefix", qos.getString("internal", ""));
+                pAttributes.put("iPubQos", qos.getString("publish", ""));
+                pAttributes.put("iSubQos", qos.getString("subscribe", ""));
             }
+        }
+        if(prefix != null) {
+            pAttributes.put("sPubPrefix", prefix.getString("publish", ""));
+            pAttributes.put("sSubPrefix", prefix.getString("subscribe", ""));
+            pAttributes.put("sIntPrefix", prefix.getString("internal", ""));
         }
         SubAssoc = new HashMap();
         if(jso.get("pubAssociation").getValueType() == JsonValue.ValueType.STRING) {

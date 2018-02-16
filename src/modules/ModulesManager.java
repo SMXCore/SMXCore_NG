@@ -76,13 +76,13 @@ public class ModulesManager {
                     mModule.pAttributes.clear();
                     mModule.sAttributesFile=pAttributes.getProperty(sAttributePrefix + "AttributesFile", "");
 //                    PropUtil.LoadFromFile(mModule.pAttributes,  mModule.sAttributesFile);
+                    mModule.logger = Logger.getLogger(sClassName + "." + sModuleName);
                     mModule.LoadConfig();
                     if (mModule.pAttributes == null) {
                         continue;
                     }
                     mModule.sName=sModuleName;
                     mModule.mmManager=this;
-                    mModule.logger = Logger.getLogger(sClassName + "." + sModuleName);
                     if(!pAttributes.getProperty(sAttributePrefix + "LogLevel", "").equals("")) {
                         mModule.logger.setLevel(Level.parse(pAttributes.getProperty(sAttributePrefix + "LogLevel", "WARNING")));
                     }
