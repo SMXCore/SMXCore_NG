@@ -96,7 +96,6 @@ public class MQTTClient extends Module {
         sUserPass = PropUtil.GetString(pAttributes, "sUserPass", "");
         sClientID = PropUtil.GetString(pAttributes, "sClientID", "");
         logger.config("Connecting to MQTT Broker with client ID" + sClientID);
-        SubAssoc = new HashMap();
 
        // PropUtil.LoadFromFile(pPubAssociation, PropUtil.GetString(pAttributes, "pPubAssociation", ""));
        // PropUtil.LoadFromFile(pSubAssociation, PropUtil.GetString(pAttributes, "pSubAssociation", ""));
@@ -110,14 +109,6 @@ public class MQTTClient extends Module {
         logger.config("Publication prefix: \"" + sPubPrefix + "\"");
         logger.config("Subscription prefix: \"" + sSubPrefix + "\"");
         logger.config("Internal prefix: \"" + sIntPrefix + "\"");
-        
-        logger.config("Loading subscribe associations");
-        ArrayList<Association> SubAssocs = loadAssoc(PropUtil.GetString(pAttributes, "pSubAssociation", ""), false);
-        for(Association a: SubAssocs) {
-            SubAssoc.put(a.mqttTopic, a);
-        }
-        logger.config("Loading public associations");
-        PubAssoc = loadAssoc(PropUtil.GetString(pAttributes, "pPubAssociation", ""), true);
 
 //        sSubTopics = PropUtil.GetString(pAttributes, "sSubTopics", "");
 //        ssSubTopics = sSubTopics.split(",");
@@ -135,10 +126,69 @@ public class MQTTClient extends Module {
         s1 = String.valueOf(lPeriod); pDataSet.put("Module/MQTTClient/"+sName+"/lPeriod", s1); // 
     }
     
+    public void LoadConfig() {
+        if(sAttributesFile.endsWith("json")) {
+            LoadJsonConfig();
+        } else {
+            LoadTxtConfig();
+        }
+    }
+    
+    void LoadJsonConfig() {
+        JsonObject jso = read_jso_from_file(sAttributesFile);
+        JsonObject prefix = jso.getJsonObject("prefix");
+        JsonObject connection = jso.getJsonObject("connection");
+        pAttributes.put("pDataSet", jso.getString("dataSet", ""));
+        pAttributes.put("lPeriod", jso.getInt("period", 5000));
+        if(prefix != null) {
+            pAttributes.put("sBroker", prefix.getString("broker", "tcp://localhost:18159"));
+            JsonObject credentials = prefix.getJsonObject("credentials");
+            if(credentials != null) {
+                pAttributes.put("sUserName", credentials.getString("username", ""));
+                pAttributes.put("sUserPass", credentials.getString("password", ""));
+                pAttributes.put("sClientID", credentials.getString("clientID", ""));
+            }
+            JsonObject qos = prefix.getJsonObject("qos");
+            if(qos != null) {
+                pAttributes.put("sPubPrefix", qos.getString("publish", ""));
+                pAttributes.put("sSubPrefix", qos.getString("subscribe", ""));
+                pAttributes.put("sIntPrefix", qos.getString("internal", ""));
+            }
+        }
+        SubAssoc = new HashMap();
+        if(jso.get("pubAssociation").getValueType() == JsonValue.ValueType.STRING) {
+            PubAssoc = loadAssoc(jso.getString("pubAssociation", ""), true);
+        } else {
+            PubAssoc = loadAssocJson(jso.getJsonObject("pubAssociation"), true);
+        }
+        ArrayList<Association> SubAssocs;
+        if(jso.get("subAssociation").getValueType() == JsonValue.ValueType.STRING) {
+            SubAssocs = loadAssoc(jso.getString("subAssociation", ""), false);
+        } else {
+            SubAssocs = loadAssocJson(jso.getJsonObject("subAssociation"), false);
+        }
+        for(Association a: SubAssocs) {
+            SubAssoc.put(a.mqttTopic, a);
+        }
+    }
+    
+    void LoadTxtConfig() {
+        PropUtil.LoadFromFile(pAttributes,  sAttributesFile);
+        SubAssoc = new HashMap();
+        
+        logger.config("Loading subscribe associations");
+        ArrayList<Association> SubAssocs = loadAssoc(PropUtil.GetString(pAttributes, "pSubAssociation", ""), false);
+        for(Association a: SubAssocs) {
+            SubAssoc.put(a.mqttTopic, a);
+        }
+        logger.config("Loading public associations");
+        PubAssoc = loadAssoc(PropUtil.GetString(pAttributes, "pPubAssociation", ""), true);
+    }
+    
     ArrayList<Association> loadAssoc(String file, boolean isPublish) {
         if(file.endsWith("json")) {
             logger.config("MQTT Association config file «" + file + "» is a json");
-            return loadAssocJson(file, isPublish);
+            return loadAssocJson(read_jso_from_file(file), isPublish);
         } else {
             logger.config("MQTT Association config file «" + file + "» is plain text or XML");
             return loadAssocTxtXml(file, isPublish);
@@ -178,12 +228,12 @@ public class MQTTClient extends Module {
         return list;
     }
     
-    ArrayList<Association> loadAssocJson(String file, boolean isPublish) {
-        ArrayList<Association> list = new ArrayList();
+    JsonObject read_jso_from_file(String file) {
+        JsonObject jso = null;
         try {
             String file_content = new Scanner(new File(file)).useDelimiter("\\Z").next();
             // comment processing
-            
+
             String comment_pattern = "(^|\\n)(#|//)[^\\n]*(\\n|$)";
             int max_iterations = 1000;
             int ijk = 0;
@@ -194,10 +244,18 @@ public class MQTTClient extends Module {
                     break;
                 } else file_content = new_file_content;
             }
-            System.out.println(file_content);
-            
+
             JsonReader jsr = Json.createReader(new StringReader(file_content));
-            JsonObject jso = jsr.readObject();
+            jso = jsr.readObject();
+        } catch(Exception ex) {
+            logger.warning(ex.getMessage());
+        }
+        return jso;
+    }
+    
+    ArrayList<Association> loadAssocJson(JsonObject jso, boolean isPublish) {
+        ArrayList<Association> list = new ArrayList();
+        try {
             Iterator it = jso.entrySet().iterator();
             while(it.hasNext()) {
                 try {
