@@ -28,8 +28,8 @@
 # 				another alias:
 			"regexSelection": "Sys",
 			"mqttTopic": "System",
-			"StartTime": "format data",
-			"EndTime": "format data",
+			"StartTime": "2018-02-17 03:06:00",
+			"EndTime": "",
 # Here we have some scaling rules for voltage		
 			"rescaleRules": [ [ "SysMemoryLoad", 0.01] ],
 			"renameRules": [ [ "SysMemoryLoad", "SML"] ],

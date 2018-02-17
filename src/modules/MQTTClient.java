@@ -290,14 +290,22 @@ public class MQTTClient extends Module {
                         assoc.internalName = ass.getString("internalName", ass.getString("regexSelection", name));
                         assoc.mqttTopic = ass.getString("mqttTopic");
                         
-                        String begindate = ass.getString("begin", "");
-                        String enddate = ass.getString("end", "");
+                        String begindate = ass.getString("StartTime", "");
+                        String enddate = ass.getString("EndTime", "");
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         if(!begindate.equals("")) {
-                            assoc.begin = formatter.parse(begindate);
+                            try {
+                                assoc.begin = formatter.parse(begindate);
+                            } catch(Exception ex) {
+                                logger.warning(ex.getMessage());
+                            }
                         }
-                        if(!begindate.equals("")) {
-                            assoc.end = formatter.parse(enddate);
+                        if(!enddate.equals("")) {
+                            try {
+                                assoc.end = formatter.parse(enddate);
+                            } catch(Exception ex) {
+                                logger.warning(ex.getMessage());
+                            }
                         }
                         
                         JsonObject ts = ass.getJsonObject("timestamp");
