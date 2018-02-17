@@ -61,6 +61,7 @@ public class MQTTClient extends Module {
     class RescaleDescriptor {
         Pattern pattern;
         double multiplier;
+        double added;
     }
     
     class AddItemDescriptor {
@@ -348,6 +349,9 @@ public class MQTTClient extends Module {
                                         String pat = descriptor.getString(0);
                                         rd.pattern = Pattern.compile(pat);
                                         rd.multiplier = descriptor.getJsonNumber(1).doubleValue();
+                                        if(descriptor.size() > 2) {
+                                            rd.added = descriptor.getJsonNumber(2).doubleValue();
+                                        } else rd.added = 0;
                                         assoc.rescale_list.add(rd);
                                     }
                                     assoc.list_apply_order.add("rescale");
@@ -581,6 +585,7 @@ public class MQTTClient extends Module {
                                                 if(match.matches()) {
                                                     double value = Double.parseDouble(a.get(ik).value);
                                                     value *= e.rescale_list.get(k).multiplier;
+                                                    value += e.rescale_list.get(k).added;
                                                     a.get(ik).value = String.valueOf(value);
                                                 }
                                             }
