@@ -26,7 +26,7 @@
 	"pubAssociation": {
 		"LD01-Partial": {
 # 				another alias:
-			"regexSelection": "Sys",
+			"regexSelection": "Sys.*",
 			"mqttTopic": "System",
 			"StartTime": "2018-02-17 03:06:00",
 			"EndTime": "",

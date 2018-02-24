@@ -38,6 +38,7 @@ import javax.json.JsonNumber;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
+import util.SmartProperties;
 
 /**
  *
@@ -560,6 +561,7 @@ public class MQTTClient extends Module {
                                 logger.fine("Publishing to broker topic " + sMQTTAttr + " with regex rule " + reg);
                                 Enumeration eKeys2 = pDataSet.keys();
                                 List<ValueNameCouple> a = new ArrayList();
+                                Date commondate = new Date(0);
                                 while(eKeys2.hasMoreElements()) {
                                     String crt = (String) eKeys2.nextElement();
                                     ValueNameCouple coup = new ValueNameCouple();
@@ -567,6 +569,10 @@ public class MQTTClient extends Module {
                                         coup.name = crt;
                                         coup.value = (String) pDataSet.getProperty(coup.name, "");
                                         a.add(coup);
+                                        Date crtd = ((SmartProperties) pDataSet).getmeta(crt).timestamp;
+                                        if(crtd.after(commondate)) {
+                                            commondate = crtd;
+                                        }
                                         logger.finer("Matched topic " + sMQTTAttr + " with element " + crt);
                                     }
                                 }
@@ -593,16 +599,25 @@ public class MQTTClient extends Module {
                                     } else if(e.list_apply_order.get(ijk).equals("additem")) {
                                         for(int k = 0; k < e.add_item_list.size(); k++) {
                                             boolean found = false;
+                                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                             for(int ik = 0; ik < a.size(); ik++) {
-                                                if(a.get(ik).name.equals(e.add_item_list.get(k).item)) {
+                                                if(a.get(ik).name.equals(sIntPrefix + e.add_item_list.get(k).item)) {
                                                     found = true;
-                                                    a.get(ik).value = e.add_item_list.get(k).value;
+                                                    if(e.add_item_list.get(k).value.equals("!Timestamp")) {
+                                                        a.get(ik).value = formatter.format(commondate);
+                                                    } else {
+                                                        a.get(ik).value = e.add_item_list.get(k).value;
+                                                    }
                                                 }
                                             }
                                             if(!found) {
                                                 ValueNameCouple e2 = new ValueNameCouple();
-                                                e2.name = e.add_item_list.get(k).item;
-                                                e2.value = e.add_item_list.get(k).value;
+                                                e2.name = sIntPrefix + e.add_item_list.get(k).item;
+                                                if(e.add_item_list.get(k).value.equals("!Timestamp")) {
+                                                    e2.value = formatter.format(commondate);
+                                                } else {
+                                                    e2.value = e.add_item_list.get(k).value;
+                                                }
                                                 a.add(e2);
                                             }
                                         }
@@ -628,8 +643,9 @@ public class MQTTClient extends Module {
                                     for(int i = 1; i < list.length; i++) {
                                         pref = greatestCommonPrefix(list[i].name, pref);
                                     }
+                                    
                                     int i;
-                                    for(i = pref.length() - 1; i > 0 && pref.charAt(i) != '/'; i--);
+                                    for(i = pref.length() - 1; i >= 0 && pref.charAt(i) != '/'; i--);
                                     pref = pref.substring(0, i + 1);
 //                                    System.out.println(pref);
                                     JsonObject j = makeObjects(pref, list);

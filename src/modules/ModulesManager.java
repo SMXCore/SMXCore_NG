@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import util.PropUtil;
 import smxcore.LogFormatter;
 import java.util.logging.Logger;
+import util.SmartProperties;
 //import sun.util.logging.PlatformLogger;
 
 /**
@@ -122,7 +123,7 @@ public class ModulesManager {
     public Properties getSharedData(String sDataName) {
         Properties pTmp = htSharedData.get(sDataName);
         if (pTmp == null) {
-            pTmp = new Properties();
+            pTmp = new SmartProperties();
             htSharedData.put(sDataName, pTmp);
         }
         return pTmp;
