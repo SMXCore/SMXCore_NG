@@ -599,21 +599,85 @@ public class MQTTClient extends Module {
                                     } else if(e.list_apply_order.get(ijk).equals("additem")) {
                                         for(int k = 0; k < e.add_item_list.size(); k++) {
                                             boolean found = false;
-                                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                            String defaultformat = "yyyy-MM-dd HH:mm:ss";
+                                            Pattern pattern_custom = Pattern.compile("^!Timestamp(\\{Custom ([^}]*)\\})(\\{([^}]*)\\})?");
+                                            Pattern pattern_otherwise = Pattern.compile("^!Timestamp(\\{([^}]*)\\})?(\\{([^}]*)\\})?");
                                             for(int ik = 0; ik < a.size(); ik++) {
                                                 if(a.get(ik).name.equals(sIntPrefix + e.add_item_list.get(k).item)) {
                                                     found = true;
-                                                    if(e.add_item_list.get(k).value.equals("!Timestamp")) {
+                                                    if(e.add_item_list.get(k).value.startsWith("!Timestamp")) {
+                                                        Matcher matcher = pattern_custom.matcher(e.add_item_list.get(k).value);
+                                                        Matcher matcher2 = pattern_otherwise.matcher(e.add_item_list.get(k).value);
+                                                        SimpleDateFormat formatter = new SimpleDateFormat();
+                                                        String format = defaultformat;
+                                                        if(matcher.matches()) {
+                                                            matcher.find();   
+                                                            if(matcher.groupCount() > 0) {
+                                                                format = matcher.group(2);
+                                                            }
+                                                            formatter = new SimpleDateFormat(format);
+                                                            if(matcher.groupCount() > 2) {
+                                                                formatter.setTimeZone(TimeZone.getTimeZone(matcher.group(4)));
+                                                            }
+                                                        } else if(matcher2.matches()) {
+                                                            format = "US-style SMXCore Timestamp";
+                                                            if(matcher.groupCount() > 0) {
+                                                                format = matcher.group(2);
+                                                            }
+                                                            //tipuri:
+                                                            // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
+                                                            // UNIX: sssssssss (since 1970)
+                                                            // ISO 8601: yyyy-mm-ddThh:mm:ssZ
+                                                            if(format.equals("US-style SMXCore Timestamp")) {
+                                                                formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                                                            } else if(format.equals("ISO 8601")) {
+                                                                formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
+                                                            } else {
+                                                                formatter = new SimpleDateFormat("Invalid dateformat: " + format);
+                                                            }
+                                                        }
                                                         a.get(ik).value = formatter.format(commondate);
                                                     } else {
                                                         a.get(ik).value = e.add_item_list.get(k).value;
                                                     }
+                                                    break;
                                                 }
                                             }
                                             if(!found) {
                                                 ValueNameCouple e2 = new ValueNameCouple();
                                                 e2.name = sIntPrefix + e.add_item_list.get(k).item;
-                                                if(e.add_item_list.get(k).value.equals("!Timestamp")) {
+                                                String t;
+                                                if(e.add_item_list.get(k).value.startsWith("!Timestamp")) {
+                                                    Matcher matcher = pattern_custom.matcher(e.add_item_list.get(k).value);
+                                                    Matcher matcher2 = pattern_otherwise.matcher(e.add_item_list.get(k).value);
+                                                    SimpleDateFormat formatter = new SimpleDateFormat();
+                                                    String format = defaultformat;
+                                                    if(matcher.matches()) {
+                                                        matcher.find();   
+                                                        if(matcher.groupCount() > 0) {
+                                                            format = matcher.group(2);
+                                                        }
+                                                        formatter = new SimpleDateFormat(format);
+                                                        if(matcher.groupCount() > 2) {
+                                                            formatter.setTimeZone(TimeZone.getTimeZone(matcher.group(4)));
+                                                        }
+                                                    } else if(matcher2.matches()) {
+                                                        format = "US-style SMXCore Timestamp";
+                                                        if(matcher.groupCount() > 0) {
+                                                            format = matcher.group(2);
+                                                        }
+                                                        //tipuri:
+                                                        // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
+                                                        // UNIX: sssssssss (since 1970)
+                                                        // ISO 8601: yyyy-mm-ddThh:mm:ssZ
+                                                        if(format.equals("US-style SMXCore Timestamp")) {
+                                                            formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                                                        } else if(format.equals("ISO 8601")) {
+                                                            formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
+                                                        } else {
+                                                            formatter = new SimpleDateFormat("Invalid dateformat: " + format);
+                                                        }
+                                                    }
                                                     e2.value = formatter.format(commondate);
                                                 } else {
                                                     e2.value = e.add_item_list.get(k).value;

@@ -35,7 +35,7 @@
 			"renameRules": [ [ "SysMemoryLoad", "SML"] ],
 			"addItemRules": [ 
 				[ "SMLU", "%" ], 
-				[ "SMXtimestamp", "!Timestamp" ] 
+				[ "SMXtimestamp", "!Timestamp{Custom yyyy/mm/dd hh:MM:ss:SSS}{UTC}" ] 
 			]
 		}
 	},
