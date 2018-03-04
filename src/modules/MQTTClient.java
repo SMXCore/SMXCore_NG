@@ -458,7 +458,7 @@ public class MQTTClient extends Module {
         return b.build();
     }
     
-    void decomposeObject(String prefix, JsonObject obj, Association assoc) {
+    void decomposeObject(String prefix, JsonObject obj, Association assoc, List<ValueNameCouple> a) {
         try {
             Iterator it = obj.entrySet().iterator();
             while(it.hasNext()) {
@@ -468,7 +468,7 @@ public class MQTTClient extends Module {
                     JsonValue value = (JsonValue) crt.getValue();
                     if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject objj = (JsonObject) value;
-                        decomposeObject(prefix + '/' + name, objj, assoc);
+                        decomposeObject(prefix + '/' + name, objj, assoc, a);
                         logger.finest("Found inner object " + prefix + '/' + name);
                     } else {
                         String ss = "";
@@ -492,7 +492,10 @@ public class MQTTClient extends Module {
                             Matcher match = assoc.replace_list.get(i).pattern.matcher(internal_name);
                             internal_name = match.replaceAll(assoc.replace_list.get(i).replacement);
                         }
-                        pDataSet.put(internal_name, ss);
+                        ValueNameCouple c = new ValueNameCouple();
+                        c.name = internal_name;
+                        c.value = ss;
+                        a.add(c);
                         logger.finest("Found value for " + internal_name + ": " + ss);
                     }
                     logger.finest("Decomposed object " + prefix);
@@ -907,7 +910,36 @@ public class MQTTClient extends Module {
                         JsonObject object = jsonReader.readObject();
                         jsonReader.close();
                         logger.fine("Found json object");
-                        decomposeObject(sIntPrefix + sSubAssocAttr, object, assoc);
+                        List<ValueNameCouple> a = new ArrayList();
+                        decomposeObject(sIntPrefix + sSubAssocAttr, object, assoc, a);
+                        
+                        for(int ijk = 0; ijk < assoc.list_apply_order.size(); ijk++) {
+                            if(assoc.list_apply_order.get(ijk).equals("replace")) {
+                                for(int k = 0; k < assoc.replace_list.size(); k++) {
+                                    for(int ik = 0; ik < a.size(); ik++) {
+                                        Matcher match = assoc.replace_list.get(k).pattern.matcher(a.get(ik).name);
+                                        a.get(ik).name = match.replaceAll(assoc.replace_list.get(k).replacement);
+                                    }
+                                }
+                            } else if(assoc.list_apply_order.get(ijk).equals("rescale")) {
+                                for(int k = 0; k < assoc.rescale_list.size(); k++) {
+                                    for(int ik = 0; ik < a.size(); ik++) {
+                                        Matcher match = assoc.rescale_list.get(k).pattern.matcher(a.get(ik).name);
+                                        if(match.matches()) {
+                                            double value = Double.parseDouble(a.get(ik).value);
+                                            value *= assoc.rescale_list.get(k).multiplier;
+                                            value += assoc.rescale_list.get(k).added;
+                                            a.get(ik).value = String.valueOf(value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        for(int i = 0; i < a.size(); i++) {
+                            pDataSet.put(a.get(i).name, a.get(i).value);
+                        }
+                        
                         if(assoc.hasTsCfg && assoc.tsCfg.only_once) {
                             pDataSet.put(sIntPrefix + sSubAssocAttr + assoc.tsCfg.ts_suffix, timestamp);
                         }
