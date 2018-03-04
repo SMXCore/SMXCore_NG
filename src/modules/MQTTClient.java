@@ -59,6 +59,11 @@ public class MQTTClient extends Module {
         String replacement;
     }
     
+    class ProcessDescriptor {
+        Pattern pattern;
+        String replacement;
+    }
+    
     class RescaleDescriptor {
         Pattern pattern;
         double multiplier;
@@ -84,6 +89,7 @@ public class MQTTClient extends Module {
         boolean hasTsCfg;
         TimestampCfg tsCfg;
         ArrayList<ReplaceDescriptor> replace_list;
+        ArrayList<ProcessDescriptor> process_list;
         ArrayList<RescaleDescriptor> rescale_list;
         ArrayList<AddItemDescriptor> add_item_list;
         ArrayList<String> list_apply_order;
@@ -215,6 +221,8 @@ public class MQTTClient extends Module {
                 assoc.hasTsCfg = true;
                 assoc.replace_list = new ArrayList();
                 assoc.rescale_list = new ArrayList();
+                assoc.process_list = new ArrayList();
+                assoc.add_item_list = new ArrayList();
                 if(isPublish) {
                     assoc.internalName = e;
                     assoc.mqttTopic = (String) prop.getProperty(e, "");
@@ -271,6 +279,7 @@ public class MQTTClient extends Module {
                     JsonValue value = (JsonValue) crt.getValue();
                     assoc.replace_list = new ArrayList();
                     assoc.rescale_list = new ArrayList();
+                    assoc.process_list = new ArrayList();
                     assoc.add_item_list = new ArrayList();
                     assoc.list_apply_order = new ArrayList();
                     if(value.getValueType() == JsonValue.ValueType.STRING) {
@@ -342,6 +351,17 @@ public class MQTTClient extends Module {
                                         assoc.replace_list.add(rd);
                                     }
                                     assoc.list_apply_order.add("replace");
+                                } else if(name2.equals("process_list") || name2.equals("processRules")) {
+                                    JsonArray replace_list = value2.asJsonArray();
+                                    for(int i = 0; i < replace_list.size(); i++) {
+                                        JsonArray descriptor = replace_list.getJsonArray(i);
+                                        ProcessDescriptor rd = new ProcessDescriptor();
+                                        String pat = descriptor.getString(0);
+                                        rd.pattern = Pattern.compile(pat);
+                                        rd.replacement = descriptor.getString(1);
+                                        assoc.process_list.add(rd);
+                                    }
+                                    assoc.list_apply_order.add("process");
                                 } else if(name2.equals("rescale_list") || name2.equals("rescaleRules")) {
                                     JsonArray replace_list = value2.asJsonArray();
                                     for(int i = 0; i < replace_list.size(); i++) {
@@ -919,6 +939,13 @@ public class MQTTClient extends Module {
                                     for(int ik = 0; ik < a.size(); ik++) {
                                         Matcher match = assoc.replace_list.get(k).pattern.matcher(a.get(ik).name);
                                         a.get(ik).name = match.replaceAll(assoc.replace_list.get(k).replacement);
+                                    }
+                                }
+                            } else if(assoc.list_apply_order.get(ijk).equals("process")) {
+                                for(int k = 0; k < assoc.replace_list.size(); k++) {
+                                    for(int ik = 0; ik < a.size(); ik++) {
+                                        Matcher match = assoc.replace_list.get(k).pattern.matcher(a.get(ik).value);
+                                        a.get(ik).value = match.replaceAll(assoc.replace_list.get(k).replacement);
                                     }
                                 }
                             } else if(assoc.list_apply_order.get(ijk).equals("rescale")) {
