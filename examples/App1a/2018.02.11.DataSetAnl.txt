@@ -1,0 +1,26 @@
+------------------------------------------------------
+2018/02/11	17:59:55:919	DataSet1: 
+LD01/U1-UM=V
+Module/FileStorage/FileStorage1/sFileName=./Log/Log1
+SysTime=17:59:55
+LD01/P2-UM=kW
+SysDateTimeUTC=02/11/2018 15:59:55
+LD01/U2-UM=V
+LD01/P3-UM=kW
+Module/DataSet/DataSet1/sName=DataSet1
+LD01/U3-UM=V
+Module/FileStorage/FileStorage1/sPrefix=
+Module/FileStorage/FileStorage1/lPeriod=1000
+Module/FileStorage/FileStorage1/StartDateTime=02/11/2018 17:59:55
+LD01/f-UM=Hz
+LD01/Q1-UM=kVar
+SysDate=02/11/2018
+LD01/I1-UM=A
+LD01/Q2-UM=kVar
+LD01/I2-UM=A
+SysDateTime=02/11/2018 17:59:55
+LD01/Q3-UM=kVar
+Module/MQTTClient/MQTTClient1/lPeriod=2000
+Module/MQTTClient/MQTTClient1/SubBytesCount=21475
+LD01/I3-UM=A
+LD01/P1-UM=kW

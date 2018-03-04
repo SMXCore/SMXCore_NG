@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+
+<object Type="CLOCK">
+<SN>11200</SN>
+<LN>0.0.1.0.0.255</LN>
+</object>
+
+<object Type="REGISTER">
+<SN>35768</SN>
+<LN>1.1.32.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>35920</SN>
+<LN>1.1.52.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>36072</SN>
+<LN>1.1.72.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>36224</SN>
+<LN>1.1.31.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>36376</SN>
+<LN>1.1.51.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>36528</SN>
+<LN>1.1.71.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>36680</SN>
+<LN>1.1.91.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>36832</SN>
+<LN>1.1.14.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>36984</SN>
+<LN>1.1.16.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37136</SN>
+<LN>1.1.131.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37288</SN>
+<LN>1.1.81.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37440</SN>
+<LN>1.1.81.7.1.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37592</SN>
+<LN>1.1.81.7.2.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37744</SN>
+<LN>1.1.81.7.4.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37896</SN>
+<LN>1.1.81.7.5.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38048</SN>
+<LN>1.1.81.7.6.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38200</SN>
+<LN>1.1.13.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38352</SN>
+<LN>1.1.33.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38504</SN>
+<LN>1.1.53.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38656</SN>
+<LN>1.1.73.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38808</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>38960</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>39112</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>39264</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>39416</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>39568</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>39720</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>39872</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="REGISTER">
+<SN>40024</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>45368</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>45632</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>45896</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>46160</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>46424</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>46688</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>46952</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>47216</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<SN>47480</SN>
+<LN>0.0.127.0.0.0</LN>
+</object>
+</objects>

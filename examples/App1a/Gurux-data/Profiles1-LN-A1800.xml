@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+<object Type="PROFILE_GENERIC">
+<LN>1.0.99.128.0.255</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<LN>1.0.99.1.1.255</LN>
+</object>
+<object Type="PROFILE_GENERIC">
+<LN>0.0.98.1.0.255</LN>
+</object>
+</objects>

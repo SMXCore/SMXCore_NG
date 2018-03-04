@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+<object Type="CLOCK">
+<SN>11200</SN>
+<LN>0.0.1.0.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37136</SN>
+<LN>1.1.131.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37288</SN>
+<LN>1.1.81.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37440</SN>
+<LN>1.1.81.7.1.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37592</SN>
+<LN>1.1.81.7.2.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37744</SN>
+<LN>1.1.81.7.4.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>37896</SN>
+<LN>1.1.81.7.5.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38048</SN>
+<LN>1.1.81.7.6.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38200</SN>
+<LN>1.1.13.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38352</SN>
+<LN>1.1.33.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38504</SN>
+<LN>1.1.53.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>38656</SN>
+<LN>1.1.73.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>8224</SN>
+<LN>1.1.1.8.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>8392</SN>
+<LN>1.1.2.8.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>8560</SN>
+<LN>1.1.3.8.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>8728</SN>
+<LN>1.1.4.8.0.255</LN>
+</object>
+</objects>

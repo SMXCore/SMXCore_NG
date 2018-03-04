@@ -1,0 +1,31 @@
+------------------------------------------------------
+2018/02/12	18:36:39:666	DataSet1: 
+LD01/U1-UM=V
+Module/FileStorage/FileStorage1/sFileName=./Log/Log1
+SysTime=18:36:39
+SysMemoryLoad=48.97759438220329
+LD01/P2-UM=kW
+SysDateTimeUTC=02/12/2018 16:36:39
+LD01/U2-UM=V
+Data/I1/value=512
+ProcPID=13796@DESKTOP-366F22Q
+LD01/P3-UM=kW
+Module/DataSet/DataSet1/sName=DataSet1
+LD01/U3-UM=V
+Module/FileStorage/FileStorage1/sPrefix=
+Module/FileStorage/FileStorage1/lPeriod=1000
+Module/FileStorage/FileStorage1/StartDateTime=02/12/2018 18:36:35
+LD01/f-UM=Hz
+LD01/Q1-UM=kVar
+LD01/I1-UM=A
+SysDate=02/12/2018
+LD01/Q2-UM=kVar
+Data/U1/value=219.34
+Data/I1/unit=V
+LD01/I2-UM=A
+SysCpuLoad=20.521637909228552
+SysDateTime=02/12/2018 18:36:39
+LD01/Q3-UM=kVar
+Module/MQTTClient/MQTTClient1/lPeriod=2000
+LD01/I3-UM=A
+LD01/P1-UM=kW

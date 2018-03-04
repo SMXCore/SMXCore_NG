@@ -1,0 +1,85 @@
+              <ShortName>52200</ShortName> = Obj2ects1.xml
+              <LogicalName>1.1.1.4.0.255</LogicalName>
+              <Description>Ch. 1 Sum Li Active power+ (QI+QIV) Current avg. 1 Rate 0 (0 is total)</Description>
+
+              <ShortName>52800</ShortName> = Objects2.xml
+              <LogicalName>1.1.2.4.0.255</LogicalName>
+              <Description>Ch. 1 Sum Li Active power- (QII+QIII) Current avg. 1 Rate 0 (0 is total)</Description>
+
+              <ShortName>52400</ShortName> = Objects2.xml
+              <LogicalName>1.1.5.4.0.255</LogicalName>
+              <Description>Ch. 1 Sum Li Reactive power QI Current avg. 1 Rate 0 (0 is total)</Description>
+
+              <ShortName>53000</ShortName> = Objects2.xml
+              <LogicalName>1.1.6.4.0.255</LogicalName>
+              <Description>Ch. 1 Sum Li Reactive power QII Current avg. 1 Rate 0 (0 is total)</Description>
+
+              <ShortName>53200</ShortName> = Objects2.xml
+              <LogicalName>1.1.7.4.0.255</LogicalName>
+              <Description>Ch. 1 Sum Li Reactive power QIII Current avg. 1 Rate 0 (0 is total)</Description>
+
+              <ShortName>52600</ShortName> = Objects2.xml
+              <LogicalName>1.1.8.4.0.255</LogicalName>
+              <Description>Ch. 1 Sum Li Reactive power QIV Current avg. 1 Rate 0 (0 is total)</Description>
+
+        <ShortName>39000</ShortName> = Objects1.xml
+        <LogicalName>1.1.32.7.0.255</LogicalName>
+        <Description>Instantaneous value (except for frequency)=Voltage U1</Description>
+
+        <ShortName>39200</ShortName> = Objects1.xml
+        <LogicalName>1.1.52.7.0.255</LogicalName>
+        <Description>Instantaneous value (except for frequency)=Voltage U2</Description>
+
+        <ShortName>39400</ShortName> = Objects1.xml
+        <LogicalName>1.1.72.7.0.255</LogicalName>
+        <Description>Instantaneous value (except for frequency)=Voltage U3</Description>
+
+        <ShortName>38200</ShortName>
+        <LogicalName>1.1.33.7.0.255</LogicalName>
+        <Description>Instantaneous value (except for frequency)=PF1</Description>
+
+        <ShortName>35200</ShortName>
+        <LogicalName>1.1.53.7.0.255</LogicalName>
+        <Description>Instantaneous value (except for frequency)=PF2</Description>
+
+        <ShortName>35000</ShortName>
+        <LogicalName>1.1.73.7.0.255</LogicalName>
+        <Description>Instantaneous value (except for frequency)=PF3</Description>
+
+              <ShortName>6000</ShortName> = Objects3.xml
+              <LogicalName>1.1.1.8.0.255</LogicalName>
+              <Description>Time integral 1, total, current billing period</Description>
+
+              <ShortName>6600</ShortName> = Objects3.xml
+              <LogicalName>1.1.2.8.0.255</LogicalName>
+              <Description>Time integral 1, total, current billing period</Description>
+
+        <ShortName>7200</ShortName> = Objects3.xml
+        <LogicalName>1.1.3.8.0.255</LogicalName>
+        <Description>Ch. 1 Sum Li Reactive power+ (QI+QII) Time integral 1 Rate 0 (0 is total)</Description>
+
+        <ShortName>7400</ShortName> = Objects3.xml
+        <LogicalName>1.1.4.8.0.255</LogicalName>
+        <Description>Ch. 1 Sum Li Reactive power- (QIII+QIV) Time integral 1 Rate 0 (0 is total)</Description>
+
+----------------
+              <ShortName>52200</ShortName> = Objects2.xml
+              <LogicalName>1.1.1.4.0.255</LogicalName>
+              <Description>Ch. 1 Sum Li Active power+ (QI+QIV) Current avg. 1 Rate 0 (0 is total)</Description>
+
+        <ShortName>38600</ShortName> = Objects2.xml
+        <LogicalName>1.1.13.7.0.255</LogicalName>
+        <Description>Instantaneous value (except for frequency)</Description>
+
+
+<object Type="REGISTER">
+<SN>38200</SN>
+<LN>1.1.33.7.0.255</LN>
+<object Type="REGISTER">
+<SN>35200</SN>
+<LN>1.1.53.7.0.255</LN>
+<object Type="REGISTER">
+<SN>35000</SN>
+<LN>1.1.73.7.0.255</LN>
+</object>
+
