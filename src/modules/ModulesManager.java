@@ -39,7 +39,7 @@ public class ModulesManager {
         Class cClass = null;
         Logger logger = Logger.getLogger("modules");
         
-        if(PropUtil.GetInt(pAttributes, "enableConsoleLog", 0) == 0) {
+        if(PropUtil.GetInt(pAttributes, "enableConsoleLog", 1) == 0) {
             Logger rootLogger = Logger.getLogger("");
             Handler[] handlers = rootLogger.getHandlers();
             if (handlers[0] instanceof ConsoleHandler) {
@@ -47,7 +47,7 @@ public class ModulesManager {
             }
         }
         
-        logger.setLevel(Level.parse(PropUtil.GetString(pAttributes, "logLevel", "WARNING")));
+        logger.setLevel(Level.parse(PropUtil.GetString(pAttributes, "logLevel", "CONFIG")));
         if(PropUtil.GetInt(pAttributes, "enableFileLog", 0) != 0) {
             try {
                 logFile = new FileHandler(PropUtil.GetString(pAttributes, "logFile", "Log/Log.txt"), PropUtil.GetInt(pAttributes, "maxBytes", 10485760), PropUtil.GetInt(pAttributes, "maxFiles", 1), true);
