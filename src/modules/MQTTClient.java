@@ -236,7 +236,11 @@ public class MQTTClient extends Module {
                 list.add(assoc);
             }  catch (Exception ex) {
 //                if (Debug == 1) {
-                logger.warning(ex.getMessage());
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                ex.printStackTrace(pw);
+                String sStackTrace = sw.toString();
+                logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                     //System.out.println(ex.getMessage());
 //                }
             }
@@ -264,7 +268,11 @@ public class MQTTClient extends Module {
             JsonReader jsr = Json.createReader(new StringReader(file_content));
             jso = jsr.readObject();
         } catch(Exception ex) {
-            logger.warning(ex.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
         return jso;
     }
@@ -310,14 +318,22 @@ public class MQTTClient extends Module {
                             try {
                                 assoc.begin = formatter.parse(begindate);
                             } catch(Exception ex) {
-                                logger.warning(ex.getMessage());
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                ex.printStackTrace(pw);
+                                String sStackTrace = sw.toString();
+                                logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                             }
                         }
                         if(!enddate.equals("")) {
                             try {
                                 assoc.end = formatter.parse(enddate);
                             } catch(Exception ex) {
-                                logger.warning(ex.getMessage());
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                ex.printStackTrace(pw);
+                                String sStackTrace = sw.toString();
+                                logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                             }
                         }
                         
@@ -390,7 +406,11 @@ public class MQTTClient extends Module {
                                     assoc.list_apply_order.add("additem");
                                 }
                             } catch(Exception ex) {
-                                logger.warning(ex.getMessage());
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                ex.printStackTrace(pw);
+                                String sStackTrace = sw.toString();
+                                logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                             }
                         }
                     }
@@ -400,14 +420,22 @@ public class MQTTClient extends Module {
 //                    if (Debug == 1) {
 //                        System.out.println(ex.getMessage());
 //                    }
-                    logger.warning(ex.getMessage());
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    String sStackTrace = sw.toString();
+                    logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                 }
             }
         } catch(Exception ex) {
 //            if (Debug == 1) {
 //                System.out.println(ex.getMessage());
 //            }
-            logger.warning(ex.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
         return list;
     }
@@ -522,11 +550,19 @@ public class MQTTClient extends Module {
                     }
                     logger.finest("Decomposed object " + prefix);
                 } catch(Exception ex) {
-                    logger.warning(ex.getMessage());
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    String sStackTrace = sw.toString();
+                    logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                 }
             }
         } catch(Exception ex) {
-            logger.warning(ex.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
     }
     
@@ -766,7 +802,11 @@ public class MQTTClient extends Module {
 //                            if (Debug == 1) {
 //                                System.out.println(ex.getMessage());
 //                            }
-                            logger.warning("Publish Loop Association Exception: " + ex.getMessage());
+                            StringWriter sw = new StringWriter();
+                            PrintWriter pw = new PrintWriter(sw);
+                            ex.printStackTrace(pw);
+                            String sStackTrace = sw.toString();
+                            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                         }
                     }
 
@@ -976,7 +1016,11 @@ public class MQTTClient extends Module {
                                 }
                             }
                         } catch(Exception ex) {
-                            logger.warning("Subscribe List Rules Exception: " + ex.getMessage());
+                            StringWriter sw = new StringWriter();
+                            PrintWriter pw = new PrintWriter(sw);
+                            ex.printStackTrace(pw);
+                            String sStackTrace = sw.toString();
+                            logger.warning("Subscribe List Rules Exception: " + ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                         }
                         
                         for(int i = 0; i < a.size(); i++) {
@@ -993,7 +1037,7 @@ public class MQTTClient extends Module {
                             pDataSet.put(sIntPrefix + sSubAssocAttr + assoc.tsCfg.ts_suffix, timestamp);
                         }
                     }
-
+                    
                     //System.out.println("Recived:" + sTopic);
                     //System.out.println("Recived:" + new String(msg.getPayload()));
                 }
@@ -1040,8 +1084,12 @@ public class MQTTClient extends Module {
             }
 
             iConnected = 1;
-        } catch (Exception e) {
-            System.out.println("Subscribe Exception: " + e.getMessage());
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
     }
 
@@ -1052,8 +1100,12 @@ public class MQTTClient extends Module {
             mqttClient.disconnect();
             mqttClient.close();
             mqttClient = null;
-        } catch (Exception e) {
-            logger.warning(e.getMessage());
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
     }
 
@@ -1071,7 +1123,12 @@ public class MQTTClient extends Module {
             });
             tPublishLoop.start();
 
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.severe(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
     }
 }
