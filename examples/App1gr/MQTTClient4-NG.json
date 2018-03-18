@@ -9,6 +9,7 @@
 #	Connection attributes to Mosquitto brocker
 	"connection": {
 #			Broker Meltemi:
+#		"broker": "tcp://xx",
 		"broker": "tcp://localhost:1883",
 		"credentials": {
 			"username": "",
@@ -25,7 +26,7 @@
 	"period": 2000,
 #	Files for list of publishable data
 	"pubAssociation": {
-		"LD01-Partial": {
+		"LD01-Partial": {      
 			"regexSelection": "LD01/1-1-(((1|3|5|7)(1|2|3|4|6)|(15|17|19)1)-7|(1|2|3|4|14)-8)-0-255/(-2|-5)",
 			"mqttTopic": "Data",
 			"StartTime": "2018-02-17 03:06:00",
@@ -39,22 +40,27 @@
 				[ "_RBAC", "SMXcore.2018.03.17.000" ], 
 				[ "LD01/_MeterPoint", "PointOfCommonCouplin-PCC" ], 
 				[ "LD01/_MeterType", "Countis_E03" ], 
-				[ "_GPS", "??? ??? Meltemi" ], 
-				[ "__SMXtimestamp", "!Timestamp" ],
+				[ "_GPS", "??? ??? Greece/Meltemi" ], 
+				[ "__SMXtimestamp", "!Timestamp{Custom yyyy/mm/dd hh:MM:ss:SSS}{UTC}" ],
 				[ "LD01/1-1-1-8-0-255/Description", "Energy A+" ],
 				[ "LD01/1-1-1-8-0-255/Unit", "kWh" ],
 				[ "LD01/1-1-14-7-0-255/Description", "Frequency" ],
 				[ "LD01/1-1-14-7-0-255/Unit", "Hz" ],
+				[ "LD01/1-1-14-7-0-255/-5", "!Timestamp{Custom yyyy/mm/dd hh:MM:ss:SSS}{UTC}" ],
 				[ "LD01/1-1-32-7-0-255/Description", "U(1-0)" ],
 				[ "LD01/1-1-32-7-0-255/Unit", "V" ],
+				[ "LD01/1-1-32-7-0-255/-5", "!Timestamp{Custom yyyy/mm/dd hh:MM:ss:SSS}{UTC}" ],
 				[ "LD01/1-1-31-7-0-255/Description", "I1" ],
 				[ "LD01/1-1-31-7-0-255/Unit", "A" ],
+				[ "LD01/1-1-31-7-0-255/-5", "!Timestamp{Custom yyyy/mm/dd hh:MM:ss:SSS}{UTC}" ],
 				[ "LD01/1-1-33-7-0-255/Description", "K1" ],
 				[ "LD01/1-1-33-7-0-255/Unit", "NoUnit" ],
 				[ "LD01/1-1-36-7-0-255/Description", "P1" ],
 				[ "LD01/1-1-36-7-0-255/Unit", "W" ],
+				[ "LD01/1-1-36-7-0-255/-5", "!Timestamp{Custom yyyy/mm/dd hh:MM:ss:SSS}{UTC}" ],
 				[ "LD01/1-1-151-7-0-255/Description", "Q1" ],
 				[ "LD01/1-1-151-7-0-255/Unit", "var" ],
+				[ "LD01/1-1-151-7-0-255/-5", "!Timestamp{Custom yyyy/mm/dd hh:MM:ss:SSS}{UTC}" ],
 				[ "LD01/Voltage/Unit", "V" ]
 			]
 		}

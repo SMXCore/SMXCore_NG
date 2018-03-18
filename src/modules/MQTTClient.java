@@ -716,7 +716,7 @@ public class MQTTClient extends Module {
                                                         SimpleDateFormat formatter = new SimpleDateFormat();
                                                         String format = defaultformat;
                                                         if(matcher.matches()) {
-                                                            System.out.println("Custom timestamp " + matcher.groupCount());
+                                                            //System.out.println("Custom timestamp " + matcher.groupCount());
                                                             if(matcher.groupCount() > 1) {
                                                                 format = matcher.group(2);
                                                             }
@@ -791,6 +791,11 @@ public class MQTTClient extends Module {
                                     mqttMessage.setQos(iPubQos);
 
                                     mqttClient.publish(sMQTTAttr, mqttMessage);
+                                    // count the number of published bytes
+                                    iNumBytesPub += mqttMessage.getPayload().length;
+                                    iNumPayloadsPub++;
+                                    pDataSet.put("Module/MQTTClient/" + sName + "/NumBytesPub", Integer.toString(iNumBytesPub)); 
+                                    pDataSet.put("Module/MQTTClient/" + sName + "/NumPayloadsPub", Integer.toString(iNumPayloadsPub)); 
                                 }
                                 iConnected = 1;
 
@@ -852,6 +857,12 @@ public class MQTTClient extends Module {
     int iConnected = 0;
     String sSubAssocAttr = "";
 
+    int iNumConnections = 0;
+    int iNumBytesPub = 0;
+    int iNumPayloadsPub = 0;
+    int iNumBytesSub = 0;
+    int iNumPayloadsSub = 0;
+    
     public void MQTTConnect() {
         try {
 
@@ -863,6 +874,12 @@ public class MQTTClient extends Module {
                     
                     Date date = new Date();
 
+                    iNumBytesSub += msg.getPayload().length;
+                    iNumPayloadsSub++;
+                    // counting the messages arriven on subscription and the total numer of bytes received (for traffic assessment)
+                    pDataSet.put("Module/MQTTClient/" + sName + "/NumBytesSub", Integer.toString(iNumBytesSub)); 
+                    pDataSet.put("Module/MQTTClient/" + sName + "/NumPayloadsSub", Integer.toString(iNumPayloadsSub)); 
+                    
                     logger.fine("Message arrived on topic " + topic + " with message " + msg);
                     if (sSubPrefix.length() > 0) {
                         if (topic.startsWith(sSubPrefix)) {
@@ -1064,6 +1081,9 @@ public class MQTTClient extends Module {
 
             mqttClient.connect(connOpts);
 
+            iNumConnections++;
+            pDataSet.put("Module/MQTTClient/" + sName + "/NumMQTTReconnections", Integer.toString(iNumConnections)); 
+            
             /*  for (String sSubTopic : ssSubTopics) {
              try {
              if (sSubTopic.length() > 0) {
@@ -1084,6 +1104,7 @@ public class MQTTClient extends Module {
             }
 
             iConnected = 1;
+
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -1092,7 +1113,7 @@ public class MQTTClient extends Module {
             logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
     }
-
+    
     public void MQTTDisconnect() {
         try {
             logger.info("Disconnected from MQTT Broker");
