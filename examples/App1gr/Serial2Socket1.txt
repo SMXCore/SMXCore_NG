@@ -1,0 +1,30 @@
+#
+iDebug = 0
+#iDebug = 1
+#
+#	Serial Port
+#
+sPortName = /dev/ttyO5
+#sPortName = /dev/ttyUSB0
+#sPortName = COM11
+
+iPortSpeed = 38400
+sPortParam = 8N1
+#
+#iReadTimeout = 3000
+iReadTimeout = 3500
+#iReadTimeout = 2000
+#iInterCharTimeout = 500
+iInterCharTimeout = 600
+#iInterCharTimeout = 80
+iCheckEcho = 0
+#
+#	String Socket Bridge
+#
+iSSBPort = 12345
+iSSBReadTimeout = 60000
+#iSSBCheckPeriod = 10
+iSSBCheckPeriod = 20
+iSSBWriteTimeout = 2000
+#iSSBWriteTimeout = 2000
+#

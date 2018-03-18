@@ -1,0 +1,65 @@
+#
+#	Number of modules (can be greater that the actual number of modules)
+#
+iNoOfModules=20
+#
+#	Module 1 MQTT client 1
+#
+#M1-Name=MQTTClient1
+#M1-ClassName=modules.MQTTClient
+#M1-AttributesFile=MQTTClient1.txt
+#
+#	Module 2 MQTT client 2 - to ESB
+#
+#M2-Name=MQTTClient2
+#M2-ClassName=modules.MQTTClient
+#M2-AttributesFile=MQTTClient2.txt
+#
+#	Module 4 File Storage 1
+#
+M4-Name=FileStorage1
+M4-ClassName=modules.FileStorage
+M4-AttributesFile=FileStorage1.txt
+#
+#	Module 5 Data Set 1
+#
+M5-Name=DataSet1
+M5-ClassName=modules.DataSet
+M5-AttributesFile=DataSet1.txt
+#
+#	Module 6 File Storage 2
+#
+M6-Name=FileStorage2
+M6-ClassName=modules.FileStorage
+M6-AttributesFile=FileStorage2.txt
+#
+#
+#	Module 7 Meter IEC62056-21-1
+#
+#M7-Name=MeterIEC6205621-1
+#M7-ClassName=modules.MeterIEC6205621
+#M7-AttributesFile=MeterIEC6205621-1.txt
+#
+#
+#	Module 8 Meter DLMS Client 1
+#
+M8-Name=MeterDLMSClient1
+M8-ClassName=modules.MeterDLMSClient
+M8-AttributesFile=MeterDLMSClient1.txt
+#
+#	Module 10 Serial2Socket
+#
+#M10-Name=Serial2Socket1
+#M10-ClassName=modules.Serial2Socket
+#M10-AttributesFile=Serial2Socket1.txt
+#
+#M10-Name=Serial2SocketAndSerial1
+#M10-ClassName=modules.Serial2SocketAndSerial
+#M10-AttributesFile=Serial2SocketAndSerial1.txt
+#
+#
+# DataSetAnl
+#
+M11-Name=DataSetAnl
+M11-ClassName=modules.DataSetAnl
+M11-AttributesFile=DataSet1.txt

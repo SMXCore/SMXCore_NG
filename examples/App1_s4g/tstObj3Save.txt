@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+
+<object Type="REGISTER">
+<SN>27968</SN>
+<LN>1.1.31.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>33</unit>
+<value_class>java.lang.Double</value_class>
+<value>0.0</value>
+</object>
+
+<object Type="REGISTER">
+<SN>28120</SN>
+<LN>1.1.51.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>33</unit>
+<value_class>java.lang.Double</value_class>
+<value>0.0</value>
+</object>
+
+<object Type="REGISTER">
+<SN>28272</SN>
+<LN>1.1.71.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>33</unit>
+<value_class>java.lang.Double</value_class>
+<value>0.0</value>
+</object>
+
+<object Type="REGISTER">
+<SN>31464</SN>
+<LN>1.1.33.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>255</unit>
+<value_class>java.lang.Double</value_class>
+<value>2.0</value>
+</object>
+
+<object Type="REGISTER">
+<SN>31616</SN>
+<LN>1.1.53.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>255</unit>
+<value_class>java.lang.Double</value_class>
+<value>2.0</value>
+</object>
+
+<object Type="REGISTER">
+<SN>31768</SN>
+<LN>1.1.73.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>255</unit>
+<value_class>java.lang.Double</value_class>
+<value>2.0</value>
+</object>
+
+<object Type="REGISTER">
+<SN>19488</SN>
+<LN>1.1.C.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>1.0</scalar>
+<unit>255</unit>
+<value_class>java.lang.Long</value_class>
+<value>31</value>
+</object>
+</objects>

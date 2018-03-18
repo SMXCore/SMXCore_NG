@@ -1,0 +1,66 @@
+{
+#	Dataset in the realtime data base
+	"dataSet": "DataSet1",
+	"prefix": {
+		"publish": "BBB2010/SMX/", 
+		"subscribe": "MQTT/config/BBB2010/SMX/", 
+		"internal": "SMX/"
+	},
+#	Connection attributes to Mosquitto brocker
+	"connection": {
+#			Broker Meltemi:
+		"broker": "tcp://localhost:1883",
+		"credentials": {
+			"username": "",
+			"password": "",
+			"clientID": "BBB2010"
+		},
+#	Quality of service for the MQTT service, for both Pub&Sub
+		"qos": {
+			"publish": 1,
+			"subscribe": 1
+		}
+	},
+#	The periodicity for transmitting publishable data & reconnect
+	"period": 2000,
+#	Files for list of publishable data
+	"pubAssociation": {
+		"LD01-Partial": {
+			"regexSelection": "LD01/1-1-(((1|3|5|7)(1|2|3|4|6)|(15|17|19)1)-7|(1|2|3|4|14)-8)-0-255/(-2|-5)",
+			"mqttTopic": "Data",
+			"StartTime": "2018-02-17 03:06:00",
+			"EndTime": "",
+# Here we have some rules adding metadata which does not exist in the SMXcore real-time databas		
+			"addItemRules": [ 
+				[ "_User_name", "******" ], 
+				[ "_Actor_type", "Consumer" ], 
+				[ "_Service", "Providing real-time values for G3M-SCADA service" ], 
+				[ "_Project", "H2020 Nobel Grid" ], 
+				[ "_RBAC", "SMXcore.2018.03.17.000" ], 
+				[ "LD01/_MeterPoint", "PointOfCommonCouplin-PCC" ], 
+				[ "LD01/_MeterType", "Countis_E03" ], 
+				[ "_GPS", "??? ??? Meltemi" ], 
+				[ "__SMXtimestamp", "!Timestamp" ],
+				[ "LD01/1-1-1-8-0-255/Description", "Energy A+" ],
+				[ "LD01/1-1-1-8-0-255/Unit", "kWh" ],
+				[ "LD01/1-1-14-7-0-255/Description", "Frequency" ],
+				[ "LD01/1-1-14-7-0-255/Unit", "Hz" ],
+				[ "LD01/1-1-32-7-0-255/Description", "U(1-0)" ],
+				[ "LD01/1-1-32-7-0-255/Unit", "V" ],
+				[ "LD01/1-1-31-7-0-255/Description", "I1" ],
+				[ "LD01/1-1-31-7-0-255/Unit", "A" ],
+				[ "LD01/1-1-33-7-0-255/Description", "K1" ],
+				[ "LD01/1-1-33-7-0-255/Unit", "NoUnit" ],
+				[ "LD01/1-1-36-7-0-255/Description", "P1" ],
+				[ "LD01/1-1-36-7-0-255/Unit", "W" ],
+				[ "LD01/1-1-151-7-0-255/Description", "Q1" ],
+				[ "LD01/1-1-151-7-0-255/Unit", "var" ],
+				[ "LD01/Voltage/Unit", "V" ]
+			]
+		}
+	},
+#	Files for list of data which is requested from Mosqutto
+#	for subscrition (these data are expected to be received
+	"subAssociation": "SubAssoc1.txt"
+#
+}

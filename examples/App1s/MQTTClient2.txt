@@ -1,0 +1,19 @@
+#
+pDataSet = DataSet1
+sPubPrefix=BBB5974/SMX/
+sSubPrefix=MQTT/config/BBB5974/SMX/
+sIntPrefix = SMX/
+#
+sBroker = tcp://172.23.0.9:1883
+sUserName = nobelgrid
+sUserPass = nobelgrid
+sClientID=BBB5974
+#
+lPeriod = 10000
+#
+pPubAssociation = PubAssoc1.txt
+pSubAssociation = SubAssoc1.txt
+#
+iPubQos = 1
+iSubQos = 1
+#

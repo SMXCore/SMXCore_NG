@@ -1,0 +1,51 @@
+#
+pDataSet = DataSet1
+sPrefix = SMX/LD03/
+#
+lPeriod = 1000
+#
+#	Gurux parameters
+#
+#sCmdLineArgs = /m=ele /h=localhost /p=12345 /s=DLMS /a=Low /pw=00000000000000000000
+#sCmdLineArgs = /m=ele /h=localhost /p=12345 /s=DLMS /a=None /pw=00000000000000000000
+sCmdLineArgs = /m=ele /h=localhost /p=12345 /s=DLMS /a=Low /pw=12345678
+#sCmdLineArgs = /m=ele /h=localhost /p=/dev/ttyO2 /s=DLMS /a=Low /pw=12345678
+sLogFile = Gurux-data/Log1
+sPath = Gurux-data/Manufacturer
+iBlockRead = 0
+#
+sObjDateFile = Gurux-data/ObjectsDate.xml
+#
+# // LD01/U1 (voltage phase 1)
+# <LN>1.0.32.7.0.255</LN>
+sObj1File = Gurux-data/Objects1-LN-SLAM.xml
+#
+# // LD01/I1 (current phase 1)
+# <LN>1.0.31.7.0.255</LN>
+sObj2File = Gurux-data/Objects2-LN-SLAM.xml
+#
+# // LD01/Ap =  Active energy consumed (3 phase, the same as for monophase meter Ap1)
+# // <LN>1.1.1.8.0.255</LN>
+sObj3File = Gurux-data/Objects3-LN-SLAM.xml
+#
+# // LD01/Am =  Active energy produced (3 phase)
+# // <LN>1.1.2.8.0.255</LN> 
+sObj4File = Gurux-data/Objects4-LN-SLAM.xml
+#
+#// LD01/P1  (active energy phase 1)
+#  <LN>1.1.36.7.0.255</LN>
+sObj5File = Gurux-data/Objects5-LN-SLAM.xml
+#
+# // LD01/Q1 (reactive energy phase 1)
+# <LN>1.1.151.7.0.255</LN>
+sObj6File = Gurux-data/Objects6-LN-SLAM.xml
+#
+# // LD01/f (frequency)
+# <LN>1.1.14.7.0.255</LN>
+sObj7File = Gurux-data/Objects7-LN-SLAM.xml
+#
+# // LD01/PF1 (power factor phase 1)
+# <LN>1.0.33.7.0.255</LN>
+sObj8File = Gurux-data/Objects8-LN-SLAM.xml
+#
+#

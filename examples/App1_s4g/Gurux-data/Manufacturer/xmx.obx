@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GXManufacturer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Identification>XMX</Identification>
+  <Name>Xemex</Name>
+  <UseLN>true</UseLN>
+  <ObisCodes />
+  <UseIEC47>true</UseIEC47>
+  <StartProtocol>DLMS</StartProtocol>
+  <Settings>
+    <GXAuthentication>
+      <Type>None</Type>
+      <ClientID xsi:type="xsd:unsignedByte">0</ClientID>
+      <Password />
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>Low</Type>
+      <ClientID xsi:type="xsd:unsignedByte">1</ClientID>
+      <Password />
+    </GXAuthentication>
+    <GXAuthentication>
+      <Selected>true</Selected>
+      <Type>High</Type>
+      <ClientID xsi:type="xsd:unsignedByte">2</ClientID>
+      <SharedSecret />
+    </GXAuthentication>
+  </Settings>
+  <ServerSettings>
+    <GXServerAddress>
+      <HDLCAddress>0</HDLCAddress>
+      <Formula />
+      <PhysicalAddress xsi:type="xsd:unsignedByte">1</PhysicalAddress>
+    </GXServerAddress>
+    <GXServerAddress>
+      <HDLCAddress>1</HDLCAddress>
+      <PhysicalAddress xsi:type="xsd:unsignedByte">1</PhysicalAddress>
+    </GXServerAddress>
+    <GXServerAddress>
+      <HDLCAddress>2</HDLCAddress>
+      <PhysicalAddress xsi:type="xsd:unsignedByte">1</PhysicalAddress>
+    </GXServerAddress>
+  </ServerSettings>
+</GXManufacturer>

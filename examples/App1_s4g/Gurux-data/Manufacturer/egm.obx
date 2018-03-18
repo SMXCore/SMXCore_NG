@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GXManufacturer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Identification>EGM</Identification>
+  <Name>Elgama-Elektronika Ltd</Name>
+  <ObisCodes />
+  <Settings>
+    <GXAuthentication>
+      <Selected>true</Selected>
+      <Type>None</Type>
+      <ClientID xsi:type="xsd:unsignedByte">16</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>Low</Type>
+      <ClientID xsi:type="xsd:unsignedByte">17</ClientID>
+    </GXAuthentication>
+  </Settings>
+  <ServerSettings>
+    <GXServerAddress>
+      <HDLCAddress>0</HDLCAddress>
+      <Formula />
+      <PhysicalAddress xsi:type="xsd:unsignedByte">1</PhysicalAddress>
+    </GXServerAddress>
+    <GXServerAddress>
+      <Selected>true</Selected>
+      <HDLCAddress>1</HDLCAddress>
+      <Formula>SN%10000+1000</Formula>
+      <PhysicalAddress xsi:type="xsd:unsignedInt">0</PhysicalAddress>
+      <LogicalAddress>1</LogicalAddress>
+    </GXServerAddress>
+  </ServerSettings>
+</GXManufacturer>

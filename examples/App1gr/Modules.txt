@@ -1,0 +1,53 @@
+#
+#	Number of modules (can be greater that the actual number of modules)
+#
+enableFileLog=1
+iNoOfModules=20
+#
+#	Module 1 MQTT client 1
+#
+#M1-Name=MQTTClient1
+#M1-ClassName=modules.MQTTClient
+#M1-AttributesFile=MQTTClient1.txt
+#
+#	Module 2 MQTT client 4 - for Nobel Grid
+#
+M2-Name=MQTTClient4
+M2-ClassName=modules.MQTTClient
+M2-AttributesFile=MQTTClient4-NG.json
+#M2-LogLevel=FINE
+#
+#	Module 3 File Storage 1
+#
+M3-Name=FileStorage1
+M3-ClassName=modules.FileStorage
+M3-AttributesFile=FileStorage1.txt
+#
+#
+#	Module 4 Data Set 1
+#
+M4-Name=DataSet1
+M4-ClassName=modules.DataSet
+#M4-AttributesFile=DataSet1.json
+M4-AttributesFile=DataSet1.txt
+#
+#
+#	Module 6 Serial2Socket
+#
+M6-Name=Serial2Socket1
+M6-ClassName=modules.Serial2Socket
+M6-AttributesFile=Serial2Socket1.txt
+#
+#
+#	Module 7 Meter Modbus 1
+#
+M7-Name=MeterModbus1
+M7-ClassName=modules.MeterModbus
+M7-AttributesFile=MeterModbus1.txt
+#
+# DataSetAnl
+#
+M11-Name=DataSetAnl
+M11-ClassName=modules.DataSetAnl
+M11-AttributesFile=DataSet1.txt
+#

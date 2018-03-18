@@ -32,6 +32,7 @@ public class MeterModbus extends Module {
         sPrefix = PropUtil.GetString(pAttributes, "sPrefix", "");
         lPeriod = PropUtil.GetInt(pAttributes, "lPeriod", 1000);
         iDebug = PropUtil.GetInt(pAttributes, "iDebug", 0);
+        bDevice1 = PropUtil.GetString(pAttributes, "bDevice", "Socomec1f");
 
         iNoOfPos = PropUtil.GetInt(pAssociation, "iNoOfPos", 0);
     }
@@ -42,6 +43,7 @@ public class MeterModbus extends Module {
     String sPrefix = "";
     Thread tLoop = null;
     int iDebug = 0;
+    String bDevice1 = "Socomec1f";
 
     public boolean Modbus_type = true; // of direct RS485, value = true; if TCP-Modbus, vaule = false;
 
@@ -207,27 +209,27 @@ Byte 12	is the lsb of number of bytes to read or write: for example 2
              Reference: 0. Word count: 40. UID: 7
              */
             if (Modbus_type==false) { // Modbus over TCP
-            //01 00
-            bSend[0] = 1;
-            bSend[1] = 0;
-            //00 00 version
-            bSend[2] = 0;
-            bSend[3] = 0;
-            //00 06 length
-            bSend[4] = 0;
-            bSend[5] = 6;
-            //07      addr device
-            bSend[6] = bAddress;
-            //04      fct
-            bSend[7] = bFunction;
-            //00 00 start addr
-            bSend[8] = lStartAddrH;
-            bSend[9] = lStartAddrL;
-            //00 28 data len
-            bSend[10] = bLenH;
-            bSend[11] = bLenL;
+                //01 00
+                bSend[0] = 1;
+                bSend[1] = 0;
+                //00 00 version
+                bSend[2] = 0;
+                bSend[3] = 0;
+                //00 06 length
+                bSend[4] = 0;
+                bSend[5] = 6;
+                //07      addr device
+                bSend[6] = bAddress;
+                //04      fct
+                bSend[7] = bFunction;
+                //00 00 start addr
+                bSend[8] = lStartAddrH;
+                bSend[9] = lStartAddrL;
+                //00 28 data len
+                bSend[10] = bLenH;
+                bSend[11] = bLenL;
 
-            iSend = 12;
+                iSend = 12;
             }
             else { // classic RS485 for Modbus
                 //07      addr device
@@ -268,7 +270,7 @@ Byte 12	is the lsb of number of bytes to read or write: for example 2
         try {
 
            // while (bStop == 0) {
-            System.out.println("Read_function\n");
+            //System.out.println("Read_function\n");
             int err_try1=0;
                 try {
 
@@ -475,15 +477,28 @@ Receive:  02 03 48 00 00 56 4B 00 00 55 AD 00 00 55 06 00   ..H..VK..U­..U..
              return val;
          }
     
+    public int hex2signed_int(String s) {
+             String digits = "0123456789ABCDEF";
+             s = s.toUpperCase();
+                    //System.out.println("Signed="+s);
+             int val = 0;
+             for (int i = 0; i < s.length(); i++) {
+                 char c = s.charAt(i);
+                 int d = digits.indexOf(c);
+                 val = 16*val + d;
+             }
+             return val;
+         }
+
     public void DecodeVals_SOCOMEC() {
         try {
             iCrtRecPos = 0;
             sTSDate = sdf.format(new Date());
             sDateIntVar = PropUtil.GetString(pAssociation, "sDateIntVar", "");
-            int val_crt1, val_crt2, val_crt3, val_crt4;
+            int val_crt1, val_crt2, val_crt3, val_crt4, val_crt5, val_crt6, val_crt7;
             int offs;
-            float f1, f2, f3,f4;
-            String s1,s2,s3,s4;
+            float f1, f2, f3,f4,f5,f6,f7;
+            String s1,s2,s3,s4, s5, s6, s7, s8;
             //if (sDateIntVar.length() > 0) {
             //   pDataSet.put(sPrefix + sDateIntVar, sTSDate);
             //} else {
@@ -543,74 +558,49 @@ Receive:  02 03 48 00 00 56 4B 00 00 55 AD 00 00 55 06 00   ..H..VK..U­..U..
                     System.out.println("Q1="+s1 + "\tQ2="+s2 + "\tQ3="+s3 + "\tTime="+sTSDate);
                     */
 //
-                    // Socomec 1f
-                    
-                    Date date = new Date();
-                    TimeZone timezone;
-                    timezone = TimeZone.getTimeZone("UTC");
-                    String timestamp = "";
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
-                    df.setTimeZone(timezone);
-                    timestamp = df.format(date);
-                    
-                    // the first useful data is at offset 3 (corresponding to lStartAddr =
-                    offs=3; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1/100; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-32-7-0-255/-2", s1); // U1
-                    /////pDataSet.put(sPrefix + "1-1-32-7-0-255/-5", timestamp); // U1
-                    //offs=3+4; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2/100; s2= String.valueOf(f2);
-                    //pDataSet.put(sPrefix + "1-1-52-7-0-255/-2", s2); // U2
-                    //offs=3+8; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3/100; s3= String.valueOf(f3);
-                    //pDataSet.put(sPrefix + "1-1-72-7-0-255/-2", s3); // U3
-                    offs=3+12; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/100; s4= String.valueOf(f4);
-                    pDataSet.put(sPrefix + "1-1-14-7-0-255/-2", s4); // frequency f
-                    /////pDataSet.put(sPrefix + "1-1-14-7-0-255/-5", timestamp); // frequency f
-                    System.out.println("U1="+s1 + "\tf="+s4);
+                    if(bDevice1 == "Socomec1f") {
+                        // Socomec 1f
 
-                    offs=3+16; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1/1000; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-31-7-0-255/-2", s1); // I1
-                    /////pDataSet.put(sPrefix + "1-1-31-7-0-255/-5", timestamp); // I1
-                    //offs=3+20; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2/1000; s2= String.valueOf(f2);
-                    //pDataSet.put(sPrefix + "1-1-51-7-0-255/-2", s2); // I2
-                    //offs=3+24; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3/1000; s3= String.valueOf(f3);
-                    //pDataSet.put(sPrefix + "1-1-71-7-0-255/-2", s3); // I3
-                    offs=3+28; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
-                    pDataSet.put(sPrefix + "1-1-7x-7-0-255/-2", s4); // I0
-                    /////pDataSet.put(sPrefix + "1-1-7x-7-0-255/-5", timestamp); // I0
-                    System.out.println("I1="+s1 + "\tI0="+s4);
+                        Date date = new Date();
+                        TimeZone timezone;
+                        //timezone = TimeZone.getTimeZone("UTC");
+                        String timestamp = "";
+                        //DateFormat df = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
+                        //df.setTimeZone(timezone);
+                        //timestamp = df.format(date);
 
-                    offs=3+32; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-36-7-0-255/-2", s1); // Ptot
-                    /////pDataSet.put(sPrefix + "1-1-36-7-0-255/-5", timestamp); // Ptot
-                    offs=3+36; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
-                    pDataSet.put(sPrefix + "1-1-151-7-0-255/-2", s2); // Qtot
-                    /////pDataSet.put(sPrefix + "1-1-151-7-0-255/-5", timestamp); // Qtot
-                    offs=3+40; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
-                    pDataSet.put(sPrefix + "1-1-71-7-0-255/-2", s3); // Stot
-                    /////pDataSet.put(sPrefix + "1-1-71-7-0-255/-5", timestamp); // Stot
-                    offs=3+44; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
-                    pDataSet.put(sPrefix + "1-1-33-7-0-255/-2", s4); // PF1
-                    /////pDataSet.put(sPrefix + "1-1-33-7-0-255/-5", timestamp); // PF1
-                    System.out.println("P="+s1 + "\tQ="+s2 + "\tS="+s3 + "\tPF1="+s4);
+                        // the first useful data is at offset 3 (corresponding to lStartAddr =
+                        offs=3; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1/100; s1= String.valueOf(f1);
+                        pDataSet.put(sPrefix + "1-1-32-7-0-255/-2", s1); // U1
+                        offs=3+12; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/100; s4= String.valueOf(f4);
+                        pDataSet.put(sPrefix + "1-1-14-7-0-255/-2", s4); // frequency f
+                        /////pDataSet.put(sPrefix + "1-1-14-7-0-255/-5", timestamp); // frequency f
 
-                    //offs=3+48; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
-                    //pDataSet.put(sPrefix + "1-1-36-7-0-255/-2", s1); // Ptot
-                    //offs=3+52; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
-                    //pDataSet.put(sPrefix + "1-1-56-7-0-255/-2", s2); // Qtot
-                    //offs=3+56; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
-                    //pDataSet.put(sPrefix + "1-1-76-7-0-255/-2", s3); // Stot
-                    //System.out.println("P1="+s1 + "\tP2="+s2 + "\tP3="+s3);
+                        offs=3+16; s5 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt5 = hex2decimal(s5); f5=val_crt1; f5=f5/1000; s5= String.valueOf(f5);
+                        pDataSet.put(sPrefix + "1-1-31-7-0-255/-2", s5); // I1
+                        //offs=3+28; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
+                        //pDataSet.put(sPrefix + "1-1-7x-7-0-255/-2", s4); // I0
+                        /////pDataSet.put(sPrefix + "1-1-7x-7-0-255/-5", timestamp); // I0
+                        System.out.println("U1="+s1 +"\tI1="+s5 + "\tf="+s4);
+                        //System.out.println("I1="+s1 + "\tI0="+s4);
 
-                    //offs=3+60; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
-                    //pDataSet.put(sPrefix + "1-1-151-7-0-255/-2", s1); // Ptot
-                    //offs=3+64; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
-                    //pDataSet.put(sPrefix + "1-1-171-7-0-255/-2", s2); // Qtot
-                    //offs=3+68; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
-                    //pDataSet.put(sPrefix + "1-1-191-7-0-255/-2", s3); // Stot
-                    //pDataSet.put(sPrefix + "0-0-1-0-0-255/-2", sTSDate); // Stot
-                    //System.out.println("Q1="+s1 + "\tQ2="+s2 + "\tQ3="+s3 + "\tTime="+sTSDate);
+                        offs=3+32; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2signed_int(s1); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
+                        pDataSet.put(sPrefix + "1-1-36-7-0-255/-2", s1); // P1
+                        /////pDataSet.put(sPrefix + "1-1-36-7-0-255/-5", timestamp); // Ptot
+                        offs=3+36; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2signed_int(s2); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
+                        pDataSet.put(sPrefix + "1-1-151-7-0-255/-2", s2); // Q1
+                        /////pDataSet.put(sPrefix + "1-1-151-7-0-255/-5", timestamp); // Qtot
+                        offs=3+40; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
+                        pDataSet.put(sPrefix + "1-1-71-7-0-255/-2", s3); // S1
+                        /////pDataSet.put(sPrefix + "1-1-71-7-0-255/-5", timestamp); // Stot
+                        offs=3+44; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2signed_int(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
+                        pDataSet.put(sPrefix + "1-1-33-7-0-255/-2", s4); // PF1
+                        offs=3+48; s5 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt5 = hex2decimal(s5); f5=val_crt5; f5=f5*10; s5= String.valueOf(f5);
+                        offs=3+60; s6 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt6 = hex2decimal(s6); f6=val_crt6; f6=f6*10; s6= String.valueOf(f6);
+                        //offs=3+72; s7 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt7 = hex2signed_int(s7); f7=val_crt7; f7=f7*10; s7= String.valueOf(f7);
+                        System.out.println("P="+s1 + "\tQ="+s2 + "\tS="+s3 + "\tPF1="+s4+ "\tP1="+s5+ "\tQ1="+s6);
+                    }
 
-                    
-                    //pDataSet.put(sPrefix + sIntName + "-ts", sTSDate);
                 } catch (Exception ex) {
                 }
             //}

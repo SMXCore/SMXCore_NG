@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+<object Type="REGISTER">
+<SN>39000</SN>
+<LN>1.1.32.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>39200</SN>
+<LN>1.1.52.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>39400</SN>
+<LN>1.1.72.7.0.255</LN>
+</object>
+</objects>

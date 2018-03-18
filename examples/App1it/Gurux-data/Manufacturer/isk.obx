@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GXManufacturer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Identification>ISK</Identification>
+  <Name>Iskraemeco</Name>
+  <UseLN>true</UseLN>
+  <InactivityMode>ReopenActive</InactivityMode>
+  <ObisCodes />
+  <UseIEC47>true</UseIEC47>
+  <WebAddress>http://iskraemeco.com/</WebAddress>
+  <Info />
+  <Settings>
+    <GXAuthentication>
+      <Selected>true</Selected>
+      <Type>None</Type>
+      <ClientAddress>100</ClientAddress>
+      <ClientID xsi:type="xsd:int">100</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>Low</Type>
+      <ClientAddress>100</ClientAddress>
+      <ClientID xsi:type="xsd:int">100</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>High</Type>
+      <ClientAddress>100</ClientAddress>
+      <ClientID xsi:type="xsd:int">100</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>HighMD5</Type>
+      <ClientAddress>1</ClientAddress>
+      <ClientID xsi:type="xsd:int">1</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>HighSHA1</Type>
+      <ClientAddress>1</ClientAddress>
+      <ClientID xsi:type="xsd:int">1</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>HighGMAC</Type>
+      <ClientAddress>1</ClientAddress>
+      <ClientID xsi:type="xsd:int">1</ClientID>
+    </GXAuthentication>
+    <GXAuthentication>
+      <Type>HighSHA256</Type>
+      <ClientAddress>1</ClientAddress>
+      <ClientID xsi:type="xsd:int">1</ClientID>
+    </GXAuthentication>
+  </Settings>
+  <ServerSettings>
+    <GXServerAddress>
+      <HDLCAddress>0</HDLCAddress>
+      <Formula />
+      <PhysicalAddress>17</PhysicalAddress>
+      <LogicalAddress>1</LogicalAddress>
+    </GXServerAddress>
+  </ServerSettings>
+</GXManufacturer>

@@ -1,0 +1,38 @@
+#
+pDataSet = DataSet1
+#
+iDebug = 0
+#
+#	Serial Port
+#
+sPortName = /dev/ttyO4
+#sPortName = /dev/ttyUSB0
+iPortSpeed = 9600
+sPortParam = 8N1
+#
+iReadTimeout = 2000
+iInterCharTimeout = 80
+iCheckEcho = 1
+#
+#	String Socket Bridge
+#
+iSSBPort = 12345
+iSSBReadTimeout = 60000
+iSSBCheckPeriod = 10
+iSSBWriteTimeout = 2000
+#
+sReadDisableParam = SMX/LD03/ReadDisable
+sReadDisabledParam = SMX/LD03/ReadDisabled
+#
+#	Serial Port 2
+#
+sPort2Name = /dev/ttyUSB0
+iPort2Speed = 9600
+sPort2Param = 8N1
+#
+iRead2Timeout = 2000
+iInterChar2Timeout = 800
+iCheckEcho2 = 1
+#
+iInactivity2Timeout = 20000
+#

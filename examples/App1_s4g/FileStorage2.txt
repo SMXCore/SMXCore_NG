@@ -1,0 +1,17 @@
+#
+pDataSet = DataSet1
+#sPrefix = SMX/
+sPrefix =
+#	Stores on disk each 5 seconds = 5000 ms.
+lPeriod = 60000
+#	Path and name for the daily stored data
+sFileName = ./Log/Log60
+sFileExt = .txt
+#	Name of file where are described the data to be stored
+pStoreAssociation = StoreAssoc1.txt
+#	Type of separators between data, on each line
+sSeparator = \t
+#	Shows if the file is compressed after the day is finished
+iCommpress = 0
+iMove = 1
+#

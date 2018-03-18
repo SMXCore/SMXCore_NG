@@ -1,0 +1,4 @@
+#	Format
+#  MQTT topic = Internal attribute
+######## Real-Time Values
+SysTime = ST_to_AMR

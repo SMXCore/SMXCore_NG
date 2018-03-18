@@ -1,0 +1,123 @@
+#	Format
+#  MQTT topic = Internal attribute
+#
+#
+# Real-Time Values
+#
+#
+#	Clock
+#
+LD01/0-0-1-0-0-255/-2 = LD01/Date			
+#G3M40000001/SMX/LD01/0-0-1-0-0-255/-2 = SMX/LD01/Date
+#
+#	Voltage
+#
+LD01/1-1-32-7-0-255/-2 = LD01/Rec1-U1
+LD01/1-1-52-7-0-255/-2 = LD01/Rec1-U2
+LD01/1-1-72-7-0-255/-2 = LD01/Rec1-U3
+#
+#	Current
+#
+LD01/1-1-31-7-0-255/-2 = LD01/Rec1-I1
+LD01/1-1-51-7-0-255/-2 = LD01/Rec1-I2
+LD01/1-1-71-7-0-255/-2 = LD01/Rec1-I3
+#
+#	Power Factor
+#
+LD01/1-1-33-7-0-255/-2 = LD01/Rec1-PF1
+LD01/1-1-53-7-0-255/-2 = LD01/Rec1-PF2
+LD01/1-1-73-7-0-255/-2 = LD01/Rec1-PF3
+#
+LD01/1-1-13-7-0-255/-2 = LD01/Rec1-PF
+#
+#	Frequency
+#
+LD01/1-1-14-7-0-255/-2 = LD01/Rec1-f
+#
+#	Active Power
+#
+LD01/1-1-36-7-0-255/-2 = LD01/Rec1-P1
+LD01/1-1-56-7-0-255/-2 = LD01/Rec1-P2
+LD01/1-1-76-7-0-255/-2 = LD01/Rec1-P3
+#
+LD01/1-1-16-7-0-255/-2 = LD01/Rec1-P
+#
+#	Reactive Power
+#
+LD01/1-1-151-7-0-255/-2 = LD01/Rec1-Q1
+LD01/1-1-171-7-0-255/-2 = LD01/Rec1-Q2
+LD01/1-1-191-7-0-255/-2 = LD01/Rec1-Q3
+#
+LD01/1-1-151-7-0-255/-2 = LD01/Rec1-Q
+#
+#
+#	Active Energy
+#
+LD01/1-1-1-8-0-255/-2 = LD01/Rec1-Ap
+LD01/1-1-2-8-0-255/-2 = LD01/Rec1-Am
+#
+#	Reactive Energy
+#
+LD01/1-1-3-8-0-255/-2 = LD01/Rec1-Rp
+LD01/1-1-4-8-0-255/-2 = LD01/Rec1-Rm
+#
+#
+#  Timestamp for Real-Time Values
+#
+#
+#	Clock
+#
+LD01/0-0-1-0-0-255/-5 = LD01/Date-ts			
+#
+#
+#	Voltage
+#
+LD01/1-1-32-7-0-255/-5 = LD01/Rec1-U1-ts
+LD01/1-1-52-7-0-255/-5 = LD01/Rec1-U2-ts
+LD01/1-1-72-7-0-255/-5 = LD01/Rec1-U3-ts
+#
+#	Current
+#
+LD01/1-1-31-7-0-255/-5 = LD01/Rec1-I1-ts
+LD01/1-1-51-7-0-255/-5 = LD01/Rec1-I2-ts
+LD01/1-1-71-7-0-255/-5 = LD01/Rec1-I3-ts
+#
+#	Power Factor
+#
+LD01/1-1-33-7-0-255/-5 = LD01/Rec1-PF1-ts
+LD01/1-1-53-7-0-255/-5 = LD01/Rec1-PF2-ts
+LD01/1-1-73-7-0-255/-5 = LD01/Rec1-PF3-ts
+#
+LD01/1-1-13-7-0-255/-5 = LD01/Rec1-PF-ts
+#
+#	Frequency
+#
+LD01/1-1-14-7-0-255/-5 = LD01/Rec1-f-ts
+#
+#	Active Power
+#
+LD01/1-1-36-7-0-255/-5 = LD01/Rec1-P1-ts
+LD01/1-1-56-7-0-255/-5 = LD01/Rec1-P2-ts
+LD01/1-1-76-7-0-255/-5 = LD01/Rec1-P3-ts
+#
+LD01/1-1-16-7-0-255/-5 = LD01/Rec1-P-ts
+#
+#	Reactive Power
+#
+LD01/1-1-151-7-0-255/-5 = LD01/Rec1-Q1-ts
+LD01/1-1-171-7-0-255/-5 = LD01/Rec1-Q2-ts
+LD01/1-1-191-7-0-255/-5 = LD01/Rec1-Q3-ts
+#
+LD01/1-1-151-7-0-255/-5 = LD01/Rec1-Q-ts
+#
+#
+#	Active Energy
+#
+LD01/1-1-1-8-0-255/-5 = LD01/Rec1-Ap-ts
+LD01/1-1-2-8-0-255/-5 = LD01/Rec1-Am-ts
+#
+#	Reactive Energy
+#
+LD01/1-1-3-8-0-255/-5 = LD01/Rec1-Rp-ts
+LD01/1-1-4-8-0-255/-5 = LD01/Rec1-Rm-ts
+#

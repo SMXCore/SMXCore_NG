@@ -1,0 +1,20 @@
+#
+iDebug = 0
+#
+#	Serial Port
+#
+sPortName = /dev/ttyO2
+iPortSpeed = 230400
+sPortParam = 8N1
+#
+iReadTimeout = 2000
+iInterCharTimeout = 80
+iCheckEcho = 1
+#
+#	String Socket Bridge
+#
+iSSBPort = 12345
+iSSBReadTimeout = 60000
+iSSBCheckPeriod = 10
+iSSBWriteTimeout = 2000
+#

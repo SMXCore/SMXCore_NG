@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+
+<object Type="CLOCK">
+<LN>0.0.1.0.0.255</LN>
+<DataType>DATETIME</DataType>
+<value_class>gurux.dlms.GXDateTime</value_class>
+<value></value>
+</object></objects>

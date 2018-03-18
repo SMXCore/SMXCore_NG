@@ -1,0 +1,33 @@
+#
+pDataSet = DataSet1
+sPrefix = SMX/LD01/
+#
+lPeriod = 2000
+#lPeriod = 1000
+#iDebug = 1
+iDebug = 0
+#
+pAssociation = ModbusAssoc1.txt
+#
+#	Connection
+#
+# ModbusType = 0 if RS485, = 1 if Modbus over TCP
+bModbusType = 0
+# If over TCP, the following additional parameters will be taken into acount
+sIP = localhost
+iPort= 12345
+#
+iReadTimeout = 3000
+iConnTimeOut = 3000
+#iReadTimeout = 2000
+#iConnTimeOut = 3000
+#
+# Socomec 3f= 2, Socomec 1f= 21, Janitza= 9
+bDevice = Socomec1f
+bAddress = 21
+bFunction = 3
+lStartAddr = 50520
+#lStartAddr = 200
+#iLen = 4
+iLen = 36
+#

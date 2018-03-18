@@ -1,0 +1,46 @@
+#
+#	Number of modules (can be greater that the actual number of modules)
+#
+iNoOfModules=20
+#
+#	Module 1 MQTT client 1
+#
+M1-Name=MQTTClient1
+M1-ClassName=modules.MQTTClient
+M1-AttributesFile=MQTTClient1.txt
+#
+#		Module 2 MQTTClient2
+#
+M2-Name=MQTTClient2
+M2-ClassName=modules.MQTTClient
+M2-AttributesFile=MQTTClient2.txt
+#
+#	Module 3 File Storage 1
+#
+M3-Name=FileStorage1
+M3-ClassName=modules.FileStorage
+M3-AttributesFile=FileStorage1.txt
+#
+#	Module 4 Data Set 1
+#
+M4-Name=DataSet1
+M4-ClassName=modules.DataSet
+M4-AttributesFile=DataSet1.txt
+#
+#	Module 8 Meter DLMS Client 1
+#
+M8-Name=MeterDLMSClient1
+M8-ClassName=modules.MeterDLMSClient
+M8-AttributesFile=MeterDLMSClient1-SLAMSerial.txt
+#
+#	Module 10 Serial2Socket
+#
+#M10-Name=Serial2Socket1
+#M10-ClassName=modules.Serial2Socket
+#M10-AttributesFile=Serial2Socket1.txt
+#
+# DataSetAnl
+#
+M11-Name=DataSetAnl
+M11-ClassName=modules.DataSetAnl
+M11-AttributesFile=DataSet1.txt

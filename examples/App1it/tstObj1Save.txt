@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+
+<object Type="REGISTER">
+<SN>39000</SN>
+<LN>1.1.32.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>35</unit>
+<value_class>java.lang.Double</value_class>
+<value>224.31</value>
+</object>
+
+<object Type="REGISTER">
+<SN>39200</SN>
+<LN>1.1.52.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>35</unit>
+<value_class>java.lang.Double</value_class>
+<value>1.22</value>
+</object>
+
+<object Type="REGISTER">
+<SN>39400</SN>
+<LN>1.1.72.7.0.255</LN>
+<DataType>NONE</DataType>
+<scalar>0.01</scalar>
+<unit>35</unit>
+<value_class>java.lang.Double</value_class>
+<value>0.92</value>
+</object>
+</objects>

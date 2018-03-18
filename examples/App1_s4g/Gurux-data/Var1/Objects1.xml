@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+<object Type="REGISTER">
+<SN>27360</SN>
+<LN>1.1.32.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>27512</SN>
+<LN>1.1.52.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>27664</SN>
+<LN>1.1.72.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>28424</SN>
+<LN>1.1.14.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>29488</SN>
+<LN>1.1.16.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>30096</SN>
+<LN>1.1.131.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>29640</SN>
+<LN>1.1.36.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>29792</SN>
+<LN>1.1.56.7.0.255</LN>
+</object>
+<object Type="REGISTER">
+<SN>29944</SN>
+<LN>1.1.76.7.0.255</LN>
+</object>
+</objects>

@@ -1,0 +1,24 @@
+#	Dataset in the realtime data base
+pDataSet = DataSet1
+#	When published, a prefix can be added to the data
+sPubPrefix=BBB6005/SMX/
+#	When subscribed, a prefix can be added to the data
+sSubPrefix=MQTT/config/BBB6005/SMX/
+#	Another general prefix for MQTT messages
+sIntPrefix = 
+#	Connection attributes to Mosquitto brocker
+sBroker = tcp://localhost:1883
+sUserName = 
+sUserPass = 
+sClientID=BBB6005
+#	The periodicity for transmitting publishable data
+lPeriod = 2000
+#	Files for list of publishable data
+pPubAssociation = MQTTClient1-PubAssoc1.json
+#	Files for list of data which is requested from Mosqutto
+#	for subscribtion (these data are expected to be received
+pSubAssociation = MQTTClient1-SubAssoc1.txt
+#	Quality of service for the MQTT service, for both Pub&Sub
+iPubQos = 1
+iSubQos = 1
+#

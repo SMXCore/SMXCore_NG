@@ -427,7 +427,6 @@ public class GXCommunicate {
                 byte[] data = dlms.read(item.getName(), item.getObjectType(),
                         attributeIndex)[0];
                 GXReplyData reply = new GXReplyData();
-
                 readDataBlock(data, reply);
                 // Update data type on read.
                 if (item.getDataType(attributeIndex) == DataType.NONE) {
