@@ -576,7 +576,7 @@ Receive:  02 03 48 00 00 56 4B 00 00 55 AD 00 00 55 06 00   ..H..VK..U­..U..
                         pDataSet.put(sPrefix + "1-1-14-7-0-255/-2", s4); // frequency f
                         /////pDataSet.put(sPrefix + "1-1-14-7-0-255/-5", timestamp); // frequency f
 
-                        offs=3+16; s5 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt5 = hex2decimal(s5); f5=val_crt1; f5=f5/1000; s5= String.valueOf(f5);
+                        offs=3+16; s5 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt5 = hex2decimal(s5); f5=val_crt5; f5=f5/1000; s5= String.valueOf(f5);
                         pDataSet.put(sPrefix + "1-1-31-7-0-255/-2", s5); // I1
                         //offs=3+28; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
                         //pDataSet.put(sPrefix + "1-1-7x-7-0-255/-2", s4); // I0
