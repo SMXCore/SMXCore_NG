@@ -612,7 +612,7 @@ public class GXCommunicate {
                     }
                 } catch (Exception e) {
                     traceLn(logFile,
-                            "Err! Failed to read scaler and unit value: "
+                            "Err! Failed1 to read scaler and unit value: "
                             + e.getMessage());
                     // Continue reading.
                 }
@@ -624,7 +624,7 @@ public class GXCommunicate {
      * Read Scalers and units from the register objects.
      */
     public void readScalerAndUnits(final GXDLMSObjectCollection objects,
-            final PrintWriter logFile) {
+            final PrintWriter logFile, String s1) {
         GXDLMSObjectCollection objs = objects.getObjects(new ObjectType[]{
             ObjectType.REGISTER, ObjectType.DEMAND_REGISTER,
             ObjectType.EXTENDED_REGISTER});
@@ -642,7 +642,9 @@ public class GXCommunicate {
             }
             readList(list);
         } catch (Exception ex) {
+            int obj1=0;
             for (GXDLMSObject it : objs) {
+                obj1++;
                 try {
                     if (it instanceof GXDLMSRegister) {
                         readObject(it, 3);
@@ -651,7 +653,7 @@ public class GXCommunicate {
                     }
                 } catch (Exception e) {
                     traceLn(logFile,
-                            "Err! Failed to read scaler and unit value: "
+                            "Err! Failed2 to read scaler and unit value."+s1+"["+Integer.toString(obj1)+"]: "
                             + e.getMessage());
                     // Continue reading.
                 }
@@ -1432,11 +1434,11 @@ public class GXCommunicate {
         //converter.updateOBISCodeInformation(objects);
         //Load objects
         GXDLMSObjectCollection objects = new GXDLMSObjectCollection();
-        objects = objects.load("Gurux-data/Objects11.xml");
+        objects = objects.load("Gurux-data/Objects1.xml");
         //readRegisters(objects, logFile);
         //objects.save("Objects21.xml");
         // Read Scalers and units from the register objects.
-        readScalerAndUnits(objects, logFile);
+        readScalerAndUnits(objects, logFile, "All");
         // Read Profile Generic columns.
         //readProfileGenericColumns(objects, logFile);
         // Read all attributes from all objects.

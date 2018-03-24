@@ -282,18 +282,25 @@ public class MeterDLMSClient extends Module {
                         return;
                     }
                     objects1 = objects1.load(sObj1File);
-                    com.readScalerAndUnits(objects1, logFile);
-                    if (CheckDisableRead()) {
+                    System.out.println("Rsau1a");
+                    try { com.readScalerAndUnits(objects1, logFile, "O1");} catch(Exception exc) {System.out.println("Rsau1: " + exc.getMessage());};
+                    System.out.println("Rsau1b");
+                    //traceLn(logFile, "rsc1: " + exc.getMessage());
+                    if (CheckDisableRead()) {     
                         return;
                     }
                     // GuruxUtil.GXDLMSObjectSaveWithVals(objects1, "tstObjSave.txt");
                     objects2 = objects2.load(sObj2File);
-                    com.readScalerAndUnits(objects2, logFile);
+                    traceLn(logFile, "Rsau2a");
+                    try { com.readScalerAndUnits(objects2, logFile, "O2");} catch(Exception exc) {traceLn(logFile, "Rsau2: " + exc.getMessage());};
+                    traceLn(logFile, "Rsau2b");
                     if (CheckDisableRead()) {
                         return;
                     }
                     objects3 = objects3.load(sObj3File);
-                    com.readScalerAndUnits(objects3, logFile);
+                    traceLn(logFile, "Rsau3a");
+                    try { com.readScalerAndUnits(objects3, logFile, "O3");} catch(Exception exc) {traceLn(logFile, "Rsau3: " + exc.getMessage());};
+                    traceLn(logFile, "Rsau3b");
 
                     if (iProfilesRead == 1) {
                         vProfilesDetail.clear();

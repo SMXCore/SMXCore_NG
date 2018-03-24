@@ -128,12 +128,22 @@ public class MQTTClient extends Module {
 
         lPeriod = PropUtil.GetLong(pAttributes, "lPeriod", 5000);
 
-        //insert in database metadata related to the Modbus module 
-        //String sTSDate;
-        //sTSDate = sdf.format(new Date());
-        //pDataSet.put("Module/FileStorage/"+sName+"/StartDateTime", sTSDate); // DateTime
+        //insert in database metadata related to the MQTT module 
+        String sTSDate;
+        
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            sTSDate = sdf.format(new Date());
+            sTSDate = sdf.format(new Date());
+            pDataSet.put("Module/MQTTClient/"+sName+"/StartDateTime", sTSDate); // DateTime
+        } 
+        catch(Exception ex) {
+                pDataSet.put("Module/MQTTClient/"+sName+"/StartDateTime", "ERROR"); // DateTime error
+        };
+        
         String s1;
         s1 = String.valueOf(lPeriod); pDataSet.put("Module/MQTTClient/"+sName+"/lPeriod", s1); // 
+        pDataSet.put("Module/MQTTClient/"+sName+"/broker", sBroker); //
     }
     
     public void LoadConfig() {
@@ -793,8 +803,10 @@ public class MQTTClient extends Module {
                                     mqttClient.publish(sMQTTAttr, mqttMessage);
                                     // count the number of published bytes
                                     iNumBytesPub += mqttMessage.getPayload().length;
+                                    iNumBytesPubAfterRecon += mqttMessage.getPayload().length;
                                     iNumPayloadsPub++;
                                     pDataSet.put("Module/MQTTClient/" + sName + "/NumBytesPub", Integer.toString(iNumBytesPub)); 
+                                    pDataSet.put("Module/MQTTClient/" + sName + "/NumBytesPubAfterRecon", Integer.toString(iNumBytesPubAfterRecon)); 
                                     pDataSet.put("Module/MQTTClient/" + sName + "/NumPayloadsPub", Integer.toString(iNumPayloadsPub)); 
                                 }
                                 iConnected = 1;
@@ -859,6 +871,7 @@ public class MQTTClient extends Module {
 
     int iNumConnections = 0;
     int iNumBytesPub = 0;
+    int iNumBytesPubAfterRecon = 0;
     int iNumPayloadsPub = 0;
     int iNumBytesSub = 0;
     int iNumPayloadsSub = 0;
@@ -1082,7 +1095,19 @@ public class MQTTClient extends Module {
             mqttClient.connect(connOpts);
 
             iNumConnections++;
+            iNumBytesPubAfterRecon = 0; // Number of bytes after recconection is set to zero
             pDataSet.put("Module/MQTTClient/" + sName + "/NumMQTTReconnections", Integer.toString(iNumConnections)); 
+
+            String sTSDate;
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                sTSDate = sdf.format(new Date());
+                sTSDate = sdf.format(new Date());
+                pDataSet.put("Module/MQTTClient/"+sName+"/MQTTReconTimestamp", sTSDate); // DateTime
+            } 
+            catch(Exception ex) {
+                pDataSet.put("Module/MQTTClient/"+sName+"/MQTTReconTimestamp", "ERROR"); // DateTime error
+            };
             
             /*  for (String sSubTopic : ssSubTopics) {
              try {

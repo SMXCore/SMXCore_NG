@@ -162,8 +162,11 @@ public class DataSet extends Module {
                 pDataSet.put(sSYSPrefix + "SysTime", sdfT.format(dt));
                 
                 pDataSet.put(sSYSPrefix + "ProcPID", ManagementFactory.getRuntimeMXBean().getName());
-
-                pDataSet.put(sSYSPrefix + "SysCpuLoad", Double.toString(osBean.getSystemCpuLoad() * 100));
+                
+                //double ystemCpuLoad = osBean.getSystemCpuLoad() * 100;
+                String SysCpuLoad =  String.format("%.2f", osBean.getSystemCpuLoad() * 100);
+                pDataSet.put(sSYSPrefix + "SysCpuLoad", SysCpuLoad);
+//                pDataSet.put(sSYSPrefix + "SysCpuLoad", Double.toString(osBean.getSystemCpuLoad() * 100));
                 pDataSet.put(sSYSPrefix + "SysMemoryLoad", Double.toString(
                         100 - (osBean.getFreePhysicalMemorySize() * 100.0) / osBean.getTotalPhysicalMemorySize()));
 
@@ -186,7 +189,9 @@ public class DataSet extends Module {
             pDataSet.put(sSYSPrefix + "SysDate", sdfD.format(dt));
             pDataSet.put(sSYSPrefix + "SysTime", sdfT.format(dt));
 
-            pDataSet.put(sSYSPrefix + "SysCpuLoad", Double.toString(osBean.getSystemCpuLoad() * 100));
+            String SysCpuLoad =  String.format("%.2f", osBean.getSystemCpuLoad() * 100);
+            pDataSet.put(sSYSPrefix + "SysCpuLoad", SysCpuLoad);
+            //pDataSet.put(sSYSPrefix + "SysCpuLoad", Double.toString(osBean.getSystemCpuLoad() * 100));
             pDataSet.put(sSYSPrefix + "SysMemoryLoad", Double.toString(
                     100 - (osBean.getFreePhysicalMemorySize() * 100.0) / osBean.getTotalPhysicalMemorySize()));
 
