@@ -1,19 +1,20 @@
 {
 	"period": 1000,
-	[
+	"dataSet": "DataSet1",
+	"commands": [
 		{
 			"Cmd": "AddItems",
 			"Input": ["SMX/LD03/I1/value", "SMX/LD03/I2/value", "SMX/LD03/I3/value"],
 			"Output": ["SMX/LD03/I_sum/value"],
-			"Period": 2,
+			"Period": 2
 		},
 		{
 			"Cmd": "DirectComponents",
 			"Input": ["SMX/LD03/I1/value", "SMX/LD03/I2/value", "SMX/LD03/I3/value"],
 			"Output": ["SMX/LD03/Id/value", "SMX/LD03/Ii/value", "SMX/LD03/Ih/value"],
 			"Matrix": [ [ 1.0, 2.5, 0.0 ],
-						[ 1.0, 2.5, 0.0 ],
-						[ 1.0, 2.5, 0.0 ] ]
+						[ 1.0, 2.5, 1.0 ],
+						[ 1.0, 2.5, 2.0 ] ]
 		}
 	]
 }

@@ -49,12 +49,11 @@ M4-AttributesFile=DataSet1.json
 #
 M11-Name=DataSetAnl
 M11-ClassName=modules.DataSetAnl
-M11-AttributesFile=DataSet1.txt
 #
 #
-# Libraries
+# Compute1
 #
-M11-Name=Libraries
-M11-ClassName=modules.Libraries
-M11-AttributesFile=Libraries.json
+M12-Name=Compute1
+M12-ClassName=modules.Compute
+M12-AttributesFile=Compute1.json
 #

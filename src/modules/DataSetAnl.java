@@ -50,6 +50,7 @@ public class DataSetAnl extends Module {
                 BufferedWriter bw = new BufferedWriter(fw);
                 file = new PrintWriter(bw);
                 startOfDayReport();
+                lastDate = df.format(date);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -58,8 +59,11 @@ public class DataSetAnl extends Module {
     }
     
     void startOfDayReport() {
-        printToFile("Start of day report: ");
+        DateFormat df = new SimpleDateFormat("yyyy/MM/dd\tHH:mm:ss:SSS\t");
+        file.println("------------------------------------------------------");
+        file.println(df.format(new Date()) + "Start of day report: ");
         list(pDataSet, file);
+        file.flush();
         // Add new reporting information, if needed
         // file.println("etc");
     }

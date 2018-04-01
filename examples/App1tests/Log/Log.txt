@@ -1,0 +1,18 @@
+Date	Level	Source	Message01/04/2018 20:41:21:07:876	WARNING	modules.Compute.Compute1	Invalid token=CURLYCLOSE at (line no=10, column no=3, offset=227). Expected tokens are: [STRING]
+ Stacktrace: javax.json.stream.JsonParsingException: Invalid token=CURLYCLOSE at (line no=10, column no=3, offset=227). Expected tokens are: [STRING]
+	at org.glassfish.json.JsonParserImpl.parsingException(JsonParserImpl.java:437)
+	at org.glassfish.json.JsonParserImpl.access$1000(JsonParserImpl.java:79)
+	at org.glassfish.json.JsonParserImpl$ObjectContext.getNextEvent(JsonParserImpl.java:489)
+	at org.glassfish.json.JsonParserImpl.next(JsonParserImpl.java:363)
+	at org.glassfish.json.JsonParserImpl.getObject(JsonParserImpl.java:333)
+	at org.glassfish.json.JsonParserImpl.getValue(JsonParserImpl.java:182)
+	at org.glassfish.json.JsonParserImpl.getArray(JsonParserImpl.java:326)
+	at org.glassfish.json.JsonParserImpl.getValue(JsonParserImpl.java:180)
+	at org.glassfish.json.JsonParserImpl.getObject(JsonParserImpl.java:339)
+	at org.glassfish.json.JsonParserImpl.getObject(JsonParserImpl.java:173)
+	at org.glassfish.json.JsonReaderImpl.readObject(JsonReaderImpl.java:112)
+	at modules.Compute.read_jso_from_file(Compute.java:99)
+	at modules.Compute.Initialize(Compute.java:41)
+	at modules.ModulesManager.LoadModules(ModulesManager.java:90)
+	at smxcore.SMXcore.main(SMXcore.java:35)
+
