@@ -29,7 +29,7 @@ import util.SmartProperties.Metadata;
 
 /**
  *
- * @author cristi
+ * @author vlad, mihai
  */
 public class Compute extends Module {
 
@@ -50,18 +50,30 @@ public class Compute extends Module {
             int period = command.getInt("Period", 1); // Neimplementat
             JsonArray Input = command.getJsonArray("Input");
             JsonArray Output = command.getJsonArray("Output");
+            
+            // Implement the Compute algorithm assocaited with "AddItems"
             if(cmd.equals("AddItems")) {
-                // momentan implementez ca si cum toate ar fii double
+                // momentan implementez ca si cum toate tipurile de variabile ar fii double
                 double sum = 0.0;
                 for(int i = 0; i < Input.size(); i++) {
+                    // Read type of item
+                    Metadata meta = pDataSet.getmeta(Output.getString(0));
+                    String type = meta.type;
+                    Date ts = meta.timestamp;
+                    // make calculations
                     sum += PropUtil.GetDouble(pDataSet, Input.getString(i), 0.0);
                 }
+                // Saves result in the first item of output set of variables
                 pDataSet.put(Output.getString(0), Double.toString(sum));
+                // Set the type equial to "double"
                 Metadata meta = pDataSet.getmeta(Output.getString(0));
                 meta.type = "double"; // ca un exemplu
-            } else if(cmd.equals("DirectComponents")) {
-                // momentan implementez ca si cum toate ar fii double
+            } else 
+                // Implement the Compute algorithm associated with "DirectComponents"
+                if(cmd.equals("DirectComponents")) {
+                // momentan implementez ca si cum toate tipurile de variabile ar fii double
                 JsonArray matrix = command.getJsonArray("Matrix");
+                // simple example, to be developed later in a real Compute function
                 for(int i = 0; i < Output.size(); i++) { // dpdv matematic transpun si devin vectori coloana (mai usor de implementat)
                     double sum = 0.0;
                     JsonArray line = matrix.getJsonArray(i);
