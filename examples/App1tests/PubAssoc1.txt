@@ -1,0 +1,8 @@
+#	Format
+# Internal attribute = MQTT topic
+########### Real-Time Values
+SysTime = ST_to_AMR
+SysMemoryLoad = SML_to_AMR
+#
+
+

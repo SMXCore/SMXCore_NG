@@ -8,6 +8,7 @@ package modules;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -48,11 +49,19 @@ public class DataSetAnl extends Module {
                 FileWriter fw = new FileWriter(/*"/home/pi/" + */dateFormat.format(date) + "DataSetAnl.txt", true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 file = new PrintWriter(bw);
+                startOfDayReport();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return date;
+    }
+    
+    void startOfDayReport() {
+        printToFile("Start of day report: ");
+        list(pDataSet, file);
+        // Add new reporting information, if needed
+        // file.println("etc");
     }
     
     void printToFile(String s) {
@@ -94,8 +103,13 @@ public class DataSetAnl extends Module {
                 printToFile("Reload success (no exception thrown) in module " + args[1]);
                 m.bReinitialize = true;
             }
-        } catch(Exception e) {
-            e.printStackTrace(file);
+        } catch(Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.fine(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
+            //ex.printStackTrace(file);
         }
     }
     
@@ -122,6 +136,7 @@ public class DataSetAnl extends Module {
             // Log(Name + "-Open-" + e.getMessage() + "-" + e.getCause());
         }
     }
+    
     public void Loop() {
         while (true) {
             try {
@@ -131,7 +146,7 @@ public class DataSetAnl extends Module {
                     processCommand(i.next());
                 }
                 commandList = new ArrayList<String>();
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (Exception e) {
             }
         }

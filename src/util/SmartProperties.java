@@ -16,6 +16,7 @@ import java.util.Properties;
 public class SmartProperties extends Properties {
     public class Metadata {
         public Date timestamp;
+        public String type;
     }
     Hashtable<String, Metadata> meta;
     

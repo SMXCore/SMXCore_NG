@@ -1,0 +1,16 @@
+#
+pDataSet = DataSet1
+sPrefix = SMX/
+#
+lPeriod = 1000
+#
+sFileName = ./Log/Log1
+sFileExt = .txt
+#
+pStoreAssociation = StoreAssoc1.txt
+#
+sSeparator = \t
+#
+iCommpress = 1
+iMove = 1
+#
