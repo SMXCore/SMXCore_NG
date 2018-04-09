@@ -59,21 +59,29 @@ public class DataSetAnl extends Module {
     }
     
     void startOfDayReport() {
-        DateFormat df = new SimpleDateFormat("yyyy/MM/dd\tHH:mm:ss:SSS\t");
-        file.println("------------------------------------------------------");
-        file.println(df.format(new Date()) + "Start of day report: ");
-        list(pDataSet, file);
-        file.flush();
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy/MM/dd\tHH:mm:ss:SSS\t");
+            file.println("------------------------------------------------------");
+            file.println(df.format(new Date()) + "Start of day report: ");
+            list(pDataSet, file);
+            file.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // Add new reporting information, if needed
         // file.println("etc");
     }
     
     void printToFile(String s) {
+        try {
         DateFormat df = new SimpleDateFormat("yyyy/MM/dd\tHH:mm:ss:SSS\t");
-        Date date = refreshFile();
-        file.println("------------------------------------------------------");
-        file.println(df.format(date) + s);
-        file.flush();
+            Date date = refreshFile();
+            file.println("------------------------------------------------------");
+            file.println(df.format(date) + s);
+            file.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     void readCommandFile(String filename) {

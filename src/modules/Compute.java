@@ -51,13 +51,14 @@ public class Compute extends Module {
             JsonArray Input = command.getJsonArray("Input");
             JsonArray Output = command.getJsonArray("Output");
             
+            //System.out.println("processCmd0: "+cmd.toString());
             // Implement the Compute algorithm assocaited with "AddItems"
             if(cmd.equals("AddItems")) {
                 // momentan implementez ca si cum toate tipurile de variabile ar fii double
                 double sum = 0.0;
                 for(int i = 0; i < Input.size(); i++) {
                     // Read type of item
-                    Metadata meta = pDataSet.getmeta(Output.getString(0));
+                    Metadata meta = pDataSet.getmeta(Output.getString(i));
                     String type = meta.type;
                     Date ts = meta.timestamp;
                     // make calculations
@@ -71,21 +72,64 @@ public class Compute extends Module {
             } else 
                 // Implement the Compute algorithm associated with "DirectComponents"
                 if(cmd.equals("DirectComponents")) {
-                // momentan implementez ca si cum toate tipurile de variabile ar fii double
-                JsonArray matrix = command.getJsonArray("Matrix");
-                // simple example, to be developed later in a real Compute function
-                for(int i = 0; i < Output.size(); i++) { // dpdv matematic transpun si devin vectori coloana (mai usor de implementat)
-                    double sum = 0.0;
-                    JsonArray line = matrix.getJsonArray(i);
-                    for(int j = 0; j < Input.size(); j++) {
-                        sum += line.getJsonNumber(j).doubleValue() * PropUtil.GetDouble(pDataSet, Input.getString(j), 0.0);
+                    // momentan implementez ca si cum toate tipurile de variabile ar fii double
+                    JsonArray matrix = command.getJsonArray("Matrix");
+                    // simple example, to be developed later in a real Compute function
+                    for(int i = 0; i < Output.size(); i++) { // dpdv matematic transpun si devin vectori coloana (mai usor de implementat)
+                        double sum = 0.0;
+                        JsonArray line = matrix.getJsonArray(i);
+                        for(int j = 0; j < Input.size(); j++) {
+                            sum += line.getJsonNumber(j).doubleValue() * PropUtil.GetDouble(pDataSet, Input.getString(j), 0.0);
+                        }
+                        pDataSet.put(Output.getString(i), Double.toString(sum));
+                        Metadata meta = pDataSet.getmeta(Output.getString(i ));
+                        meta.type = "double"; // ca un exemplu
                     }
-                    pDataSet.put(Output.getString(i), Double.toString(sum));
-                    Metadata meta = pDataSet.getmeta(Output.getString(i ));
-                    meta.type = "double"; // ca un exemplu
+            } else 
+                // Implement the Compute algorithm associated with "ChangeValue_Lib01"
+                if(cmd.equals("ChangeValue_Lib01_numkMG")) {
+                    // A value which has as sufix k, M, G will be mulktiplied by 1000 (kilo), 1'000'000 (Mega) or 1'000'000'000 (Giga)
+                    //double new_result=0;
+                    //System.out.println("processCmd1: "+cmd.toString());
+                    String variable_string_ini="";
+                    String variable_string_final="";
+                    double new_value = 0.0;
+                    //System.out.println("processCmd3: "+Input.getString(0));
+                    Metadata meta = pDataSet.getmeta(Input.getString(0));
+                    String type = meta.type;
+//                    Date ts = meta.timestamp;
+                    // make calculations
+                    
+                    //System.out.println("processCmd2: "+cmd.toString());
+                    variable_string_ini = (String) pDataSet.getProperty(Input.getString(0), "");
+                    //System.out.println("ChangeValue_Lib01_numkMG: " + variable_string_ini+"\n");
+
+                    if(  variable_string_ini.endsWith("m") == true) {
+                        variable_string_final = variable_string_ini.replace("m","");
+                        new_value =  Double.parseDouble(variable_string_final)*0.001;     
+                    } else
+                    if(  variable_string_ini.endsWith("k") == true) {
+                        variable_string_final = variable_string_ini.replace("k","");
+                        new_value =  Double.parseDouble(variable_string_final)*1000;     
+                    } else
+                    if(  variable_string_ini.endsWith("M") == true) {
+                        variable_string_final = variable_string_ini.replace("M","");
+                        new_value =  Double.parseDouble(variable_string_final)*1000*1000;     
+                    } else 
+                    new_value =  Double.parseDouble(variable_string_ini);
+                    //System.out.println("ChangeValue_Lib01_numkMG_new value: " + Double.toString(new_value));
+                    //System.out.println("ChangeValue_Lib01_numkMG_new name_of value: " + Output.getString(0));
+                              // variable_string_final = 0;
+                            //PropUtil.GetDouble(pDataSet, Input.getString(0), 0.0);
+//                            sum += line.getJsonNumber(j).doubleValue() * PropUtil.GetDouble(pDataSet, Input.getString(j), 0.0);
+                        
+                    pDataSet.put(Output.getString(0), Double.toString(new_value));
+                    //Metadata meta = pDataSet.getmeta(Output.getString(0));
+                    //meta.type = "double"; // ca un exemplu
+                    
                 }
-            }
-        } catch(Exception ex) {
+        } 
+        catch(Exception ex) {
             
         }
     }

@@ -560,6 +560,8 @@ public class MQTTClient extends Module {
                     }
                     logger.finest("Decomposed object " + prefix);
                 } catch(Exception ex) {
+                    System.out.println("Wrong1 in decomposeObject");
+                    
                     StringWriter sw = new StringWriter();
                     PrintWriter pw = new PrintWriter(sw);
                     ex.printStackTrace(pw);
@@ -736,8 +738,13 @@ public class MQTTClient extends Module {
                                                             }
                                                         } else if(matcher2.matches()) {
                                                             format = "US-style SMXCore Timestamp";
-                                                            if(matcher.groupCount() > 1) {
+                                                            try {
+                                                                if(matcher.groupCount() > 1) {
                                                                 format = matcher.group(2);
+                                                            }
+                                                            } catch(Exception ex) { 
+                                                                //e.internalName;
+                                                                System.out.println("Wrong1 in matcher: " + e.mqttTopic);
                                                             }
                                                             //tipuri:
                                                             // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
