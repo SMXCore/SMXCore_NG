@@ -1,0 +1,29 @@
+#
+#	Number of modules (can be greater that the actual number of modules)
+#
+enableFileLog=1
+iNoOfModules=20
+#
+#	Module 1 MQTT client 1
+#
+M1-Name=MQTTClient1
+M1-ClassName=modules.MQTTClient
+M1-AttributesFile=MQTTClient1.txt
+#
+#	Module 3 File Storage 1
+#
+M3-Name=FileStorage1
+M3-ClassName=modules.FileStorage
+M3-AttributesFile=FileStorage1.txt
+#
+#	Module 4 Data Set 1
+#
+M4-Name=DataSet1
+M4-ClassName=modules.DataSet
+M4-AttributesFile=DataSet1.json
+#
+# DataSetAnl
+#
+M11-Name=DataSetAnl
+M11-ClassName=modules.DataSetAnl
+#

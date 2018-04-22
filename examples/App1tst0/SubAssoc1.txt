@@ -1,0 +1,6 @@
+#	Format
+#  MQTT topic = Internal attribute
+######## Real-Time Values
+SMX/LD03/I1/value_ =  I1
+SMX/LD03/I2/value_ = I2
+SMX/LD03/I3/value_ = I3

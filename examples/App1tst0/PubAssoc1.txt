@@ -1,0 +1,10 @@
+#	Format
+# Internal attribute = MQTT topic
+########### Real-Time Values
+#SysTime = ST_to_AMR
+#SysMemoryLoad = SML_to_AMR
+#
+SMX/LD03/I1/value = I1
+SMX/LD03/I2/value = I2
+SMX/LD03/I3/value = I3
+

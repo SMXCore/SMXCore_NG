@@ -15,5 +15,3 @@ LD01/Q1-UM = kVar
 LD01/Q2-UM = kVar
 LD01/Q3-UM = kVar
 #
-LD01/f-UM = Hz
-#
