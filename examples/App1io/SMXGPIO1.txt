@@ -1,0 +1,7 @@
+#
+pDataSet = DataSet1
+sPrefix = GPIO/
+#	Stores on disk each 5 seconds = 5000 ms.
+lPeriod = 1000
+#
+ReadTherm = 1

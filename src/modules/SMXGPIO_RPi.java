@@ -20,9 +20,21 @@ import java.text.DateFormat;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Hashtable;
 
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  *
@@ -52,6 +64,7 @@ public class SMXGPIO_RPi extends Module {
     public boolean consoleLogEnable = false;
     public boolean fileLogEnable = false; // Unimplemented
     public boolean dataSetConnection = false; 
+    public boolean read_therm = false;
     
     public String filePath = new String();
     public String fileName = new String();
@@ -127,6 +140,7 @@ public class SMXGPIO_RPi extends Module {
             }
 
             iNoOfPins = PropUtil.GetInt(pAttributes, "iNoOfPins", 0);
+            read_therm = (PropUtil.GetInt(pAttributes, "ReadTherm", 0) > 0);
 //            System.out.println("Number of pins: " + iNoOfPins);
 //            System.out.println("" + lPeriod);
             for (int i = 0; i < iNoOfPins; i++) {
@@ -205,9 +219,34 @@ public class SMXGPIO_RPi extends Module {
                     ex.printStackTrace();
                 }
             }
+            
+            String res = runAndGetOutput("id -u");
+            if(res.equals("0") && read_therm) {
+                res = runAndGetOutput("grep /proc/modules -e \"w1_therm\" | wc -l");
+                if(res.equals("0")) {
+                    runAndGetOutput("dtoverlay w1-gpio gpiopin=4 pullup=0");
+                }
+            }
 
         } catch (Exception e) {
 
+        }
+    }
+    
+    String runAndGetOutput(String cmd) {
+        try {
+            Process p;
+            p = Runtime.getRuntime().exec(cmd);
+            BufferedReader stdInput = new BufferedReader(new 
+                 InputStreamReader(p.getInputStream()));
+            String s = null;
+            String complete = "";
+            while ((s = stdInput.readLine()) != null) {
+                complete = complete + s;
+            }
+            return complete;
+        } catch(Exception e) {
+            return "Java Error " + e.getMessage();
         }
     }
 
@@ -278,6 +317,32 @@ public class SMXGPIO_RPi extends Module {
                             printToFile(message);
                         }
                     }
+                }
+                
+                if(read_therm) {
+                    final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:/sys/bus/w1/devices/28*");
+                    Files.walkFileTree(Paths.get("/sys/bus/w1/devices/"), new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            if (matcher.matches(file)) {
+                                String res = runAndGetOutput("cat " + file.toString() + "/w1_slave");
+                                int i = res.length() - 1;
+                                while(i > 0 && res.charAt(i) >= '0' && res.charAt(i) <= '9') { 
+                                    i--;
+                                }
+                                String rem = res.substring(i + 1);
+                                double temp = Double.parseDouble(rem);
+                                temp = temp / 1000;
+                                pDataSet.put(sPrefix + file.toString(), String.valueOf(temp));
+                            }
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
                 }
 
             } catch (Exception e) {
