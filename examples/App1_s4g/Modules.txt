@@ -27,3 +27,10 @@ M6-AttributesFile=S4G_LESSAg.txt
 M11-Name=DataSetAnl
 M11-ClassName=modules.DataSetAnl
 M11-AttributesFile=DataSet1.txt
+#
+# Compute1
+#
+M12-Name=Compute1
+M12-ClassName=modules.Compute
+M12-AttributesFile=Compute1.json
+#

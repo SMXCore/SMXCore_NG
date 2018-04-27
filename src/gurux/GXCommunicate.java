@@ -184,7 +184,7 @@ public class GXCommunicate {
         p.setWaitTime(WaitTime);
         synchronized (Media.getSynchronous()) {
             while (!succeeded) {
-                writeTrace("DLMS_S01<- " + now() + "\t" + GXCommon.bytesToHex(data));
+                writeTrace("DLMS_S01a<- " + now() + "\t" + GXCommon.bytesToHex(data));
                 Media.send(data, null);
                 if (p.getEop() == null) {
                     p.setCount(1);
@@ -226,12 +226,15 @@ public class GXCommunicate {
                 throw e;
             }
         }
+        String a1 = GXCommon.bytesToHex(p.getReply());
         writeTrace("DLMS_R02-> " + now() + "\t" + GXCommon.bytesToHex(p.getReply()));
+        //writeTrace("DLMS_R02text-> " + now() + "\t" + a1);
         if (reply.getError() != 0) {
             if (reply.getError() == ErrorCode.REJECTED.getValue()) {
                 Thread.sleep(1000);
                 readDLMSPacket(data, reply);
             } else {
+                writeTrace("DLMS_R02_exception-> " + now() + "\t" + GXCommon.bytesToHex(p.getReply()));
                 throw new GXDLMSException(reply.getError());
             }
         }
@@ -359,7 +362,7 @@ public class GXCommunicate {
                 p.setReply(null);
                 synchronized (Media.getSynchronous()) {
                     Media.send(tmp, null);
-                    writeTrace("DLMS_S01<- " + now() + "\t" + GXCommon.bytesToHex(tmp));
+                    writeTrace("DLMS_S01b<- " + now() + "\t" + GXCommon.bytesToHex(tmp));
                     p.setWaitTime(100);
                     if (Media.receive(p)) {
                         writeTrace("DLMS_R05-> " + now() + "\t"

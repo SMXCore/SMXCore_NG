@@ -1,0 +1,16 @@
+{
+	"period": 1000,
+	"dataSet": "DataSet1",
+	"commands": [
+		{
+			"Cmd": "Send_email_01",
+			"Input": [],
+			"Output": [],
+			"User": "M11S11.2018@gmail.com",
+			"Password": "Djf85jfuY",
+			"Recipient": "M11S11.2018@gmail.com",
+			"Subject": "Testing Subject",
+			"Period": 2
+		}
+	]
+}

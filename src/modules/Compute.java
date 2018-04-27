@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -27,6 +28,13 @@ import javax.json.JsonValue;
 import util.SmartProperties;
 import util.SmartProperties.Metadata;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 /**
  *
  * @author vlad, mihai
@@ -34,6 +42,7 @@ import util.SmartProperties.Metadata;
 public class Compute extends Module {
 
     JsonArray commands;
+    PrintWriter file;
     
     @Override
     public void Initialize() {
@@ -43,6 +52,24 @@ public class Compute extends Module {
         lPeriod = jso.getInt("period", 1000);
         commands = jso.getJsonArray("commands");
     }
+    
+    void printToFile(String s) {
+        try {
+        //DateFormat df = new SimpleDateFormat("yyyy/MM/dd\tHH:mm:ss:SSS\t");
+            //Date date = refreshFile();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd.");
+            FileWriter fw = new FileWriter("Compute_log.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            file = new PrintWriter(bw);
+            //file.println("------------------------------------------------------");
+            file.println(s);
+            file.flush();
+            file.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     
     void processCmd(JsonObject command) {
         try {
@@ -86,6 +113,52 @@ public class Compute extends Module {
                         meta.type = "double"; // ca un exemplu
                     }
             } else 
+                // Implement the Compute algorithm associated with "Send_email_01"
+                if(cmd.equals("Send_email_01")) {
+                    DateFormat df = new SimpleDateFormat("yyyy/MM/dd\tHH"); // hour based
+                    //DateFormat df = new SimpleDateFormat("yyyy/MM/dd\tHH:mm"); // minute based
+                    String date = df.format(new Date());
+                    if(!(date.equals(pAttributes.getProperty("Send_email_01_time", "")))) {
+                        pAttributes.setProperty("Send_email_01_time", date);
+                        Properties props = new Properties();
+                        props.put("mail.smtp.host", "smtp.gmail.com");
+                        props.put("mail.smtp.socketFactory.port", "465");
+                        props.put("mail.smtp.socketFactory.class",
+                                        "javax.net.ssl.SSLSocketFactory");
+                        props.put("mail.smtp.auth", "true");
+                        props.put("mail.smtp.port", "465");
+                        final String user = command.getString("User");
+                        final String password = command.getString("Password");
+                        final String recipient = command.getString("Recipient");
+                        final String subject = command.getString("Subject");
+
+                        Session session = Session.getDefaultInstance(props,
+                                new javax.mail.Authenticator() {
+                                        protected PasswordAuthentication getPasswordAuthentication() {
+                                                return new PasswordAuthentication(user,password);
+                                        }
+                                });
+
+                        try {
+
+                                Message message = new MimeMessage(session);
+                                message.setFrom(new InternetAddress(user));
+                                message.setRecipients(Message.RecipientType.TO,
+                                                InternetAddress.parse(recipient));
+                                message.setSubject(subject);
+                                message.setText("Dear Mr. Me," +
+                                                "\n\n No spam to my email, please!");
+
+                                Transport.send(message);
+
+                                System.out.println("Email Sent");
+
+                        } catch (MessagingException e) {
+                                throw new RuntimeException(e);
+                        }
+                    }
+                    
+            } else 
                 // Implement the Compute algorithm associated with "ChangeValue_Lib01"
                 if(cmd.equals("ChangeValue_Lib01_numkMG")) {
                     // A value which has as sufix k, M, G will be mulktiplied by 1000 (kilo), 1'000'000 (Mega) or 1'000'000'000 (Giga)
@@ -117,6 +190,46 @@ public class Compute extends Module {
                         new_value =  Double.parseDouble(variable_string_final)*1000*1000;     
                     } else 
                     new_value =  Double.parseDouble(variable_string_ini);
+                    //System.out.println("ChangeValue_Lib01_numkMG_new value: " + Double.toString(new_value));
+                    //System.out.println("ChangeValue_Lib01_numkMG_new name_of value: " + Output.getString(0));
+                              // variable_string_final = 0;
+                            //PropUtil.GetDouble(pDataSet, Input.getString(0), 0.0);
+//                            sum += line.getJsonNumber(j).doubleValue() * PropUtil.GetDouble(pDataSet, Input.getString(j), 0.0);
+                        
+                    pDataSet.put(Output.getString(0), Double.toString(new_value));
+                    //Metadata meta = pDataSet.getmeta(Output.getString(0));
+                    //meta.type = "double"; // ca un exemplu
+                    
+                } else 
+                // Implement the Compute algorithm associated with "ChangeValue_Lib01"
+                if(cmd.equals("ChangeValue_Lib01_multiply")) {
+                    // A value will be mulktiplied by a constant and a sign will be given based on the sig of another value
+                    //double new_result=0;
+                    //System.out.println("processCmd1: "+cmd.toString());
+                    String variable_string_ini="";
+                    String variable_string_multiplier="";
+                    String variable_string_value_sign="";
+                    //String variable_string_final="";
+                    double new_value = 0.0;
+                    //printToFile("Hello");
+                    //System.out.println("processCmd3: "+Input.getString(0));
+                    Metadata meta = pDataSet.getmeta(Input.getString(0));
+                    String type = meta.type;
+//                    Date ts = meta.timestamp;
+                    // make calculations
+                    
+                    //System.out.println("processCmd2: "+cmd.toString());
+                    variable_string_ini = (String) pDataSet.getProperty(Input.getString(0), "");
+                    //printToFile("H1="+variable_string_ini+" str="+Input.getString(0));
+                    variable_string_multiplier = (String) Input.getString(1);
+                    variable_string_value_sign = (String) pDataSet.getProperty(Input.getString(2), "");
+                    //printToFile("H2="+variable_string_multiplier+" str="+Input.getString(1));
+                    //variable_string_final = (String) pDataSet.getProperty(Input.getString(2), "");
+                    //System.out.println("ChangeValue_Lib01_numkMG: " + variable_string_ini+"\n");
+                    new_value =  Double.parseDouble(variable_string_ini)*Double.parseDouble(variable_string_multiplier); 
+                    if(Double.parseDouble(variable_string_value_sign)<0) new_value=-new_value;
+                    //printToFile("H3="+new_value+" str="+Output.getString(0));
+
                     //System.out.println("ChangeValue_Lib01_numkMG_new value: " + Double.toString(new_value));
                     //System.out.println("ChangeValue_Lib01_numkMG_new name_of value: " + Output.getString(0));
                               // variable_string_final = 0;

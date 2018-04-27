@@ -4,4 +4,11 @@ sPrefix = GPIO/
 #	Stores on disk each 5 seconds = 5000 ms.
 lPeriod = 1000
 #
+# ## Acrions to be made
+# New pi4j-core.jar => pi4j-core V1.2.jar
+# New pi4j-gpio-extension.jar => pi4j-gpio-extension V1.2.jar
+# sudo might be necessary for starting SMXcore.jar
+# Install: apt-get install w1_gpio, w1_therm
+# GPIO_PIN4= comunicare; restul sunt 3.3V si GND, 4.7k resistor between GPIO_PIN4 and 3.3V
+# 
 ReadTherm = 1
