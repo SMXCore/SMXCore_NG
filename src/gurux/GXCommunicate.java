@@ -57,9 +57,11 @@ import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.Hashtable;
 
+import modules.MeterDLMSClient;
+
 /**
  *
- * @author w7user
+ * @author w7user, mihai, vlad
  */
 public class GXCommunicate {
 
@@ -160,9 +162,12 @@ public class GXCommunicate {
         }
     }
 
+    public String Debug_String1=""; // the debug data is buffered in this string, to be saved later in one action
     /**
      * Read DLMS Data from the device. If access is denied return null.
      */
+    public int iDebugModelDLMS_local = 0;
+    
     public void readDLMSPacket(byte[] data, GXReplyData reply)
             throws Exception {
         if (data == null || data.length == 0) {
@@ -176,19 +181,26 @@ public class GXCommunicate {
             eop = null;
         }
         Integer pos = 0;
+        String Debug_String_local="";
         boolean succeeded = false;
         ReceiveParameters<byte[]> p
                 = new ReceiveParameters<byte[]>(byte[].class);
         p.setEop(eop);
         p.setCount(5);
         p.setWaitTime(WaitTime);
+        //iDebugModelDLMS_local = MeterDLMSClient.iDebugModeDLMS;
         synchronized (Media.getSynchronous()) {
             while (!succeeded) {
-                writeTrace("DLMS_S01a<- " + now() + "\t" + GXCommon.bytesToHex(data));
+                Debug_String_local = "DLMS_S01a<- " + now() + "\t" + GXCommon.bytesToHex(data);
+                if((iDebugModelDLMS_local & 0x01)==1){
+                    if((iDebugModelDLMS_local & 0x02)==0) writeTrace("*"+Debug_String_local); else Debug_String1 += "\n_"+Debug_String_local;
+                }
                 Media.send(data, null);
                 if (p.getEop() == null) {
                     p.setCount(1);
                 }
+                //Debug_String_local = "DLMS_Sent<- " + now() + "\t" + GXCommon.bytesToHex(data);
+                //if((iDebugModelDLMS_local & 0x01)==0) writeTrace("*"+Debug_String_local); else Debug_String1 += "_"+Debug_String_local;
                 succeeded = Media.receive(p);
                 if (!succeeded) {
                     // Try to read again...
@@ -227,14 +239,20 @@ public class GXCommunicate {
             }
         }
         String a1 = GXCommon.bytesToHex(p.getReply());
-        writeTrace("DLMS_R02-> " + now() + "\t" + GXCommon.bytesToHex(p.getReply()));
+        Debug_String_local = "DLMS_R02 -> " + now() + "\t" + GXCommon.bytesToHex(p.getReply());
+        if((iDebugModelDLMS_local & 0x01)==1){
+            if((iDebugModelDLMS_local & 0x02)==0) writeTrace("*"+Debug_String_local); else Debug_String1 += "\n_"+Debug_String_local;
+        }
         //writeTrace("DLMS_R02text-> " + now() + "\t" + a1);
         if (reply.getError() != 0) {
             if (reply.getError() == ErrorCode.REJECTED.getValue()) {
                 Thread.sleep(1000);
                 readDLMSPacket(data, reply);
             } else {
-                writeTrace("DLMS_R02_exception-> " + now() + "\t" + GXCommon.bytesToHex(p.getReply()));
+                Debug_String_local = "DLMS_R02_exception-> " + now() + "\t" + GXCommon.bytesToHex(p.getReply());
+                if((iDebugModelDLMS_local & 0x01)==1){
+                    if((iDebugModelDLMS_local & 0x02)==0) writeTrace("*"+Debug_String_local); else Debug_String1 += "\n_"+Debug_String_local;
+                }
                 throw new GXDLMSException(reply.getError());
             }
         }

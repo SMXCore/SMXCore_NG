@@ -43,7 +43,7 @@ import util.PropUtil;
 
 /**
  *
- * @author cristi, mihai
+ * @author cristi, mihai, vlad
  */
 public class MeterDLMSClient extends Module {
 
@@ -66,13 +66,18 @@ public class MeterDLMSClient extends Module {
         sObj1File = PropUtil.GetString(pAttributes, "sObj1File", "");
         sObj2File = PropUtil.GetString(pAttributes, "sObj2File", "");
         sObj3File = PropUtil.GetString(pAttributes, "sObj3File", "");
+        sObj4File = PropUtil.GetString(pAttributes, "sObj4File", "");
 
         sProf1File = PropUtil.GetString(pAttributes, "sProf1File", "");
 
         iBlockRead = PropUtil.GetInt(pAttributes, "iBlockRead", 0);
         iProfilesRead = PropUtil.GetInt(pAttributes, "iProfilesRead", 0);
 
-        iSLAM = PropUtil.GetInt(pAttributes, "iSLAM", 0);
+        iMultiSingleOBIS = PropUtil.GetInt(pAttributes, "iMultiSingleOBIS", 0);
+        iObisFilesNumber = PropUtil.GetInt(pAttributes, "iObisFilesNumber", 3);
+
+        iDebugModelDLMS = PropUtil.GetInt(pAttributes, "iDebugModelDLMS", 0);
+        //com.iDebugModelDLMS_local = iDebugModelDLMS; // debug mode is set also for GXCommunicate module
 
         df1.setTimeZone(TimeZone.getTimeZone("UTC"));
         df2.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -89,13 +94,14 @@ public class MeterDLMSClient extends Module {
             pDataSet.put(sReadDisabledParam, "0");
         }
 
-        //insert in database metadata related to the Modbus module 
+        //insert in database metadata 
         String sTSDate;
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         sTSDate = sdf.format(new Date());
         pDataSet.put("Module/MeterDLMSClient/"+sName+"/StartDateTime", sTSDate); // DateTime
         String s1;
         s1 = sCmdLineArgs; pDataSet.put("Module/MeterDLMSClient/"+sName+"/sCmdLineArgs", s1); // 
+        //pDataSet.put("Module/MeterDLMSClient/"+sName+"/iObisFilesNumber", iObisFilesNumber); // DateTime
     }
 
     int iReadDisable = 0;
@@ -115,14 +121,18 @@ public class MeterDLMSClient extends Module {
     String sObj1File = "";
     String sObj2File = "";
     String sObj3File = "";
+    String sObj4File = "";
 
     String sProf1File = "";
 
     int iBlockRead = 0;
     int iProfilesRead = 0;
 
-    int iSLAM = 0;
+    int iMultiSingleOBIS = 0;
+    int iObisFilesNumber = 3;
 
+    public int iDebugModelDLMS = 0; // Bit 0:  0=no debug; 1=debug // Bit 1: 0=on the run debug; 1=buffered debug // bit 2: level of debug
+    
     Thread tMeterCalc = null;
 
     @Override
@@ -232,6 +242,7 @@ public class MeterDLMSClient extends Module {
     GXDLMSObjectCollection objects1 = new GXDLMSObjectCollection();
     GXDLMSObjectCollection objects2 = new GXDLMSObjectCollection();
     GXDLMSObjectCollection objects3 = new GXDLMSObjectCollection();
+    GXDLMSObjectCollection objects4 = new GXDLMSObjectCollection();
 //
     GXDLMSObjectCollection profiles1 = new GXDLMSObjectCollection();
     int iNoOfProfiles = 0;
@@ -297,10 +308,17 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    // Object no. 3
                     objects3 = objects3.load(sObj3File);
                     traceLn(logFile, "Rsau3a");
                     try { com.readScalerAndUnits(objects3, logFile, "O3");} catch(Exception exc) {traceLn(logFile, "Rsau3: " + exc.getMessage());};
                     traceLn(logFile, "Rsau3b");
+                    
+                    if(iObisFilesNumber>3) {
+                        objects4 = objects4.load(sObj4File);
+                        try { com.readScalerAndUnits(objects4, logFile, "O4");} catch(Exception exc) {traceLn(logFile, "Rsau4: " + exc.getMessage());};
+                    
+                    }
 
                     if (iProfilesRead == 1) {
                         vProfilesDetail.clear();
@@ -350,8 +368,8 @@ public class MeterDLMSClient extends Module {
                 }
                 GuruxUtil.GXDLMSObjectSaveWithVals(objectDate, "tstObjDSave.txt");
 
-                //If this is a SLAM, handle time
-                if (iSLAM > 0) {
+                //If this is requesting mutiple single OBIS requests, such is the case with SLAM V1.0, handle time
+                if (iMultiSingleOBIS > 0) {
                     if (c_smx.get(Calendar.YEAR) < 2015) {
                         traceLn(logFile, "Setting SMX time...");
                         //SMX is assumed not to have the correct time. Retrieve time from SMM and set SMX. NTP will perform adjustments afterwards.
@@ -378,6 +396,7 @@ public class MeterDLMSClient extends Module {
             }
 
             if (iBlockRead == 1) {
+                com.Debug_String1="";
                 //com.readAllObjects(logFile);
                 if (objects1 != null) {
                     if (CheckDisableRead()) {
@@ -406,6 +425,17 @@ public class MeterDLMSClient extends Module {
                     WriteVals(objects3);
                     GuruxUtil.GXDLMSObjectSaveWithVals(objects3, "tstObj3Save.txt");
                 }
+                if(iObisFilesNumber>3) {
+                    if (objects4 != null) {
+                        if (CheckDisableRead()) {
+                            return;
+                        }
+                        com.readRegisters(objects4, logFile);
+
+                        WriteVals(objects4);
+                        GuruxUtil.GXDLMSObjectSaveWithVals(objects4, "tstObj4Save.txt");
+                    }
+                }
             } else {
                 if (objects1 != null) {
                     if (CheckDisableRead()) {
@@ -427,6 +457,13 @@ public class MeterDLMSClient extends Module {
                     }
                     com.readValues2(objects3, logFile);
                     WriteVals(objects3);
+                }
+                if(iObisFilesNumber>3) if (objects4 != null) {
+                    if (CheckDisableRead()) {
+                        return;
+                    }
+                    com.readValues2(objects4, logFile);
+                    WriteVals(objects4);
                 }
             }
             if (iProfilesRead == 1) {
@@ -489,6 +526,12 @@ public class MeterDLMSClient extends Module {
              }
              System.out.println("Done!");*/
         }
+        String sTSDate="None";
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        sTSDate = sdf.format(new Date());
+        if((com.iDebugModelDLMS_local & 0x01)==1) com.writeTrace("Buffered Debug: "+sTSDate+" ; iObisFilesNumber="+iObisFilesNumber+com.Debug_String1);
+
+        //com.writeTrace("\n**"+sTSDate+" Debug:"+com.iDebugModelDLMS_local+" ; iDebugModelDLMS="+ iDebugModelDLMS +" ; iObisFilesNumber="+iObisFilesNumber);
     }
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     String sDate = "";
@@ -693,6 +736,7 @@ public class MeterDLMSClient extends Module {
         dlms.setObisCodes(man.getObisCodes());
         com = new GXCommunicate(5000, dlms, man, iec, auth, pw, media);
         com.Trace = trace;
+        com.iDebugModelDLMS_local = iDebugModelDLMS; // debug mode is set also for GXCommunicate module
         return com;
     }
 }

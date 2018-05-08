@@ -240,6 +240,32 @@ public class Compute extends Module {
                     //Metadata meta = pDataSet.getmeta(Output.getString(0));
                     //meta.type = "double"; // ca un exemplu
                     
+                } else
+                if(cmd.equals("ChangeValue_Lib01_Add3Values")) {
+                    // A value will be mulktiplied by a constant and a sign will be given based on the sig of another value
+                    //double new_result=0;
+                    //System.out.println("processCmd1: "+cmd.toString());
+                    String variable_string1="";
+                    String variable_string2="";
+                    String variable_string3="";
+                    //String variable_string_final="";
+                    double new_value = 0.0;
+                    //printToFile("Hello");
+                    //System.out.println("processCmd3: "+Input.getString(0));
+                    Metadata meta = pDataSet.getmeta(Input.getString(0));
+                    String type = meta.type;
+//                    Date ts = meta.timestamp;
+                    // make calculations
+                    
+                    //System.out.println("processCmd2: "+cmd.toString());
+                    variable_string1 = (String) pDataSet.getProperty(Input.getString(0), "");
+                    //printToFile("H1="+variable_string_ini+" str="+Input.getString(0));
+                    variable_string2 = (String) pDataSet.getProperty(Input.getString(1), "");
+                    variable_string3 = (String) pDataSet.getProperty(Input.getString(2), "");
+                    new_value =  Double.parseDouble(variable_string1)+Double.parseDouble(variable_string2)+Double.parseDouble(variable_string3); 
+                        
+                    pDataSet.put(Output.getString(0), Double.toString(new_value));
+                    
                 }
         } 
         catch(Exception ex) {
