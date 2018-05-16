@@ -52,6 +52,7 @@ public class MeterDLMSClient extends Module {
 
     @Override
     public void Initialize() {
+
         pDataSet = mmManager.getSharedData(PropUtil.GetString(pAttributes, "pDataSet", sName));
         sPrefix = PropUtil.GetString(pAttributes, "sPrefix", "");
         lPeriod = PropUtil.GetInt(pAttributes, "lPeriod", 1000);
@@ -67,6 +68,14 @@ public class MeterDLMSClient extends Module {
         sObj2File = PropUtil.GetString(pAttributes, "sObj2File", "");
         sObj3File = PropUtil.GetString(pAttributes, "sObj3File", "");
         sObj4File = PropUtil.GetString(pAttributes, "sObj4File", "");
+
+        iObisFilesArrayEnable = PropUtil.GetInt(pAttributes, "iObisFilesArrayEnable", 0);
+        iObisFilesArrayNumber = PropUtil.GetInt(pAttributes, "iObisFilesArrayNumber", 4);
+        if(iObisFilesArrayNumber>=67) iObisFilesArrayNumber = 67;
+        if(iObisFilesArrayEnable==1) for(int i1=0; i1<iObisFilesArrayNumber; i1++) {
+            // Up to 20 files can be read
+            sObjFiles[i1] = PropUtil.GetString(pAttributes, "sObjFiles"+i1, "");
+        }
 
         sProf1File = PropUtil.GetString(pAttributes, "sProf1File", "");
 
@@ -101,6 +110,8 @@ public class MeterDLMSClient extends Module {
         pDataSet.put("Module/MeterDLMSClient/"+sName+"/StartDateTime", sTSDate); // DateTime
         String s1;
         s1 = sCmdLineArgs; pDataSet.put("Module/MeterDLMSClient/"+sName+"/sCmdLineArgs", s1); // 
+        s1 = String.valueOf(iObisFilesArrayEnable); pDataSet.put("Module/MeterDLMSClient/"+sName+"/iObisFilesArrayEnable", s1); // 
+        s1 = String.valueOf(iObisFilesArrayNumber); pDataSet.put("Module/MeterDLMSClient/"+sName+"/iObisFilesArrayNumber", s1); // 
         //pDataSet.put("Module/MeterDLMSClient/"+sName+"/iObisFilesNumber", iObisFilesNumber); // DateTime
     }
 
@@ -122,6 +133,7 @@ public class MeterDLMSClient extends Module {
     String sObj2File = "";
     String sObj3File = "";
     String sObj4File = "";
+    String[] sObjFiles = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}; // a number of 20 files is initialized
 
     String sProf1File = "";
 
@@ -130,6 +142,10 @@ public class MeterDLMSClient extends Module {
 
     int iMultiSingleOBIS = 0;
     int iObisFilesNumber = 3;
+
+    int iObisFilesArrayEnable = 0; // Default it is not enabled the array of Obis files
+    int iObisFilesArrayNumber = 0; // If iObisFilesArrayEnable is "1", then the default number of Obis files is defined here
+    
 
     public int iDebugModelDLMS = 0; // Bit 0:  0=no debug; 1=debug // Bit 1: 0=on the run debug; 1=buffered debug // bit 2: level of debug
     
@@ -243,6 +259,13 @@ public class MeterDLMSClient extends Module {
     GXDLMSObjectCollection objects2 = new GXDLMSObjectCollection();
     GXDLMSObjectCollection objects3 = new GXDLMSObjectCollection();
     GXDLMSObjectCollection objects4 = new GXDLMSObjectCollection();
+    // A collection of 24 objects is initialized for the array of OBIS files
+    GXDLMSObjectCollection[] objects_arr  = new GXDLMSObjectCollection[99];
+    //objects_arr[1] = new GXDLMSObjectCollection();
+    
+    //Carinfo[] mycars = new Carinfo[1];
+    //mycars[0] = new Carinfo("Lada", 9000);
+
 //
     GXDLMSObjectCollection profiles1 = new GXDLMSObjectCollection();
     int iNoOfProfiles = 0;
@@ -260,7 +283,7 @@ public class MeterDLMSClient extends Module {
 
     public void QueryMeter() {
         // TODO code application logic here
-
+        System.out.println("QueryMeter()");
         try {
             if (com == null) {
                 if (logFile == null) {
@@ -272,13 +295,19 @@ public class MeterDLMSClient extends Module {
                 // /m=grx /h=localhost /p=4061
                 com = getManufactureSettings(ssCmdLineArgs);
                 // If help is shown.
+                System.out.println("com = getManufactureSettings: " + ssCmdLineArgs.length);
                 if (com == null) {
+                    System.out.println("com == null");
                     return;
                 }
                 if (CheckDisableRead()) {
+                    System.out.println("CheckDisableRead()");
                     return;
                 }
+
+                System.out.println("com.initializeConnection() to start");
                 com.initializeConnection();
+                System.out.println("com.initializeConnection() done");
                 try {
                     // com.readAndPrintAllObjects(logFile);
                     if(!isInit){
@@ -292,9 +321,12 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    traceLn(logFile, "iObisFilesNumber="+iObisFilesNumber);
+
+                    traceLn(logFile, "sObj1File="+sObj1File);
                     objects1 = objects1.load(sObj1File);
                     System.out.println("Rsau1a");
-                    try { com.readScalerAndUnits(objects1, logFile, "O1");} catch(Exception exc) {System.out.println("Rsau1: " + exc.getMessage());};
+                    try { com.readScalerAndUnits(objects1, logFile, "O1");} catch(Exception exc) {System.out.println("Rsau1exc: " + exc.getMessage());};
                     System.out.println("Rsau1b");
                     //traceLn(logFile, "rsc1: " + exc.getMessage());
                     if (CheckDisableRead()) {     
@@ -302,22 +334,38 @@ public class MeterDLMSClient extends Module {
                     }
                     // GuruxUtil.GXDLMSObjectSaveWithVals(objects1, "tstObjSave.txt");
                     objects2 = objects2.load(sObj2File);
+                    traceLn(logFile, "sObj2File="+sObj2File);
                     traceLn(logFile, "Rsau2a");
-                    try { com.readScalerAndUnits(objects2, logFile, "O2");} catch(Exception exc) {traceLn(logFile, "Rsau2: " + exc.getMessage());};
+                    try { com.readScalerAndUnits(objects2, logFile, "O2");} catch(Exception exc) {traceLn(logFile, "Rsau2exc: " + exc.getMessage());};
                     traceLn(logFile, "Rsau2b");
                     if (CheckDisableRead()) {
                         return;
                     }
                     // Object no. 3
                     objects3 = objects3.load(sObj3File);
-                    traceLn(logFile, "Rsau3a");
-                    try { com.readScalerAndUnits(objects3, logFile, "O3");} catch(Exception exc) {traceLn(logFile, "Rsau3: " + exc.getMessage());};
-                    traceLn(logFile, "Rsau3b");
+                    traceLn(logFile, "sObj3File="+sObj3File);
+                    traceLn(logFile, "readScalerAndUnits_3start");
+                    try { com.readScalerAndUnits(objects3, logFile, "O3");} catch(Exception exc) {traceLn(logFile, "Rsau3exc: " + exc.getMessage());};
+                    traceLn(logFile, "readScalerAndUnits_3stop");
                     
                     if(iObisFilesNumber>3) {
                         objects4 = objects4.load(sObj4File);
-                        try { com.readScalerAndUnits(objects4, logFile, "O4");} catch(Exception exc) {traceLn(logFile, "Rsau4: " + exc.getMessage());};
+                        traceLn(logFile, ">sObj4File="+sObj4File);
+                        traceLn(logFile, "readScalerAndUnits_4start");
+                        try { com.readScalerAndUnits(objects4, logFile, "O4");} catch(Exception exc) {traceLn(logFile, "Rsau4exc: " + exc.getMessage());};
+                        traceLn(logFile, "readScalerAndUnits_4stop");
+                    }
+
                     
+                    if(iObisFilesArrayEnable==1) {
+                        traceLn(logFile, "iObisFilesArrayEnable="+iObisFilesArrayEnable+"\n>>readScalerAndUnits");
+                        for(int i1=0; i1<iObisFilesArrayNumber; i1++) {
+                            objects_arr[i1] = objects_arr[i1].load(sObjFiles[i1]);
+                            traceLn(logFile, ">sObjFiles["+i1+"]="+sObjFiles[i1]);
+                            traceLn(logFile, "readScalerAndUnits_Arr["+i1+"]start");
+                            try { com.readScalerAndUnits(objects_arr[i1], logFile, "OArr"+i1);} catch(Exception exc) {traceLn(logFile, "RsaArr"+i1+": " + exc.getMessage());};
+                            traceLn(logFile, "readScalerAndUnits_Arr["+i1+"]stop");
+                        }
                     }
 
                     if (iProfilesRead == 1) {
@@ -436,11 +484,29 @@ public class MeterDLMSClient extends Module {
                         GuruxUtil.GXDLMSObjectSaveWithVals(objects4, "tstObj4Save.txt");
                     }
                 }
+                // Array of OBIS files
+                if(iObisFilesArrayEnable==1) {
+                    traceLn(logFile, "iObisFilesArrayEnable="+iObisFilesArrayEnable+"\n>>readRegisters");
+                    for(int i1=0; i1<iObisFilesArrayNumber; i1++) {
+                        if (objects_arr[i1] != null) {
+                            if (CheckDisableRead()) {
+                                return;
+                            }
+                            com.ObjFileCrt = sObjFiles[i1];
+                            com.readRegisters(objects_arr[i1], logFile);
+
+                            WriteVals(objects_arr[i1]);
+                            GuruxUtil.GXDLMSObjectSaveWithVals(objects_arr[i1], "tstObjArray"+i1+"Save.txt");
+                        }
+                    }
+                }
+
             } else {
                 if (objects1 != null) {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    com.ObjFileCrt = sObj1File;
                     com.readValues2(objects1, logFile);
                     WriteVals(objects1);
                 }
@@ -448,6 +514,7 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    com.ObjFileCrt = sObj2File;
                     com.readValues2(objects2, logFile);
                     WriteVals(objects2);
                 }
@@ -455,6 +522,7 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    com.ObjFileCrt = sObj3File;
                     com.readValues2(objects3, logFile);
                     WriteVals(objects3);
                 }
@@ -462,10 +530,25 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    com.ObjFileCrt = sObj4File;
                     com.readValues2(objects4, logFile);
                     WriteVals(objects4);
                 }
             }
+                // Array of OBIS files
+                if(iObisFilesArrayEnable==1) {
+                    traceLn(logFile, "iObisFilesArrayEnable="+iObisFilesArrayEnable+"\n>>readValues2");
+                    for(int i1=0; i1<iObisFilesArrayNumber; i1++) {
+                        if (objects_arr[i1] != null) {
+                            if (CheckDisableRead()) {
+                                return;
+                            }
+                            com.ObjFileCrt = sObjFiles[i1];
+                            com.readValues2(objects_arr[i1], logFile);
+                            WriteVals(objects_arr[i1]);
+                        }                    
+                    }
+                }
             if (iProfilesRead == 1) {
                 if (CheckDisableRead()) {
                     return;
@@ -735,6 +818,7 @@ public class MeterDLMSClient extends Module {
         }
         dlms.setObisCodes(man.getObisCodes());
         com = new GXCommunicate(5000, dlms, man, iec, auth, pw, media);
+        System.out.println("COM("+man.getName()+")");
         com.Trace = trace;
         com.iDebugModelDLMS_local = iDebugModelDLMS; // debug mode is set also for GXCommunicate module
         return com;

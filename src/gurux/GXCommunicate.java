@@ -73,6 +73,7 @@ public class GXCommunicate {
     boolean iec;
     java.nio.ByteBuffer replyBuff;
     int WaitTime = 10000;
+    public String ObjFileCrt = "";
 
     public static void trace(PrintWriter logFile, String text) {
         logFile.write(text);
@@ -88,6 +89,7 @@ public class GXCommunicate {
             GXManufacturer manufacturer, boolean iec, Authentication auth,
             String pw, IGXMedia media) throws Exception {
         Files.deleteIfExists(Paths.get("trace.txt"));
+        //traceLn(logFile, "Start tracing DLMS");
         Media = media;
         WaitTime = waitTime;
         this.dlms = dlms;
@@ -117,13 +119,17 @@ public class GXCommunicate {
                 + Integer.toHexString(dlms.getServerAddress()));
         if (dlms.getInterfaceType() == InterfaceType.WRAPPER) {
             replyBuff = java.nio.ByteBuffer.allocate(8 + 1024);
+            System.out.println("ByteBuffer.allocate: 8+1024");
         } else {
             replyBuff = java.nio.ByteBuffer.allocate(100);
+            System.out.println("ByteBuffer.allocate: 100");
         }
     }
 
     public void close() throws Exception {
         if (Media != null) {
+            System.out.println("GXCommunicate close()");
+
             System.out.println("DisconnectRequest");
             GXReplyData reply = new GXReplyData();
             readDLMSPacket(dlms.disconnectRequest(), reply);
@@ -191,7 +197,7 @@ public class GXCommunicate {
         //iDebugModelDLMS_local = MeterDLMSClient.iDebugModeDLMS;
         synchronized (Media.getSynchronous()) {
             while (!succeeded) {
-                Debug_String_local = "DLMS_S01a<- " + now() + "\t" + GXCommon.bytesToHex(data);
+                Debug_String_local = "DLMS_S01a<- " + now() + "\t" + GXCommon.bytesToHex(data) +"     ("+ObjFileCrt+")";
                 if((iDebugModelDLMS_local & 0x01)==1){
                     if((iDebugModelDLMS_local & 0x02)==0) writeTrace("*"+Debug_String_local); else Debug_String1 += "\n_"+Debug_String_local;
                 }
@@ -293,7 +299,10 @@ public class GXCommunicate {
      */
     public void initializeConnection() throws Exception, InterruptedException {
         Media.open();
+        System.out.println("Media.open()");
         if (Media instanceof GXSerial) {
+            System.out.println("Media instanceof GXSerial");
+
             GXSerial serial = (GXSerial) Media;
             serial.setDtrEnable(true);
             serial.setRtsEnable(true);
