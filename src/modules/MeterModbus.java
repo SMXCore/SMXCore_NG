@@ -68,6 +68,7 @@ public class MeterModbus extends Module {
 
     public void Loop() {
 
+        System.out.println("bDevice1="+bDevice1);
         while (bStop == 0) {
             try {
                 if (lPeriod > 0) {
@@ -145,6 +146,7 @@ public class MeterModbus extends Module {
     public int iReqPause = 100;
     public int iMaxSuccErr = 10;
     
+   
     public void ReOpen() {
         try {
             try {
@@ -171,6 +173,8 @@ public class MeterModbus extends Module {
 
             iReadTimeOut = PropUtil.GetInt(pAttributes, "iReadTimeOut", 2000);
             iConnTimeOut = PropUtil.GetInt(pAttributes, "iConnTimeOut", 3000);
+
+            //iMeterType = PropUtil.GetString(pAttributes, "iMeterType", "");
 
             s = new Socket();
             s.setReuseAddress(true);
@@ -279,16 +283,23 @@ Byte 12	is the lsb of number of bytes to read or write: for example 2
                         ReOpen();
                     }
                     err_try1=1;
+                    if (iDebug == 1) System.out.println("Modb_Out="+util.ConvertUtil.ByteStr2HexStr(bSend, 0, iSend));
                     outToServer.write(bSend, 0, iSend);
-                    Thread.sleep(10); //30 //20
+                    
+                    if("Socomec1f".equals(bDevice1)) Thread.sleep(10); //30 //20
+                    //if(bDevice1 == "Socomec3f") Thread.sleep(50); //30 //20
+                    if("Socomec3f".equals(bDevice1)) Thread.sleep(50); //30 //20
                     err_try1=2;
                     outToServer.flush();
 
                     err_try1=3;
-                    Thread.sleep(150); // 120 // 150
+                    //if(bDevice1 == "Socomec1f") Thread.sleep(150); // 120 // 150
+                    if("Socomec1f".equals(bDevice1)) Thread.sleep(150); // 120 // 150
+                    if("Socomec3f".equals(bDevice1)) Thread.sleep(300); // 120 // 150
                     err_try1=4;
                     //System.out.println("Err_try4\n");
                     iRec = inFromServer.read(bRec);
+                    if (iDebug == 1) System.out.println("Modb_In:iRec="+iRec);
                     err_try1=5;
                     //System.out.println("Err_try5\n");
                     if (iDebug == 1) System.out.println("Modb_In="+util.ConvertUtil.ByteStr2HexStr(bRec, 0, iRec));
@@ -362,10 +373,11 @@ Receive:  02 03 48 00 00 56 4B 00 00 55 AD 00 00 55 06 00   ..H..VK..U­..U..
                     }
             } else {
                     if (iRec != 77) {
-                        //bRecOK = false;
+                        bRecOK = false;
                     }
                     if(bRecOK==true) {
                         sRecHex = util.ConvertUtil.ByteStr2HexStr(bRec, 36, iRec);
+                        if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC:");
                         DecodeVals_SOCOMEC();
                     }
             
@@ -498,67 +510,79 @@ Receive:  02 03 48 00 00 56 4B 00 00 55 AD 00 00 55 06 00   ..H..VK..U­..U..
             int val_crt1, val_crt2, val_crt3, val_crt4, val_crt5, val_crt6, val_crt7;
             int offs;
             float f1, f2, f3,f4,f5,f6,f7;
-            String s1,s2,s3,s4, s5, s6, s7, s8;
+            String s1,s2,s3,s4, s1a,s2a,s3a,s4a, s5, s6, s7, s8;
             //if (sDateIntVar.length() > 0) {
             //   pDataSet.put(sPrefix + sDateIntVar, sTSDate);
             //} else {
             //    pDataSet.put(sPrefix + sName + "-ReadDate", sTSDate);
             //}
             //for (int iCrtPosNo = 1; iCrtPosNo <= iNoOfPos; iCrtPosNo++) {
+                if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC started1:"+bDevice1);
                 try {
+                    if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC started2");
+                    if("Socomec3f".equals(bDevice1)) //if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC3f started2");
+                    {
+                        if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC started3: Socomec3f");
+                        // Socomec 3f
+                        // the firts useful data is at offset 3 (corresponding to lStartAddr =
+                        offs=3; s1a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1a); 
+                        //if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC started: offs=3,Str="+s1);
+                        //if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC started: offs=3,Val="+val_crt1);
+                        f1=val_crt1; f1=f1/100; s1= String.valueOf(f1);
+                        pDataSet.put(sPrefix + "1-1-32-7-0-255/-2", s1); // U1
+                        offs=3+4; s2a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2a); f2=val_crt2; f2=f2/100; s2= String.valueOf(f2);
+                        pDataSet.put(sPrefix + "1-1-52-7-0-255/-2", s2); // U2
+                        offs=3+8; s3a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3a); f3=val_crt3; f3=f3/100; s3= String.valueOf(f3);
+                        pDataSet.put(sPrefix + "1-1-72-7-0-255/-2", s3); // U3
+                        offs=3+12; s4a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4a); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
+                        pDataSet.put(sPrefix + "1-1-14-7-0-255/-2", s4); // frequency f
+                        //System.out.println("U1="+s1 + "\tU2="+s2 + "\tU3="+s3 + "\tf="+s4);
+                        System.out.println("U1("+s1a+")="+s1 + "\tU2("+s2a+")="+s2 + "\tU3("+s3a+")="+s3 + "\tf("+s4a+")="+s4);
 
-                    /*
-                    // Socomec 3f
-                    // the firts useful data is at offset 3 (corresponding to lStartAddr =
-                    offs=3; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1/100; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-32-7-0-255/-2", s1); // U1
-                    offs=3+4; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2/100; s2= String.valueOf(f2);
-                    pDataSet.put(sPrefix + "1-1-52-7-0-255/-2", s2); // U2
-                    offs=3+8; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3/100; s3= String.valueOf(f3);
-                    pDataSet.put(sPrefix + "1-1-72-7-0-255/-2", s3); // U3
-                    offs=3+12; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
-                    pDataSet.put(sPrefix + "1-1-14-7-0-255/-2", s4); // frequency f
-                    System.out.println("U1="+s1 + "\tU2="+s2 + "\tU3="+s3 + "\tf="+s4);
+                        offs=3+16; s1a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1a); f1=val_crt1; f1=f1/1000; s1= String.valueOf(f1);
+                        pDataSet.put(sPrefix + "1-1-31-7-0-255/-2", s1); // I1
+                        offs=3+20; s2a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2a); f2=val_crt2; f2=f2/1000; s2= String.valueOf(f2);
+                        pDataSet.put(sPrefix + "1-1-51-7-0-255/-2", s2); // I2
+                        offs=3+24; s3a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3a); f3=val_crt3; f3=f3/1000; s3= String.valueOf(f3);
+                        pDataSet.put(sPrefix + "1-1-71-7-0-255/-2", s3); // I3
+                        offs=3+28; s4a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4a); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
+                        //pDataSet.put(sPrefix + "1-1-7x-7-0-255/-2", s4); // I0
+                        //System.out.println("I1="+s1 + "\tI2="+s2 + "\tI3="+s3 + "\tI0="+s4);
+                        System.out.println("I1("+s1a+")="+s1 + "\tI2("+s2a+")="+s2 + "\tI3("+s3a+")="+s3 + "\tI0("+s4a+")="+s4);
 
-                    offs=3+16; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1/1000; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-31-7-0-255/-2", s1); // I1
-                    offs=3+20; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2/1000; s2= String.valueOf(f2);
-                    pDataSet.put(sPrefix + "1-1-51-7-0-255/-2", s2); // I2
-                    offs=3+24; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3/1000; s3= String.valueOf(f3);
-                    pDataSet.put(sPrefix + "1-1-71-7-0-255/-2", s3); // I3
-                    offs=3+28; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
-                    pDataSet.put(sPrefix + "1-1-7x-7-0-255/-2", s4); // I0
-                    System.out.println("I1="+s1 + "\tI2="+s2 + "\tI3="+s3 + "\tI0="+s4);
+                        offs=3+32; s1a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1a); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
+                        pDataSet.put(sPrefix + "1-1-16-7-0-255/-2", s1); // Ptot
+                        offs=3+36; s2a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2a); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
+                        pDataSet.put(sPrefix + "1-1-131-7-0-255/-2", s2); // Qtot
+                        offs=3+40; s3a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3a); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
+                        //pDataSet.put(sPrefix + "1-1-71-7-0-255/-2", s3); // Stot
+                        offs=3+44; s4a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4a); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
+                        //pDataSet.put(sPrefix + "1-1-72-7-0-255/-2", s4); // PF
+                        System.out.println("P("+s1a+")="+s1 + "\tQ("+s2a+")="+s2 + "\tS("+s3a+")="+s3 + "\tPF("+s4a+")="+s4);
 
-                    offs=3+32; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-16-7-0-255/-2", s1); // Ptot
-                    offs=3+36; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
-                    pDataSet.put(sPrefix + "1-1-131-7-0-255/-2", s2); // Qtot
-                    offs=3+40; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
-                    pDataSet.put(sPrefix + "1-1-7z1-7-0-255/-2", s3); // Stot
-                    offs=3+44; s4 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt4 = hex2decimal(s4); f4=val_crt4; f4=f4/1000; s4= String.valueOf(f4);
-                    pDataSet.put(sPrefix + "1-1-7z2-7-0-255/-2", s4); // PF
-                    System.out.println("P="+s1 + "\tQ="+s2 + "\tS="+s3 + "\tPF="+s4);
+                        offs=3+48; s1a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1a); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
+                        pDataSet.put(sPrefix + "1-1-36-7-0-255/-2", s1); // Ptot
+                        offs=3+52; s2a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2a); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
+                        pDataSet.put(sPrefix + "1-1-56-7-0-255/-2", s2); // Qtot
+                        offs=3+56; s3a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3a); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
+                        pDataSet.put(sPrefix + "1-1-76-7-0-255/-2", s3); // Stot
+                        //System.out.println("P1="+s1 + "\tP2="+s2 + "\tP3="+s3);
+                        System.out.println("P1("+s1a+")="+s1 + "\tP2("+s2a+")="+s2 + "\tP3("+s3a+")="+s3);
 
-                    offs=3+48; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-36-7-0-255/-2", s1); // Ptot
-                    offs=3+52; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
-                    pDataSet.put(sPrefix + "1-1-56-7-0-255/-2", s2); // Qtot
-                    offs=3+56; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
-                    pDataSet.put(sPrefix + "1-1-76-7-0-255/-2", s3); // Stot
-                    System.out.println("P1="+s1 + "\tP2="+s2 + "\tP3="+s3);
-
-                    offs=3+60; s1 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
-                    pDataSet.put(sPrefix + "1-1-151-7-0-255/-2", s1); // Ptot
-                    offs=3+64; s2 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
-                    pDataSet.put(sPrefix + "1-1-171-7-0-255/-2", s2); // Qtot
-                    offs=3+68; s3 =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
-                    pDataSet.put(sPrefix + "1-1-191-7-0-255/-2", s3); // Stot
-                    pDataSet.put(sPrefix + "0-0-1-0-0-255/-2", sTSDate); // Stot
-                    System.out.println("Q1="+s1 + "\tQ2="+s2 + "\tQ3="+s3 + "\tTime="+sTSDate);
-                    */
+                        offs=3+60; s1a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt1 = hex2decimal(s1a); f1=val_crt1; f1=f1*10; s1= String.valueOf(f1);
+                        pDataSet.put(sPrefix + "1-1-151-7-0-255/-2", s1); // Ptot
+                        offs=3+64; s2a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt2 = hex2decimal(s2a); f2=val_crt2; f2=f2*10; s2= String.valueOf(f2);
+                        pDataSet.put(sPrefix + "1-1-171-7-0-255/-2", s2); // Qtot
+                        offs=3+68; s3a =  util.ConvertUtil.ByteStr2HexStr(bRec, offs, 4); val_crt3 = hex2decimal(s3a); f3=val_crt3; f3=f3*10; s3= String.valueOf(f3);
+                        pDataSet.put(sPrefix + "1-1-191-7-0-255/-2", s3); // Stot
+                        pDataSet.put(sPrefix + "0-0-1-0-0-255/-2", sTSDate); // Stot
+                        //System.out.println("Q1="+s1 + "\tQ2="+s2 + "\tQ3="+s3 + "\tTime="+sTSDate);
+                        System.out.println("Q1("+s1a+")="+s1 + "\tQ2("+s2a+")="+s2 + "\tQ3("+s3a+")="+s3);
+                        /*
+                        */
+                    } // Endof if(bDevice1 =="Socomec3f")
 //
-                    if(bDevice1 == "Socomec1f") {
+                    if("Socomec1f".equals(bDevice1)) {
                         // Socomec 1f
 
                         Date date = new Date();
@@ -602,6 +626,7 @@ Receive:  02 03 48 00 00 56 4B 00 00 55 AD 00 00 55 06 00   ..H..VK..U­..U..
                     }
 
                 } catch (Exception ex) {
+                    if (iDebug == 1) System.out.println("DecodeVals_SOCOMEC started: Error");
                 }
             //}
         } catch (Exception e) {

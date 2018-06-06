@@ -71,7 +71,7 @@ public class MeterDLMSClient extends Module {
 
         iObisFilesArrayEnable = PropUtil.GetInt(pAttributes, "iObisFilesArrayEnable", 0);
         iObisFilesArrayNumber = PropUtil.GetInt(pAttributes, "iObisFilesArrayNumber", 4);
-        if(iObisFilesArrayNumber>=67) iObisFilesArrayNumber = 67;
+        if(iObisFilesArrayNumber>=120) iObisFilesArrayNumber = 120;
         if(iObisFilesArrayEnable==1) for(int i1=0; i1<iObisFilesArrayNumber; i1++) {
             // Up to 20 files can be read
             sObjFiles[i1] = PropUtil.GetString(pAttributes, "sObjFiles"+i1, "");
@@ -133,7 +133,13 @@ public class MeterDLMSClient extends Module {
     String sObj2File = "";
     String sObj3File = "";
     String sObj4File = "";
-    String[] sObjFiles = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}; // a number of 20 files is initialized
+    String[] sObjFiles = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                          "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
+                          "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
+                          "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
+                          "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
+                          "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
+                          "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}; // a number of 140 files is initialized
 
     String sProf1File = "";
 
@@ -260,7 +266,7 @@ public class MeterDLMSClient extends Module {
     GXDLMSObjectCollection objects3 = new GXDLMSObjectCollection();
     GXDLMSObjectCollection objects4 = new GXDLMSObjectCollection();
     // A collection of 24 objects is initialized for the array of OBIS files
-    GXDLMSObjectCollection[] objects_arr  = new GXDLMSObjectCollection[99];
+    GXDLMSObjectCollection[] objects_arr  = new GXDLMSObjectCollection[121];
     //objects_arr[1] = new GXDLMSObjectCollection();
     
     //Carinfo[] mycars = new Carinfo[1];
@@ -792,6 +798,7 @@ public class MeterDLMSClient extends Module {
                 serial.setDataBits(8);
                 serial.setParity(Parity.NONE);
                 serial.setStopBits(StopBits.ONE);
+                //serial.setHandshake(Handshake.NONE);
             }
         } else if (media instanceof GXNet) {
             GXNet net = (GXNet) media;
