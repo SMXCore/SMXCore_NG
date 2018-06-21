@@ -19,11 +19,15 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 import util.SmartProperties;
 import util.SmartProperties.Metadata;
@@ -80,6 +84,7 @@ public class Compute extends Module {
             
             //System.out.println("processCmd0: "+cmd.toString());
             // Implement the Compute algorithm assocaited with "AddItems"
+            System.out.println("I'm running");
             if(cmd.equals("AddItems")) {
                 // momentan implementez ca si cum toate tipurile de variabile ar fii double
                 double sum = 0.0;
@@ -266,10 +271,70 @@ public class Compute extends Module {
                         
                     pDataSet.put(Output.getString(0), Double.toString(new_value));
                     
+                } else
+                if(cmd.equals("ReadJsonArrayFile")) {
+                    // Reads a json array file whole, indexes it by value and throws it into the array
+                    //pDataSet.put(Output.getString(0), Double.toString(new_value));
+                    JsonArray jsa = read_jsa_from_file(command.getString("File", "pmu_out.txt"));
+                    for(int i = 0; i < jsa.size(); i++) {
+                        decomposeObject(Output.getString(0) + Integer.toString(i), jsa.getJsonObject(i));
+                    }
                 }
         } 
         catch(Exception ex) {
             
+        }
+    }
+    void decomposeObject(String prefix, JsonObject obj) {
+        try {
+            Iterator it = obj.entrySet().iterator();
+            while(it.hasNext()) {
+                try {                    
+                    Map.Entry crt = (Map.Entry) it.next();
+                    String name = (String) crt.getKey();
+                    JsonValue value = (JsonValue) crt.getValue();
+                    if(value.getValueType() == JsonValue.ValueType.OBJECT) {
+                        JsonObject objj = (JsonObject) value;
+                        decomposeObject(prefix + '/' + name, objj);
+                        logger.finest("Found inner object " + prefix + '/' + name);
+                    } else {
+                        String ss = "";
+                        if(value.getValueType() == JsonValue.ValueType.STRING) {
+                            JsonString s = (JsonString) value;
+                            ss = s.getString();
+                        } else if(value.getValueType() == JsonValue.ValueType.NUMBER) {
+                            JsonNumber n = (JsonNumber) value;
+                            if(n.isIntegral()) {
+                                long nr = n.longValue();
+                                ss = String.valueOf(nr);
+                            } else {
+                                double nr = n.doubleValue();
+                                ss = String.valueOf(nr);
+                            }
+                        } else {
+                            ss = value.toString();
+                        }
+                        String internal_name = prefix + '/' + name;
+                        pDataSet.put(internal_name, ss);
+                        logger.finest("Found value for " + internal_name + ": " + ss);
+                    }
+                    logger.finest("Decomposed object " + prefix);
+                } catch(Exception ex) {
+                    System.out.println("Wrong1 in decomposeObject");
+                    
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    String sStackTrace = sw.toString();
+                    logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
+                }
+            }
+        } catch(Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
     }
     
@@ -300,6 +365,34 @@ public class Compute extends Module {
             logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
         return jso;
+    }
+    JsonArray read_jsa_from_file(String file) {
+        JsonArray jsa = null;
+        try {
+            String file_content = new Scanner(new File(file)).useDelimiter("\\Z").next();
+            // comment processing
+
+            String comment_pattern = "(^|\\n)(#|//)[^\\n]*(\\n|$)";
+            int max_iterations = 1000;
+            int ijk = 0;
+            while(true) {
+                ijk++;
+                String new_file_content = file_content.replaceAll(comment_pattern, "\n");
+                if(new_file_content.equals(file_content) || ijk == max_iterations) {
+                    break;
+                } else file_content = new_file_content;
+            }
+
+            JsonReader jsr = Json.createReader(new StringReader(file_content));
+            jsa = jsr.readArray();
+        } catch(Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
+        }
+        return jsa;
     }
 
     Properties pAssociation = new Properties();
