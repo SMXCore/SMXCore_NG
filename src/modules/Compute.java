@@ -81,10 +81,12 @@ public class Compute extends Module {
             int period = command.getInt("Period", 1); // Neimplementat
             JsonArray Input = command.getJsonArray("Input");
             JsonArray Output = command.getJsonArray("Output");
+            String Period = command.getString("Period","1");
             
             //System.out.println("processCmd0: "+cmd.toString());
             // Implement the Compute algorithm assocaited with "AddItems"
-            System.out.println("I'm running");
+//            System.out.println("Running #Compute#");
+            logger.finest("Running #Compute#");
             if(cmd.equals("AddItems")) {
                 // momentan implementez ca si cum toate tipurile de variabile ar fii double
                 double sum = 0.0;
@@ -166,6 +168,9 @@ public class Compute extends Module {
             } else 
                 // Implement the Compute algorithm associated with "ChangeValue_Lib01"
                 if(cmd.equals("ChangeValue_Lib01_numkMG")) {
+                    logger.finest("Running #Compute.ChangeValue_Lib01_numkMG#");
+                    //System.out.println("Running #Compute.ChangeValue_Lib01_numkMG#");
+                    
                     // A value which has as sufix k, M, G will be mulktiplied by 1000 (kilo), 1'000'000 (Mega) or 1'000'000'000 (Giga)
                     //double new_result=0;
                     //System.out.println("processCmd1: "+cmd.toString());
@@ -246,8 +251,36 @@ public class Compute extends Module {
                     //meta.type = "double"; // ca un exemplu
                     
                 } else
-                if(cmd.equals("ChangeValue_Lib01_Add3Values")) {
+                if(cmd.equals("ChangeValue_Lib01_multiply_3_values")) {
                     // A value will be mulktiplied by a constant and a sign will be given based on the sig of another value
+                    //double new_result=0;
+                    //System.out.println("processCmd1: "+cmd.toString());
+                    String variable_string_val_1="";
+                    String variable_string_val_2="";
+                    String variable_string_val_3="";
+                    //String variable_string_final="";
+                    double new_value = 0.0;
+                    //printToFile("Hello");
+                    //System.out.println("processCmd3: "+Input.getString(0));
+                    Metadata meta = pDataSet.getmeta(Input.getString(0));
+                    String type = meta.type;
+//                    Date ts = meta.timestamp;
+                    // make calculations
+                    
+                    variable_string_val_1 = (String) pDataSet.getProperty(Input.getString(0), "");
+                    variable_string_val_2 = (String) pDataSet.getProperty(Input.getString(1), "");
+                    variable_string_val_3 = (String) pDataSet.getProperty(Input.getString(2), "");
+                    //System.out.println("ChangeValue_Lib01_numkMG: " + variable_string_ini+"\n");
+                    new_value =  Double.parseDouble(variable_string_val_1)
+                                *Double.parseDouble(variable_string_val_2)
+                                *Double.parseDouble(variable_string_val_3); 
+
+                        
+                    pDataSet.put(Output.getString(0), Double.toString(new_value));
+                   
+                } else
+                if(cmd.equals("ChangeValue_Lib01_Add3Values")) {
+                    // Three variables are added
                     //double new_result=0;
                     //System.out.println("processCmd1: "+cmd.toString());
                     String variable_string1="";
@@ -273,12 +306,70 @@ public class Compute extends Module {
                     
                 } else
                 if(cmd.equals("ReadJsonArrayFile")) {
+                    logger.finest("Running #Compute.ReadJsonArrayFile#");
+                    // System.out.println("Running #Compute.ReadJsonArrayFile#");
+                    
                     // Reads a json array file whole, indexes it by value and throws it into the array
                     //pDataSet.put(Output.getString(0), Double.toString(new_value));
                     JsonArray jsa = read_jsa_from_file(command.getString("File", "pmu_out.txt"));
                     for(int i = 0; i < jsa.size(); i++) {
                         decomposeObject(Output.getString(0) + Integer.toString(i), jsa.getJsonObject(i));
                     }
+                } else
+                if(cmd.equals("RunCommand")) {
+                    String answer = "";
+                    java.lang.Runtime.getRuntime().exec("sudo df -h"); // df -h | tee df.log
+                    answer = "";
+                }
+                if(cmd.equals("Same_Value_Processing")) {
+                    // Looks for same value of a certain variable and increments a variable
+                    //pDataSet.put(Output.getString(0), Double.toString(new_value));
+                    try {
+                        String variable_string_to_compare=""; // variable to be compared
+                        String variable_string_to_compare_old=""; // the previou svalue (historical)
+                        String string_Same_SMMTime_No=""; // the number of same value
+                        String string_Same_SMMTime_No_Max="";
+                        String variable_string5=""; // Period for testing the function
+                        //String variable_string_final="";
+                        double Same_SMMTime_No = 0;
+                        double Same_SMMTime_No_Max = 0;
+                        //printToFile("Hello");
+                        //System.out.println("processCmd3: "+Input.getString(0));
+                        Metadata meta = pDataSet.getmeta(Input.getString(0));
+                        String type = meta.type;
+
+                        variable_string_to_compare = (String) pDataSet.getProperty(Input.getString(0), ""); // variable to be compared
+                        //System.out.println("Running #Compute.Same_Value_Processing0#"+variable_string1+"#"+variable_string2+"#"+variable_string3+"#"+variable_string4+"#");
+                        variable_string_to_compare_old = (String) pDataSet.getProperty(Input.getString(1), ""); // the previous value (historical)
+                        //System.out.println("Running #Compute.Same_Value_Processing1#"+variable_string1+"#"+variable_string2+"#"+variable_string3+"#"+variable_string4+"#");
+                        string_Same_SMMTime_No = (String) pDataSet.getProperty(Input.getString(2), "0"); // the number of same values
+                        //System.out.println("Running #Compute.Same_Value_Processing2#"+variable_string1+"#"+variable_string2+"#"+variable_string3+"#"+variable_string4+"#");
+                        string_Same_SMMTime_No_Max = (String) Input.getString(3);; // the number of same value when it restest and triggers an action
+                        variable_string5 = (String) Period.toString(); // the number of same value when it restest and triggers an action
+
+                        System.out.println("Running #Compute.Same_Value_Processing3#"+variable_string_to_compare+"#"+variable_string_to_compare_old+
+                                "#"+string_Same_SMMTime_No+"#"+string_Same_SMMTime_No_Max+"#"+variable_string5+"#");
+
+                        if(string_Same_SMMTime_No!="") {
+                            Same_SMMTime_No =  Double.parseDouble(string_Same_SMMTime_No); 
+                            Same_SMMTime_No_Max =  Double.parseDouble(string_Same_SMMTime_No_Max); 
+                            if(variable_string_to_compare == variable_string_to_compare_old) {
+                                logger.finest("Running #Compute.Same_Value_Processing#Equal#"+variable_string_to_compare);
+                                //System.out.println("Running #Compute.Same_Value_Processing#Equal#"+variable_string_to_compare);
+                                Same_SMMTime_No++;
+                                if(Same_SMMTime_No>Same_SMMTime_No_Max) Same_SMMTime_No=0;
+                            }
+                        }
+                        variable_string_to_compare_old = variable_string_to_compare; // the old valeu becomes the current value
+
+                        pDataSet.put(Output.getString(0), Double.toString(Same_SMMTime_No)); // Save number of old Date-time
+                        pDataSet.put(Input.getString(1), variable_string_to_compare_old); // Save old Date-time
+                    }
+                    catch(Exception ex) {
+                        logger.finest("Running #Compute.Same_Value_Processing#Error");
+                        //System.out.println("Running #Compute.Same_Value_Processing#Error");
+                    }
+
                 }
         } 
         catch(Exception ex) {
@@ -452,8 +543,6 @@ public class Compute extends Module {
 
         }
     }
-
-
 
     public int Pause = 0;
     public int memPause = 0;

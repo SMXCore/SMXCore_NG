@@ -246,9 +246,10 @@ public class Serial2Socket extends Module {
                 //Thread.sleep(200);
                 sRec = Exchange(sSSBridgeMessage, -1);
 
-                if (iDebug == 1) {
-                    System.out.println("Msg(iDebug=1): " + sRec+"\n");
-                }
+//                if (iDebug == 1) {
+//                    System.out.println("Msg(iDebug=1): " + sRec+"\n");
+//                }
+                logger.fine(sRec);
                 if (sRec.length() > 0) {
                     sssBridge.SocketWrite(sRec);
                 } else {

@@ -1,0 +1,5 @@
+#	Format
+#  MQTT topic = Internal attribute
+Relay1 = Relay1
+# mosquitto_pub -t "GPIO/Relay1" -p "TRUE"
+# mosquitto_pub -t "GPIO/Relay1" -p "FALSE"

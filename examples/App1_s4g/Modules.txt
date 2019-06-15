@@ -2,12 +2,26 @@
 #	Number of modules (can be greater that the actual number of modules)
 #
 iNoOfModules=20
+logLevel=CONFIG
+#
+#	Module 2 MQTT client ER
+#
+M2-Name=MQTTClient2
+M2-ClassName=modules.MQTTClient
+M2-AttributesFile=MQTTClient2-ER.json
 #
 #	Module 4 File Storage 1
 #
 M4-Name=FileStorage1
 M4-ClassName=modules.FileStorage
 M4-AttributesFile=FileStorage1.txt
+#M4-LogLevel=SEVERE
+#M4-LogLevel=WARNING
+#M4-LogLevel=INFO
+#M4-LogLevel=CONFIG
+#M4-LogLevel=FINE
+#M4-LogLevel=FINER
+#M4-LogLevel=FINEST
 #
 #	Module 5 Data Set 1
 #
@@ -30,7 +44,7 @@ M11-AttributesFile=DataSet1.txt
 #
 # Compute1
 #
-M12-Name=Compute1
-M12-ClassName=modules.Compute
-M12-AttributesFile=Compute1.json
+#M12-Name=Compute1
+#M12-ClassName=modules.Compute
+#M12-AttributesFile=Compute1.json
 #

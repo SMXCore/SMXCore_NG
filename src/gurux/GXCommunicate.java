@@ -179,6 +179,7 @@ public class GXCommunicate {
         if (data == null || data.length == 0) {
             return;
         }
+        //System.out.println("#$%(1)\n");
         reply.setError((short) 0);
         Object eop = (byte) 0x7E;
         // In network connection terminator is not used.
@@ -195,19 +196,23 @@ public class GXCommunicate {
         p.setCount(5);
         p.setWaitTime(WaitTime);
         //iDebugModelDLMS_local = MeterDLMSClient.iDebugModeDLMS;
+        //System.out.println("#$%(1A)\n");
         synchronized (Media.getSynchronous()) {
             while (!succeeded) {
                 Debug_String_local = "DLMS_S01a<- " + now() + "\t" + GXCommon.bytesToHex(data) +"     ("+ObjFileCrt+")";
                 if((iDebugModelDLMS_local & 0x01)==1){
                     if((iDebugModelDLMS_local & 0x02)==0) writeTrace("*"+Debug_String_local); else Debug_String1 += "\n_"+Debug_String_local;
                 }
+        //System.out.println("#$%(1AA)\n");
                 Media.send(data, null);
                 if (p.getEop() == null) {
                     p.setCount(1);
                 }
+        //System.out.println("#$%(1AAA)\n");
                 //Debug_String_local = "DLMS_Sent<- " + now() + "\t" + GXCommon.bytesToHex(data);
                 //if((iDebugModelDLMS_local & 0x01)==0) writeTrace("*"+Debug_String_local); else Debug_String1 += "_"+Debug_String_local;
                 succeeded = Media.receive(p);
+        //System.out.println("#$%(1B)\n");
                 if (!succeeded) {
                     // Try to read again...
                     if (pos++ == 3) {
@@ -219,6 +224,7 @@ public class GXCommunicate {
                 }
             }
             // Loop until whole DLMS packet is received.
+        //System.out.println("#$%(2)\n");
             try {
                 while (!dlms.getData(p.getReply(), reply)) {
                     if (p.getEop() == null) {
@@ -262,6 +268,7 @@ public class GXCommunicate {
                 throw new GXDLMSException(reply.getError());
             }
         }
+        //System.out.println("#$%(3)\n");
     }
 
     public void readDataBlock(byte[][] data, GXReplyData reply) throws Exception {

@@ -1,0 +1,33 @@
+{
+#	Dataset in the realtime data base
+	"dataSet": "DataSet1",
+	"prefix": {
+		"publish": "GPIO/", 
+		"subscribe": "GPIO/", 
+		"internal": "GPIO/"
+	},
+#	Connection attributes to Mosquitto brocker
+	"connection": {
+#			Broker Meltemi:
+		"broker": "tcp://localhost:1883",
+		"credentials": {
+			"username": "",
+			"password": "",
+			"clientID": "Ireland"
+		},
+#	Quality of service for the MQTT service, for both Pub&Sub
+		"qos": {
+			"publish": 1,
+			"subscribe": 1
+		}
+	},
+#	The periodicity for transmitting publishable data & reconnect
+	"period": 2000,
+#	Files for list of publishable data
+	"pubAssociation": {
+	},
+#	Files for list of data which is requested from Mosqutto
+#	for subscrition (these data are expected to be received
+	"subAssociation": "SubAssocIO.txt"
+#
+}

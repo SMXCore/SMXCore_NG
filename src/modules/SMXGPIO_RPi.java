@@ -66,6 +66,9 @@ public class SMXGPIO_RPi extends Module {
     public boolean dataSetConnection = false; 
     public boolean read_therm = false;
     
+    String truth = "TRUE";
+    String falsehood = "FALSE";
+    
     public String filePath = new String();
     public String fileName = new String();
     String lastDate = new String();
@@ -74,7 +77,8 @@ public class SMXGPIO_RPi extends Module {
 
     Map<String, GpioPinDigitalOutput> output_pins = new HashMap();
     Map<String, Boolean> output_pins_state = new HashMap();
-    Map<String, PinState> input_pins = new HashMap();
+    Map<String, GpioPinDigitalInput> input_pins = new HashMap();
+    Map<String, PinState> input_pins_state = new HashMap();
     Map<String, Integer> input_pins_cntr = new HashMap();
 
     Date refreshFile() {
@@ -138,6 +142,12 @@ public class SMXGPIO_RPi extends Module {
             } else {
                 dataSetConnection = false;
             }
+            
+            value = PropUtil.GetString(pAttributes, "UseZeroesOnes", "FALSE");
+            if(value.equals("TRUE")) {
+                truth = "1";
+                falsehood = "0";
+            }
 
             iNoOfPins = PropUtil.GetInt(pAttributes, "iNoOfPins", 0);
             read_therm = (PropUtil.GetInt(pAttributes, "ReadTherm", 0) > 0);
@@ -160,7 +170,8 @@ public class SMXGPIO_RPi extends Module {
 
                         final String pinname = sPinName;
                         final String pinnamecntr = sPinNameCntr;
-                        input_pins.put(pinname, PinState.LOW);
+                        input_pins.put(pinname, myButton);
+                        input_pins_state.put(pinname, myButton.getState()); 
 
                         input_pins_cntr.put(sPinNameCntr, 0);
 
@@ -171,7 +182,13 @@ public class SMXGPIO_RPi extends Module {
                             @Override
                             public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
                                 // display pin state on console and file
-                                String message = "STATE CHANGE" + "\t" + event.getPin() + "\t" + pinname + "\t" + event.getState();
+                                String state = "";
+                                if(event.getState() == PinState.HIGH) {
+                                    state = truth;
+                                } else {
+                                    state = falsehood;
+                                }
+                                String message = "STATE CHANGE" + "\t" + event.getPin() + "\t" + pinname + "\t" + state;
                                 if(consoleLogEnable) {
                                     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
                                     Date date = new Date();
@@ -182,30 +199,30 @@ public class SMXGPIO_RPi extends Module {
                                 }
 
                                 if(event.getState() == PinState.LOW) {
-                                    pDataSet.put(sPrefix + pinname, "FALSE");
+                                    pDataSet.put(sPrefix + pinname, falsehood);
                                 } else {
                                     int crt = input_pins_cntr.get(pinnamecntr);
                                     input_pins_cntr.put(pinnamecntr, crt + 1);
                                     if(dataSetConnection) {
-                                        pDataSet.put(sPrefix + pinname, "TRUE");
+                                        pDataSet.put(sPrefix + pinname, truth);
                                         pDataSet.put(sPrefix + pinnamecntr, crt + 1);
                                     }
-                                    message = "COUNTER\t" + event.getPin() + "\t" + pinname + "\t" + (crt + 1);
-                                    if(consoleLogEnable) {
-                                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
-                                        Date date = new Date();
-                                        System.out.println("<SMXGPIO_RPi: " + sName + "> [" + dateFormat.format(date) + "] --> " + message);
-                                    }
-                                    if(fileLogEnable) {
-                                        try {
-                                            printToFile(message);
-                                        } catch(Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
+//                                    message = "COUNTER\t" + event.getPin() + "\t" + pinname + "\t" + (crt + 1);
+//                                    if(consoleLogEnable) {
+//                                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
+//                                        Date date = new Date();
+//                                        System.out.println("<SMXGPIO_RPi: " + sName + "> [" + dateFormat.format(date) + "] --> " + message);
+//                                    }
+//                                    if(fileLogEnable) {
+//                                        try {
+//                                            printToFile(message);
+//                                        } catch(Exception e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    }
                                 }
 
-                                input_pins.put(pinname, event.getState());
+                                input_pins_state.put(pinname, event.getState());
                             }
 
                         });
@@ -288,12 +305,24 @@ public class SMXGPIO_RPi extends Module {
                 ldt = lIniSysTimeMs - lMemSysTimeMs;
                 lMemSysTimeMs = lIniSysTimeMs;
                     //System.out.println("<SMXGPIO_RPi>");
+                for(Map.Entry<String, GpioPinDigitalInput> pin: input_pins.entrySet()) {
+                    String pinname = pin.getKey();
+                    PinState ps = pin.getValue().getState();
+                    if(ps == PinState.HIGH) { 
+                        pDataSet.put(sPrefix + pinname, truth);
+                    } else {
+                        pDataSet.put(sPrefix + pinname, falsehood);
+                    }
+                    input_pins_state.put(pinname, ps);
+                }
 
                 for(Map.Entry<String, GpioPinDigitalOutput> pin: output_pins.entrySet()) {
                     String value = PropUtil.GetString(pDataSet, sPrefix + pin.getKey(), "ERROR");
                     boolean crt = output_pins_state.get(pin.getKey());
                     boolean changed = false;
-                    if(value.equals("TRUE")) {
+                        System.out.println("Testing pin " + pin.getValue().getPin().getAddress() + " with internal: " + sPrefix + pin.getKey());
+                    if(value.equals(truth)) {
+                        System.out.println(pin.getValue().getState() + " is now TRUE: " + sPrefix + pin.getKey());
                         pin.getValue().high();
                         output_pins_state.put(pin.getKey(), true);
                         if(crt != true) {

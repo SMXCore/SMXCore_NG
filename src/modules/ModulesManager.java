@@ -47,6 +47,8 @@ public class ModulesManager {
             }
         }
         
+        // SEVERE WARNING, INFO, CONFIG, FINE, FINER, FINEST, OFF , ALL 
+        // https://docs.oracle.com/javase/7/docs/api/java/util/logging/Level.html
         logger.setLevel(Level.parse(PropUtil.GetString(pAttributes, "logLevel", "CONFIG")));
         if(PropUtil.GetInt(pAttributes, "enableFileLog", 0) != 0) {
             try {

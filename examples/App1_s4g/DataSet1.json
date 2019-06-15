@@ -32,13 +32,15 @@
 			},
 			"P_PCC": {
 				"unit": "W",
-				"value": -120,
+				"value": -70,
 				"OBIS_code": "1.1.8.1.255",
 				 "Timestamp": "2016-04-15T23:06:30.000Z"
 			},
 			"P_BAT": {
 				"unit": "W",
-				"value": 120,
+				"P_real": 120,
+				"P_cd_setpoint": 120,
+				"P_setpoint": 120,
 				"OBIS_code": "1.1.8.1.255",
 				 "Timestamp": "2016-04-15T23:06:30.000Z"
 			}

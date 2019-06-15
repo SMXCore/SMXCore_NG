@@ -8,7 +8,8 @@ lPeriod = 1000
 sFileName = ./Log/Log1
 sFileExt = .txt
 #	Name of file where are described the data to be stored
-pStoreAssociation = StoreAssoc1.txt
+#pStoreAssociation = StoreAssoc1.txt
+pStoreAssociation = StoreAssoc1.json
 #	Type of separators between data, on each line
 sSeparator = \t
 #	Shows if the file is compressed after the day is finished

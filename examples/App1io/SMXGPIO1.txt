@@ -12,3 +12,12 @@ lPeriod = 1000
 # GPIO_PIN4= comunicare; restul sunt 3.3V si GND, 4.7k resistor between GPIO_PIN4 and 3.3V
 # 
 ReadTherm = 1
+#
+# GPIO/Relay1 = "TRUE" sau orice altceva
+P1-Name = Relay1
+# Select GPIO number e.g. equal 12 in follwing case
+P1-Code = 12
+P1-PinIO = Output
+# How to control it:
+# If we want to have a 1 logic, we just change the value of GPIO/Relay1 to "TRUE"
+# Otherwise, if we want a 0, we change the value of GPIO/Relay1 to "FALSE" - anything else will work, but not recommended 

@@ -24,6 +24,7 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import util.PropUtil;
+import com.pi4j.system.SystemInfo;
 
 /**
  *
@@ -80,12 +81,14 @@ public class DataSet extends Module {
                 }
             }
         } catch(Exception ex) {
+            System.out.println("DataSet.decomposeObject.Error");
             logger.warning(ex.getMessage());
         }
     }
     
     @Override
     public void Initialize() {
+        System.out.println("DataSet.Initialize");
         pDataSet = mmManager.getSharedData(sName);
         if(sAttributesFile.endsWith("json")) {
             try {
@@ -93,6 +96,7 @@ public class DataSet extends Module {
                 JsonObject jso = jsr.readObject();
                 decomposeObject("", jso);
             } catch(Exception ex) {
+                System.out.println("DataSet.Initialize.Error");
                 logger.warning(ex.getMessage());
             }
         } else {
@@ -129,6 +133,7 @@ public class DataSet extends Module {
             tLoop.start();
 
         } catch (Exception e) {
+                System.out.println("DataSet.Start.Error");
             // Log(Name + "-Open-" + e.getMessage() + "-" + e.getCause());
         }
     }
@@ -139,6 +144,11 @@ public class DataSet extends Module {
         UpdateFirst();
         while (bStop == 0) {
             try {
+                if(bReinitialize) {
+                    Initialize();
+                    bReinitialize = false;
+                }
+                
                 if (lPeriod > 0) {
                     //lIniSysTimeMs = System.currentTimeMillis();
                     lDelay = lPeriod - (System.currentTimeMillis() % lPeriod);
@@ -163,6 +173,8 @@ public class DataSet extends Module {
                 
                 pDataSet.put(sSYSPrefix + "ProcPID", ManagementFactory.getRuntimeMXBean().getName());
                 
+                pDataSet.put(sSYSPrefix + "SysCpuTemp", Double.toString(SystemInfo.getCpuTemperature()));
+                
                 //double ystemCpuLoad = osBean.getSystemCpuLoad() * 100;
                 String SysCpuLoad =  String.format("%.2f", osBean.getSystemCpuLoad() * 100);
                 pDataSet.put(sSYSPrefix + "SysCpuLoad", SysCpuLoad);
@@ -172,6 +184,7 @@ public class DataSet extends Module {
 
 
             } catch (Exception e) {
+                System.out.println("DataSet.Loop.Error");
                 if (Debug == 1) {
                     System.out.println(e.getMessage());
                 }
@@ -210,6 +223,7 @@ public class DataSet extends Module {
             pDataSet.put(sSYSPrefix + "SysSN", sSN);
 
         } catch (Exception e) {
+            System.out.println("DataSet.UpdateFirst.Error");
             if (Debug == 1) {
                 System.out.println(e.getMessage());
             }

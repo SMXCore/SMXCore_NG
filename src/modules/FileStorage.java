@@ -14,11 +14,13 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
@@ -58,6 +60,7 @@ public class FileStorage extends Module {
     int iMove;
 
     Properties pStoreAssociation = new Properties();
+    Hashtable<String, Integer> pDecimalsAssociation = new Hashtable<>();
 
     Properties pDataSet = null;
     String sPrefix = "";
@@ -94,6 +97,14 @@ public class FileStorage extends Module {
                         pStoreAssociation.put(name, fss);
                     } else if(value.getValueType() == JsonValue.ValueType.OBJECT) {
                         JsonObject ass = (JsonObject) value;
+                        String fss = ass.getString("label");
+                        pStoreAssociation.put(name, fss);
+                        JsonValue decv = ass.get("decimals");
+                        if(decv != null && decv.getValueType() == JsonValue.ValueType.NUMBER) {
+                            JsonNumber decn = (JsonNumber) decv;
+                            Integer dec = decn.intValue();
+                            pDecimalsAssociation.put(name, dec);
+                        }
                     }
                 } catch(Exception ex) {
 //                    if (Debug == 1) {
@@ -248,6 +259,10 @@ public class FileStorage extends Module {
 
                     sInternalAttr = sPrefix + (String) eKeys.nextElement();
                     sValue = (String) pDataSet.getProperty(sInternalAttr, "");
+                    Integer decimals = pDecimalsAssociation.get(sInternalAttr);
+                    if(decimals != null) {
+                        sValue = Double2DecPointStr(Double.parseDouble(sValue), decimals);
+                    }
                     sRet += sValue + sSeparator;
 
                 } catch (Exception ex) {
@@ -314,4 +329,25 @@ public class FileStorage extends Module {
 
     }
 
+    public static String Double2DecPointStr(double dVal, int iDecimals) {
+        String sResult = " ";
+        int iLen, iNoOfIntDigits;
+        try {
+            sResult = Double.toString(dVal);
+            iLen = sResult.length();
+            iNoOfIntDigits = sResult.indexOf(".");
+            if (iLen - iNoOfIntDigits - 1 > iDecimals) {
+                if (iDecimals < 1) {
+                    sResult = sResult.substring(0, iNoOfIntDigits + iDecimals);
+                } else {
+                    sResult = sResult.substring(0, iNoOfIntDigits + iDecimals + 1);
+                }
+            }
+
+        } catch (Exception e) {
+
+        }
+        return sResult;
+    }
+    
 }

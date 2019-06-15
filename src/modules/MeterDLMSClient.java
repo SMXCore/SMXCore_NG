@@ -88,6 +88,9 @@ public class MeterDLMSClient extends Module {
         iDebugModelDLMS = PropUtil.GetInt(pAttributes, "iDebugModelDLMS", 0);
         //com.iDebugModelDLMS_local = iDebugModelDLMS; // debug mode is set also for GXCommunicate module
 
+        iDelayBetweenMessages = PropUtil.GetInt(pAttributes, "iDelayBetweenMessages", 1);
+        iPrintlnMessages = PropUtil.GetInt(pAttributes, "iPrintlnMessages", 1);
+
         df1.setTimeZone(TimeZone.getTimeZone("UTC"));
         df2.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -113,12 +116,14 @@ public class MeterDLMSClient extends Module {
         s1 = String.valueOf(iObisFilesArrayEnable); pDataSet.put("Module/MeterDLMSClient/"+sName+"/iObisFilesArrayEnable", s1); // 
         s1 = String.valueOf(iObisFilesArrayNumber); pDataSet.put("Module/MeterDLMSClient/"+sName+"/iObisFilesArrayNumber", s1); // 
         //pDataSet.put("Module/MeterDLMSClient/"+sName+"/iObisFilesNumber", iObisFilesNumber); // DateTime
+        s1 = String.valueOf(iDelayBetweenMessages); pDataSet.put("Module/MeterDLMSClient/"+sName+"/iDelayBetweenMessages", s1); // 
     }
 
     int iReadDisable = 0;
     int iReadDisabledParam = 1;
     String sReadDisableParam = "";
     String sReadDisabledParam = "";
+    public static int iPrintlnMessages = 0; // 64 means all (111111); 0 means nothing (000000)
 
     Properties pDataSet = null;
     String sPrefix = "";
@@ -286,10 +291,12 @@ public class MeterDLMSClient extends Module {
     String s = "";
     
     boolean isInit=false;
+    
+    int iDelayBetweenMessages = 50;
 
     public void QueryMeter() {
         // TODO code application logic here
-        System.out.println("QueryMeter()");
+        if(iPrintlnMessages==64) System.out.println("QueryMeter()");
         try {
             if (com == null) {
                 if (logFile == null) {
@@ -301,19 +308,19 @@ public class MeterDLMSClient extends Module {
                 // /m=grx /h=localhost /p=4061
                 com = getManufactureSettings(ssCmdLineArgs);
                 // If help is shown.
-                System.out.println("com = getManufactureSettings: " + ssCmdLineArgs.length);
+                if(iPrintlnMessages==64) System.out.println("com = getManufactureSettings: " + ssCmdLineArgs.length);
                 if (com == null) {
-                    System.out.println("com == null");
+                    if(iPrintlnMessages==64) System.out.println("com == null");
                     return;
                 }
                 if (CheckDisableRead()) {
-                    System.out.println("CheckDisableRead()");
+                    if(iPrintlnMessages==64) System.out.println("CheckDisableRead()");
                     return;
                 }
 
-                System.out.println("com.initializeConnection() to start");
+                if(iPrintlnMessages==64) System.out.println("com.initializeConnection() to start");
                 com.initializeConnection();
-                System.out.println("com.initializeConnection() done");
+                if(iPrintlnMessages==64) System.out.println("com.initializeConnection() done");
                 try {
                     // com.readAndPrintAllObjects(logFile);
                     if(!isInit){
@@ -331,9 +338,9 @@ public class MeterDLMSClient extends Module {
 
                     traceLn(logFile, "sObj1File="+sObj1File);
                     objects1 = objects1.load(sObj1File);
-                    System.out.println("Rsau1a");
+                    if(iPrintlnMessages==64) System.out.println("Rsau1a");
                     try { com.readScalerAndUnits(objects1, logFile, "O1");} catch(Exception exc) {System.out.println("Rsau1exc: " + exc.getMessage());};
-                    System.out.println("Rsau1b");
+                    if(iPrintlnMessages==64) System.out.println("Rsau1b");
                     //traceLn(logFile, "rsc1: " + exc.getMessage());
                     if (CheckDisableRead()) {     
                         return;
@@ -342,11 +349,12 @@ public class MeterDLMSClient extends Module {
                     objects2 = objects2.load(sObj2File);
                     traceLn(logFile, "sObj2File="+sObj2File);
                     traceLn(logFile, "Rsau2a");
-                    try { com.readScalerAndUnits(objects2, logFile, "O2");} catch(Exception exc) {traceLn(logFile, "Rsau2exc: " + exc.getMessage());};
-                    traceLn(logFile, "Rsau2b");
-                    if (CheckDisableRead()) {
-                        return;
-                    }
+                    try { com.readScalerAndUnits(objects2, logFile, "O2");} catch(Exception exc) {
+                        traceLn(logFile, "Rsau2exc: " + exc.getMessage());};
+                        traceLn(logFile, "Rsau2b");
+                        if (CheckDisableRead()) {
+                            return;
+                        }
                     // Object no. 3
                     objects3 = objects3.load(sObj3File);
                     traceLn(logFile, "sObj3File="+sObj3File);
@@ -456,6 +464,7 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    Thread.sleep(iDelayBetweenMessages); // a delay between each two queries, such that the meter can recover
                     com.readRegisters(objects1, logFile);
 
                     WriteVals(objects1);
@@ -465,6 +474,7 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    Thread.sleep(iDelayBetweenMessages); // a delay between each two queries, such that the meter can recover
                     com.readRegisters(objects2, logFile);
 
                     WriteVals(objects2);
@@ -474,6 +484,7 @@ public class MeterDLMSClient extends Module {
                     if (CheckDisableRead()) {
                         return;
                     }
+                    Thread.sleep(iDelayBetweenMessages); // a delay between each two queries, such that the meter can recover
                     com.readRegisters(objects3, logFile);
 
                     WriteVals(objects3);
@@ -484,6 +495,7 @@ public class MeterDLMSClient extends Module {
                         if (CheckDisableRead()) {
                             return;
                         }
+                        Thread.sleep(iDelayBetweenMessages); // a delay between each two queries, such that the meter can recover
                         com.readRegisters(objects4, logFile);
 
                         WriteVals(objects4);
@@ -581,7 +593,7 @@ public class MeterDLMSClient extends Module {
                         }
                     }
                 } catch (Exception ex3) {
-                    System.out.println(ex3.toString());
+                    if(iPrintlnMessages==64) System.out.println(ex3.toString());
                 }
 
             }
@@ -598,7 +610,7 @@ public class MeterDLMSClient extends Module {
                 System.out.println(Ex2.toString());
             }
             com = null;
-            System.out.println(e.toString());
+            if(iPrintlnMessages==64) System.out.println(e.toString());
         } finally {
             /*   if (logFile != null) {
              logFile.close();
@@ -651,7 +663,7 @@ public class MeterDLMSClient extends Module {
                 try {
                     pDataSet.put(sOBISPath + "/" + "-2", it.getValues()[1].toString());
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    if(iPrintlnMessages==64) System.out.println(e.getMessage());
                 }
             }
             // GXDLMSAttributeSettings gas=it.getAttributes().find(1);
@@ -668,7 +680,7 @@ public class MeterDLMSClient extends Module {
             }
         }
         sb.append(']');
-        System.out.println(sb.toString());
+        if(iPrintlnMessages==64) System.out.println(sb.toString());
     }
 
     /**
@@ -722,7 +734,7 @@ public class MeterDLMSClient extends Module {
                 GXManufacturerCollection.updateManufactureSettings(path);
             }
         } catch (Exception ex) {
-            System.out.println(ex.toString());
+            if(iPrintlnMessages==64) System.out.println(ex.toString());
         }
         // 4059 is Official DLMS port.
         String id = "", host = "", port = "4059", pw = "";
@@ -825,7 +837,7 @@ public class MeterDLMSClient extends Module {
         }
         dlms.setObisCodes(man.getObisCodes());
         com = new GXCommunicate(5000, dlms, man, iec, auth, pw, media);
-        System.out.println("COM("+man.getName()+")");
+        if(iPrintlnMessages==64) System.out.println("COM("+man.getName()+")");
         com.Trace = trace;
         com.iDebugModelDLMS_local = iDebugModelDLMS; // debug mode is set also for GXCommunicate module
         return com;

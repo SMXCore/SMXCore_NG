@@ -89,6 +89,7 @@ public class MQTTClient extends Module {
         boolean isClassic; // Backwards compatibility mode
         boolean readJson;
         boolean hasTsCfg;
+        boolean extractFirst;
         TimestampCfg tsCfg;
         ArrayList<ReplaceDescriptor> replace_list;
         ArrayList<ProcessDescriptor> process_list;
@@ -126,7 +127,7 @@ public class MQTTClient extends Module {
         iPubQos = PropUtil.GetInt(pAttributes, "iReadQos", 1);
         iSubQos = PropUtil.GetInt(pAttributes, "iSubQos", 1);
 
-        lPeriod = PropUtil.GetLong(pAttributes, "lPeriod", 5000);
+        lPeriod = PropUtil.GetLong(pAttributes, "lPeriod", 2000);
 
         //insert in database metadata related to the MQTT module 
         String sTSDate;
@@ -159,7 +160,7 @@ public class MQTTClient extends Module {
         JsonObject prefix = jso.getJsonObject("prefix");
         JsonObject connection = jso.getJsonObject("connection");
         pAttributes.put("pDataSet", jso.getString("dataSet", ""));
-        pAttributes.put("lPeriod", jso.getInt("period", 5000));
+        pAttributes.put("lPeriod", jso.getInt("period", 2000));
         if(connection != null) {
             pAttributes.put("sBroker", connection.getString("broker", "tcp://localhost:18159"));
             JsonObject credentials = connection.getJsonObject("credentials");
@@ -231,6 +232,7 @@ public class MQTTClient extends Module {
                 assoc.isClassic = true;
                 assoc.readJson = false;
                 assoc.hasTsCfg = true;
+                assoc.extractFirst = false;
                 assoc.replace_list = new ArrayList();
                 assoc.rescale_list = new ArrayList();
                 assoc.process_list = new ArrayList();
@@ -307,6 +309,7 @@ public class MQTTClient extends Module {
                         assoc.isClassic = true;
                         assoc.readJson = false;
                         assoc.hasTsCfg = false;
+                        assoc.extractFirst = false;
                         if(!isPublish) {
                             assoc.internalName = ss.getString();
                             assoc.mqttTopic = name;
@@ -318,6 +321,7 @@ public class MQTTClient extends Module {
                         JsonObject ass = (JsonObject) value;
                         assoc.isClassic = ass.getBoolean("isClassic", false);
                         assoc.readJson = ass.getBoolean("TreatAsJsonObject", ass.getBoolean("readJson", false));
+                        assoc.extractFirst = ass.getBoolean("extractFirst", ass.getBoolean("extractFirst", false));
                         assoc.internalName = ass.getString("internalName", ass.getString("regexSelection", name));
                         assoc.mqttTopic = ass.getString("mqttTopic");
                         
@@ -602,6 +606,7 @@ public class MQTTClient extends Module {
                         //pPubAssociation = new Properties();
                         //pSubAssociation = new Properties();
                         Initialize();
+                        bReinitialize = false;
                     }
                     
                     if (iConnected == 0) {
@@ -1015,7 +1020,13 @@ public class MQTTClient extends Module {
                         }
                     } else if(assoc.readJson) {
                         JsonReader jsonReader = Json.createReader(new StringReader(msg.toString()));
-                        JsonObject object = jsonReader.readObject();
+                        JsonObject object;
+                        if(assoc.extractFirst) {
+                            JsonArray container = jsonReader.readArray();
+                            object = container.getJsonObject(0);
+                        } else {
+                            object = jsonReader.readObject();
+                        }
                         jsonReader.close();
                         logger.fine("Found json object");
                         List<ValueNameCouple> a = new ArrayList();
