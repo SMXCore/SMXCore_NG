@@ -46,7 +46,7 @@ import util.SmartProperties;
  *
  * @author cristi, vlad
  */
-public class MQTTClient extends Module {
+public class MQTTClient extends Module implements SmartProperties.Listener {
 
     private class TimestampCfg {
         boolean only_once;
@@ -90,6 +90,7 @@ public class MQTTClient extends Module {
         boolean readJson;
         boolean hasTsCfg;
         boolean extractFirst;
+        boolean publishOnChange;
         TimestampCfg tsCfg;
         ArrayList<ReplaceDescriptor> replace_list;
         ArrayList<ProcessDescriptor> process_list;
@@ -97,10 +98,12 @@ public class MQTTClient extends Module {
         ArrayList<AddItemDescriptor> add_item_list;
         ArrayList<String> list_apply_order;
         Date begin, end;
+        String lasttransmit;
     }
     
     @Override
     public void Initialize() {
+            System.out.println(">" + sName);
         sBroker = PropUtil.GetString(pAttributes, "sBroker", "tcp://localhost:18159");
         logger.config("MQTT Broker is at " + sBroker);
         sUserName = PropUtil.GetString(pAttributes, "sUserName", "");
@@ -145,14 +148,31 @@ public class MQTTClient extends Module {
         String s1;
         s1 = String.valueOf(lPeriod); pDataSet.put("Module/MQTTClient/"+sName+"/lPeriod", s1); // 
         pDataSet.put("Module/MQTTClient/"+sName+"/broker", sBroker); //
+        try {
+            ((SmartProperties) pDataSet).listen(this);
+        } catch(Exception e) {
+            logger.severe("Severe error while trying to listen to pDataSet: " + e.toString());
+        }
+        lPeriodRemain = 0;
+            System.out.println("<" + sName);
     }
     
     public void LoadConfig() {
-        if(sAttributesFile.endsWith("json")) {
-            LoadJsonConfig();
-        } else {
-            LoadTxtConfig();
+            System.out.println("?" + sName);
+        try {
+            if(sAttributesFile.endsWith("json")) {
+                LoadJsonConfig();
+            } else {
+                LoadTxtConfig();
+            }
+        } catch(Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.severe(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
+            System.out.println("!" + sName);
     }
     
     void LoadJsonConfig() {
@@ -160,7 +180,7 @@ public class MQTTClient extends Module {
         JsonObject prefix = jso.getJsonObject("prefix");
         JsonObject connection = jso.getJsonObject("connection");
         pAttributes.put("pDataSet", jso.getString("dataSet", ""));
-        pAttributes.put("lPeriod", jso.getInt("period", 2000));
+        pAttributes.put("lPeriod", Long.toString(jso.getInt("period", 2000)));
         if(connection != null) {
             pAttributes.put("sBroker", connection.getString("broker", "tcp://localhost:18159"));
             JsonObject credentials = connection.getJsonObject("credentials");
@@ -237,6 +257,8 @@ public class MQTTClient extends Module {
                 assoc.rescale_list = new ArrayList();
                 assoc.process_list = new ArrayList();
                 assoc.add_item_list = new ArrayList();
+                assoc.publishOnChange = false;
+                assoc.lasttransmit = "";
                 if(isPublish) {
                     assoc.internalName = e;
                     assoc.mqttTopic = (String) prop.getProperty(e, "");
@@ -310,6 +332,8 @@ public class MQTTClient extends Module {
                         assoc.readJson = false;
                         assoc.hasTsCfg = false;
                         assoc.extractFirst = false;
+                        assoc.publishOnChange = false;
+                        assoc.lasttransmit = "";
                         if(!isPublish) {
                             assoc.internalName = ss.getString();
                             assoc.mqttTopic = name;
@@ -323,6 +347,8 @@ public class MQTTClient extends Module {
                         assoc.readJson = ass.getBoolean("TreatAsJsonObject", ass.getBoolean("readJson", false));
                         assoc.extractFirst = ass.getBoolean("extractFirst", ass.getBoolean("extractFirst", false));
                         assoc.internalName = ass.getString("internalName", ass.getString("regexSelection", name));
+                        assoc.publishOnChange = ass.getBoolean("publishOnChange", false);
+                        assoc.lasttransmit = "";
                         assoc.mqttTopic = ass.getString("mqttTopic");
                         
                         String begindate = ass.getString("StartTime", "");
@@ -582,273 +608,311 @@ public class MQTTClient extends Module {
         }
     }
     
+    void doPublish(boolean onChange) {
+        //logger.severe("DoPublish");
+        try {
+            for(Association e: PubAssoc) {
+                try {
+                   // if (iConnected == 0) {
+                   //     break;
+                   // }
+                    sInternalAttr = e.internalName;
+                    sMQTTAttr = sPubPrefix + e.mqttTopic;
+                    if (sMQTTAttr.length() > sPubPrefix.length()) {
+                        String reg = "";
+                        if(e.isClassic) {
+                            reg = "^" + sIntPrefix + sInternalAttr + ".*$";
+                        } else {
+                            if(reg.startsWith("^")) {
+                                reg = "^" + sIntPrefix + sInternalAttr.substring(1);
+                            } else {
+                                reg = sIntPrefix + sInternalAttr;
+                            }
+                        }
+                        reg = reg.replaceAll("/", "\\/");
+                        logger.fine("Publishing to broker topic " + sMQTTAttr + " with regex rule " + reg);
+                        Enumeration eKeys2 = pDataSet.keys();
+                        List<ValueNameCouple> a = new ArrayList();
+                        Date commondate = new Date(0);
+                        while(eKeys2.hasMoreElements()) {
+                            String crt = (String) eKeys2.nextElement();
+                            ValueNameCouple coup = new ValueNameCouple();
+                            if(crt.matches(reg)) {
+                                coup.name = crt;
+                                coup.value = (String) pDataSet.getProperty(coup.name, "");
+                                a.add(coup);
+                                Date crtd = ((SmartProperties) pDataSet).getmeta(crt).timestamp;
+                                if(crtd.after(commondate)) {
+                                    commondate = crtd;
+                                }
+                                logger.finer("Matched topic " + sMQTTAttr + " with element " + crt);
+                            }
+                        }
+                        try {
+                            for(int ijk = 0; ijk < e.list_apply_order.size(); ijk++) {
+                                if(e.list_apply_order.get(ijk).equals("replace")) {
+                                    for(int k = 0; k < e.replace_list.size(); k++) {
+                                        for(int ik = 0; ik < a.size(); ik++) {
+                                            Matcher match = e.replace_list.get(k).pattern.matcher(a.get(ik).name);
+                                            a.get(ik).name = match.replaceAll(e.replace_list.get(k).replacement);
+                                        }
+                                    }
+                                } else if(e.list_apply_order.get(ijk).equals("rescale")) {
+                                    for(int k = 0; k < e.rescale_list.size(); k++) {
+                                        for(int ik = 0; ik < a.size(); ik++) {
+                                            Matcher match = e.rescale_list.get(k).pattern.matcher(a.get(ik).name);
+                                            if(match.matches()) {
+                                                double value = Double.parseDouble(a.get(ik).value);
+                                                value *= e.rescale_list.get(k).multiplier;
+                                                value += e.rescale_list.get(k).added;
+                                                a.get(ik).value = String.valueOf(value);
+                                            }
+                                        }
+                                    }
+                                } else if(e.list_apply_order.get(ijk).equals("additem")) {
+                                    for(int k = 0; k < e.add_item_list.size(); k++) {
+                                        boolean found = false;
+                                        String defaultformat = "yyyy-MM-dd HH:mm:ss";
+                                        Pattern pattern_custom = Pattern.compile("^!Timestamp(\\{Custom ([^}]*)\\})(\\{([^}]*)\\})?");
+                                        Pattern pattern_otherwise = Pattern.compile("^!Timestamp(\\{([^}]*)\\})?(\\{([^}]*)\\})?");
+                                        for(int ik = 0; ik < a.size(); ik++) {
+                                            if(a.get(ik).name.equals(sIntPrefix + e.add_item_list.get(k).item)) {
+                                                found = true;
+                                                if(e.add_item_list.get(k).value.startsWith("!Timestamp")) {
+                                                    Matcher matcher = pattern_custom.matcher(e.add_item_list.get(k).value);
+                                                    Matcher matcher2 = pattern_otherwise.matcher(e.add_item_list.get(k).value);
+                                                    SimpleDateFormat formatter = new SimpleDateFormat();
+                                                    String format = defaultformat;
+                                                    if(matcher.matches()) {
+                                                        matcher.find();   
+                                                        if(matcher.groupCount() > 0) {
+                                                            format = matcher.group(2);
+                                                        }
+                                                        formatter = new SimpleDateFormat(format);
+                                                        if(matcher.groupCount() > 2) {
+                                                            formatter.setTimeZone(TimeZone.getTimeZone(matcher.group(4)));
+                                                        }
+                                                    } else if(matcher2.matches()) {
+                                                        matcher2.find();
+                                                        format = "US-style SMXCore Timestamp";
+                                                        if(matcher.groupCount() > 0) {
+                                                            format = matcher.group(2);
+                                                        }
+                                                        //tipuri:
+                                                        // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
+                                                        // UNIX: sssssssss (since 1970)
+                                                        // ISO 8601: yyyy-mm-ddThh:mm:ssZ
+                                                        if(format.equals("US-style SMXCore Timestamp")) {
+                                                            formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                                                        } else if(format.equals("ISO 8601")) {
+                                                            formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
+                                                        } else {
+                                                            formatter = new SimpleDateFormat("Invalid dateformat: " + format);
+                                                        }
+                                                    }
+                                                    a.get(ik).value = formatter.format(commondate);
+                                                } else {
+                                                    a.get(ik).value = e.add_item_list.get(k).value;
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        if(!found) {
+                                            ValueNameCouple e2 = new ValueNameCouple();
+                                            e2.name = sIntPrefix + e.add_item_list.get(k).item;
+                                            String t;
+                                            if(e.add_item_list.get(k).value.startsWith("!Timestamp")) {
+                                                Matcher matcher = pattern_custom.matcher(e.add_item_list.get(k).value);
+                                                Matcher matcher2 = pattern_otherwise.matcher(e.add_item_list.get(k).value);
+                                                SimpleDateFormat formatter = new SimpleDateFormat();
+                                                String format = defaultformat;
+                                                if(matcher.matches()) {
+                                                    //System.out.println("Custom timestamp " + matcher.groupCount());
+                                                    if(matcher.groupCount() > 1) {
+                                                        format = matcher.group(2);
+                                                    }
+                                                    formatter = new SimpleDateFormat(format);
+                                                    if(matcher.groupCount() > 3) {
+                                                        formatter.setTimeZone(TimeZone.getTimeZone(matcher.group(4)));
+                                                    }
+                                                } else if(matcher2.matches()) {
+                                                    format = "US-style SMXCore Timestamp";
+                                                    try {
+                                                        if(matcher.groupCount() > 1) {
+                                                        format = matcher.group(2);
+                                                    }
+                                                    } catch(Exception ex) { 
+                                                        //e.internalName;
+                                                        System.out.println("Wrong1 in matcher: " + e.mqttTopic);
+                                                    }
+                                                    //tipuri:
+                                                    // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
+                                                    // UNIX: sssssssss (since 1970)
+                                                    // ISO 8601: yyyy-mm-ddThh:mm:ssZ
+                                                    if(format.equals("US-style SMXCore Timestamp")) {
+                                                        formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                                                    } else if(format.equals("ISO 8601")) {
+                                                        formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
+                                                    } else {
+                                                        formatter = new SimpleDateFormat("Invalid dateformat: " + format);
+                                                    }
+                                                }
+                                                e2.value = formatter.format(commondate);
+                                            } else {
+                                                e2.value = e.add_item_list.get(k).value;
+                                            }
+                                            a.add(e2);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch(Exception ex) {
+                            StringWriter sw = new StringWriter();
+                            PrintWriter pw = new PrintWriter(sw);
+                            ex.printStackTrace(pw);
+                            String sStackTrace = sw.toString();
+                            logger.warning("Publish List Rules Exception: " + ex.getMessage() + "\n Stacktrace: " + sStackTrace);
+                        }
+                        ValueNameCouple[] list = new ValueNameCouple[a.size()];
+                        list = a.toArray(list);
+                        Arrays.sort(list, new Comparator<ValueNameCouple>() {
+                            @Override
+                            public int compare(ValueNameCouple lhs, ValueNameCouple rhs) {
+                                // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                                return lhs.name.compareTo(rhs.name);
+                            }
+                        });
+                        if(list.length == 0) {
+                            sValue = "";
+                        } else if(list.length == 1) {
+//                                    System.out.println("Only found one");
+                            sValue = list[0].value;
+                        } else {
+//                                    System.out.println("Found more than one");
+                            String pref = list[0].name;
+                            for(int i = 1; i < list.length; i++) {
+                                pref = greatestCommonPrefix(list[i].name, pref);
+                            }
+
+                            int i;
+                            for(i = pref.length() - 1; i >= 0 && pref.charAt(i) != '/'; i--);
+                            pref = pref.substring(0, i + 1);
+//                                    System.out.println(pref);
+                            JsonObject j = makeObjects(pref, list);
+                            sValue = j.toString();
+                        }
+                        Date now = new Date();
+                        //if(onChange && e.publishOnChange) {
+                        //    logger.severe("Comparing " + e.lasttransmit + " to " + sValue + " results " + !(e.lasttransmit.equals(sValue)));
+                        //}
+                        if((e.begin == null || now.after(e.begin)) && (e.end == null || now.before(e.end)) && (!onChange || (e.publishOnChange && !(e.lasttransmit.equals(sValue))))) {
+                            e.lasttransmit = sValue;
+                           // if(!(e.lasttransmit.equals(sValue))) {
+                            mqttMessage = new MqttMessage(sValue.getBytes());
+                            mqttMessage.setQos(iPubQos);
+
+                            mqttClient.publish(sMQTTAttr, mqttMessage);
+                            // count the number of published bytes
+                            iNumBytesPub += mqttMessage.getPayload().length;
+                            iNumBytesPubAfterRecon += mqttMessage.getPayload().length;
+                            iNumPayloadsPub++;
+                            ((SmartProperties) pDataSet).putNoLstnr("Module/MQTTClient/" + sName + "/NumBytesPub", Integer.toString(iNumBytesPub)); 
+                            ((SmartProperties) pDataSet).putNoLstnr("Module/MQTTClient/" + sName + "/NumBytesPubAfterRecon", Integer.toString(iNumBytesPubAfterRecon)); 
+                            ((SmartProperties) pDataSet).putNoLstnr("Module/MQTTClient/" + sName + "/NumPayloadsPub", Integer.toString(iNumPayloadsPub)); 
+                        }
+                        iConnected = 1;
+
+                    }
+                } catch (Exception ex) {
+
+                    //MQTTDisconnect();
+                    iConnected = 0;
+//                            if (Debug == 1) {
+//                                System.out.println(ex.getMessage());
+//                            }
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    String sStackTrace = sw.toString();
+                    logger.severe(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
+                }
+            }
+
+        } catch (Exception e) {
+//                    if (Debug == 1) {
+//                        System.out.println(e.getMessage());
+//                    }
+            logger.severe(e.getMessage());
+        }
+    }
+    
+    @Override
+    public void wakeup(Object key, Object value) {
+        // doPublish(key, value);
+    }
+    
+    long lPeriodRemain = 0;
+    long lLastPeriod = 0;
+    
     public void MQTTPublishLoop() {
 //        String[] test = {"SMX/LD01/v1/value", "SMX/LD01/v1/unit", "SMX/LD01/v2/value", "SMX/LD01/v3/value"};
 //        String s = makeObjects("SMX/LD01/", test).toString();
 //        System.out.println(s);
         try {
+            System.out.println(sName);
+            boolean onChange = true;
+            lLastPeriod = System.currentTimeMillis();
             while (bStop == 0) {
-                try {
-                    if (lPeriod > 0) {
-                        //lIniSysTimeMs = System.currentTimeMillis();
-                        lDelay = lPeriod - (System.currentTimeMillis() % lPeriod);
-                        Thread.sleep(lDelay);
-                    } else {
-                        Thread.sleep(1000);
+                onChange = true;
+                if (lPeriod > 0) {
+                    //lIniSysTimeMs = System.currentTimeMillis();
+                    /*lDelay = lPeriod - (System.currentTimeMillis() % lPeriod);
+                    Thread.sleep(lDelay);*/
+                    lDelay = 1000 - (System.currentTimeMillis() % 1000);
+                    Thread.sleep(lDelay);
+                    lPeriodRemain = lPeriod - (System.currentTimeMillis() - lLastPeriod);
+                    lLastPeriod = System.currentTimeMillis();
+                    if(lPeriodRemain < 0 && System.currentTimeMillis() % lPeriod < lPeriod / 2) {
+                        lPeriodRemain += lPeriod;
+                        onChange = false;
+                    } else if(System.currentTimeMillis() % lPeriod < 1000) {
+                        onChange = false;
+                        lPeriodRemain = lPeriod - System.currentTimeMillis() % lPeriod;
                     }
-                    if (lMemSysTimeMs == 0) {
-                        lMemSysTimeMs = System.currentTimeMillis();
-                        //  continue;
-                    }
-                    if(bReinitialize) {
-                        logger.info("Received reinitialization command");
-                        MQTTDisconnect();
-                        //pPubAssociation = new Properties();
-                        //pSubAssociation = new Properties();
-                        Initialize();
-                        bReinitialize = false;
-                    }
-                    
-                    if (iConnected == 0) {
-                        logger.info("Connecting or reconnecting to the MQTT Broker");
-                        MQTTConnect();
-                    }
-                    if (iConnected == 0) {
-                        logger.warning("Failed to connect to the MQTT Broker - skipping loop step");
-                        continue;
-                    }
-                    for(Association e: PubAssoc) {
-                        try {
-                           // if (iConnected == 0) {
-                           //     break;
-                           // }
-                            sInternalAttr = e.internalName;
-                            sMQTTAttr = sPubPrefix + e.mqttTopic;
-                            if (sMQTTAttr.length() > sPubPrefix.length()) {
-                                String reg = "";
-                                if(e.isClassic) {
-                                    reg = "^" + sIntPrefix + sInternalAttr + ".*$";
-                                } else {
-                                    if(reg.startsWith("^")) {
-                                        reg = "^" + sIntPrefix + sInternalAttr.substring(1);
-                                    } else {
-                                        reg = sIntPrefix + sInternalAttr;
-                                    }
-                                }
-                                reg = reg.replaceAll("/", "\\/");
-                                logger.fine("Publishing to broker topic " + sMQTTAttr + " with regex rule " + reg);
-                                Enumeration eKeys2 = pDataSet.keys();
-                                List<ValueNameCouple> a = new ArrayList();
-                                Date commondate = new Date(0);
-                                while(eKeys2.hasMoreElements()) {
-                                    String crt = (String) eKeys2.nextElement();
-                                    ValueNameCouple coup = new ValueNameCouple();
-                                    if(crt.matches(reg)) {
-                                        coup.name = crt;
-                                        coup.value = (String) pDataSet.getProperty(coup.name, "");
-                                        a.add(coup);
-                                        Date crtd = ((SmartProperties) pDataSet).getmeta(crt).timestamp;
-                                        if(crtd.after(commondate)) {
-                                            commondate = crtd;
-                                        }
-                                        logger.finer("Matched topic " + sMQTTAttr + " with element " + crt);
-                                    }
-                                }
-                                try {
-                                    for(int ijk = 0; ijk < e.list_apply_order.size(); ijk++) {
-                                        if(e.list_apply_order.get(ijk).equals("replace")) {
-                                            for(int k = 0; k < e.replace_list.size(); k++) {
-                                                for(int ik = 0; ik < a.size(); ik++) {
-                                                    Matcher match = e.replace_list.get(k).pattern.matcher(a.get(ik).name);
-                                                    a.get(ik).name = match.replaceAll(e.replace_list.get(k).replacement);
-                                                }
-                                            }
-                                        } else if(e.list_apply_order.get(ijk).equals("rescale")) {
-                                            for(int k = 0; k < e.rescale_list.size(); k++) {
-                                                for(int ik = 0; ik < a.size(); ik++) {
-                                                    Matcher match = e.rescale_list.get(k).pattern.matcher(a.get(ik).name);
-                                                    if(match.matches()) {
-                                                        double value = Double.parseDouble(a.get(ik).value);
-                                                        value *= e.rescale_list.get(k).multiplier;
-                                                        value += e.rescale_list.get(k).added;
-                                                        a.get(ik).value = String.valueOf(value);
-                                                    }
-                                                }
-                                            }
-                                        } else if(e.list_apply_order.get(ijk).equals("additem")) {
-                                            for(int k = 0; k < e.add_item_list.size(); k++) {
-                                                boolean found = false;
-                                                String defaultformat = "yyyy-MM-dd HH:mm:ss";
-                                                Pattern pattern_custom = Pattern.compile("^!Timestamp(\\{Custom ([^}]*)\\})(\\{([^}]*)\\})?");
-                                                Pattern pattern_otherwise = Pattern.compile("^!Timestamp(\\{([^}]*)\\})?(\\{([^}]*)\\})?");
-                                                for(int ik = 0; ik < a.size(); ik++) {
-                                                    if(a.get(ik).name.equals(sIntPrefix + e.add_item_list.get(k).item)) {
-                                                        found = true;
-                                                        if(e.add_item_list.get(k).value.startsWith("!Timestamp")) {
-                                                            Matcher matcher = pattern_custom.matcher(e.add_item_list.get(k).value);
-                                                            Matcher matcher2 = pattern_otherwise.matcher(e.add_item_list.get(k).value);
-                                                            SimpleDateFormat formatter = new SimpleDateFormat();
-                                                            String format = defaultformat;
-                                                            if(matcher.matches()) {
-                                                                matcher.find();   
-                                                                if(matcher.groupCount() > 0) {
-                                                                    format = matcher.group(2);
-                                                                }
-                                                                formatter = new SimpleDateFormat(format);
-                                                                if(matcher.groupCount() > 2) {
-                                                                    formatter.setTimeZone(TimeZone.getTimeZone(matcher.group(4)));
-                                                                }
-                                                            } else if(matcher2.matches()) {
-                                                                matcher2.find();
-                                                                format = "US-style SMXCore Timestamp";
-                                                                if(matcher.groupCount() > 0) {
-                                                                    format = matcher.group(2);
-                                                                }
-                                                                //tipuri:
-                                                                // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
-                                                                // UNIX: sssssssss (since 1970)
-                                                                // ISO 8601: yyyy-mm-ddThh:mm:ssZ
-                                                                if(format.equals("US-style SMXCore Timestamp")) {
-                                                                    formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-                                                                } else if(format.equals("ISO 8601")) {
-                                                                    formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
-                                                                } else {
-                                                                    formatter = new SimpleDateFormat("Invalid dateformat: " + format);
-                                                                }
-                                                            }
-                                                            a.get(ik).value = formatter.format(commondate);
-                                                        } else {
-                                                            a.get(ik).value = e.add_item_list.get(k).value;
-                                                        }
-                                                        break;
-                                                    }
-                                                }
-                                                if(!found) {
-                                                    ValueNameCouple e2 = new ValueNameCouple();
-                                                    e2.name = sIntPrefix + e.add_item_list.get(k).item;
-                                                    String t;
-                                                    if(e.add_item_list.get(k).value.startsWith("!Timestamp")) {
-                                                        Matcher matcher = pattern_custom.matcher(e.add_item_list.get(k).value);
-                                                        Matcher matcher2 = pattern_otherwise.matcher(e.add_item_list.get(k).value);
-                                                        SimpleDateFormat formatter = new SimpleDateFormat();
-                                                        String format = defaultformat;
-                                                        if(matcher.matches()) {
-                                                            //System.out.println("Custom timestamp " + matcher.groupCount());
-                                                            if(matcher.groupCount() > 1) {
-                                                                format = matcher.group(2);
-                                                            }
-                                                            formatter = new SimpleDateFormat(format);
-                                                            if(matcher.groupCount() > 3) {
-                                                                formatter.setTimeZone(TimeZone.getTimeZone(matcher.group(4)));
-                                                            }
-                                                        } else if(matcher2.matches()) {
-                                                            format = "US-style SMXCore Timestamp";
-                                                            try {
-                                                                if(matcher.groupCount() > 1) {
-                                                                format = matcher.group(2);
-                                                            }
-                                                            } catch(Exception ex) { 
-                                                                //e.internalName;
-                                                                System.out.println("Wrong1 in matcher: " + e.mqttTopic);
-                                                            }
-                                                            //tipuri:
-                                                            // US-style SMXCore Timestamp: mm/dd/yyyy hh:mm:ss
-                                                            // UNIX: sssssssss (since 1970)
-                                                            // ISO 8601: yyyy-mm-ddThh:mm:ssZ
-                                                            if(format.equals("US-style SMXCore Timestamp")) {
-                                                                formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-                                                            } else if(format.equals("ISO 8601")) {
-                                                                formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss\\Z");
-                                                            } else {
-                                                                formatter = new SimpleDateFormat("Invalid dateformat: " + format);
-                                                            }
-                                                        }
-                                                        e2.value = formatter.format(commondate);
-                                                    } else {
-                                                        e2.value = e.add_item_list.get(k).value;
-                                                    }
-                                                    a.add(e2);
-                                                }
-                                            }
-                                        }
-                                    }
-                                } catch(Exception ex) {
-                                    StringWriter sw = new StringWriter();
-                                    PrintWriter pw = new PrintWriter(sw);
-                                    ex.printStackTrace(pw);
-                                    String sStackTrace = sw.toString();
-                                    logger.warning("Publish List Rules Exception: " + ex.getMessage() + "\n Stacktrace: " + sStackTrace);
-                                }
-                                ValueNameCouple[] list = new ValueNameCouple[a.size()];
-                                list = a.toArray(list);
-                                Arrays.sort(list, new Comparator<ValueNameCouple>() {
-                                    @Override
-                                    public int compare(ValueNameCouple lhs, ValueNameCouple rhs) {
-                                        // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
-                                        return lhs.name.compareTo(rhs.name);
-                                    }
-                                });
-                                if(list.length == 0) {
-                                    sValue = "";
-                                } else if(list.length == 1) {
-//                                    System.out.println("Only found one");
-                                    sValue = list[0].value;
-                                } else {
-//                                    System.out.println("Found more than one");
-                                    String pref = list[0].name;
-                                    for(int i = 1; i < list.length; i++) {
-                                        pref = greatestCommonPrefix(list[i].name, pref);
-                                    }
-                                    
-                                    int i;
-                                    for(i = pref.length() - 1; i >= 0 && pref.charAt(i) != '/'; i--);
-                                    pref = pref.substring(0, i + 1);
-//                                    System.out.println(pref);
-                                    JsonObject j = makeObjects(pref, list);
-                                    sValue = j.toString();
-                                }
-                                Date now = new Date();
-                                if((e.begin == null || now.after(e.begin)) && (e.end == null || now.before(e.end))) {
-                                    mqttMessage = new MqttMessage(sValue.getBytes());
-                                    mqttMessage.setQos(iPubQos);
-
-                                    mqttClient.publish(sMQTTAttr, mqttMessage);
-                                    // count the number of published bytes
-                                    iNumBytesPub += mqttMessage.getPayload().length;
-                                    iNumBytesPubAfterRecon += mqttMessage.getPayload().length;
-                                    iNumPayloadsPub++;
-                                    pDataSet.put("Module/MQTTClient/" + sName + "/NumBytesPub", Integer.toString(iNumBytesPub)); 
-                                    pDataSet.put("Module/MQTTClient/" + sName + "/NumBytesPubAfterRecon", Integer.toString(iNumBytesPubAfterRecon)); 
-                                    pDataSet.put("Module/MQTTClient/" + sName + "/NumPayloadsPub", Integer.toString(iNumPayloadsPub)); 
-                                }
-                                iConnected = 1;
-
-                            }
-                        } catch (Exception ex) {
-
-                            //MQTTDisconnect();
-                            iConnected = 0;
-//                            if (Debug == 1) {
-//                                System.out.println(ex.getMessage());
-//                            }
-                            StringWriter sw = new StringWriter();
-                            PrintWriter pw = new PrintWriter(sw);
-                            ex.printStackTrace(pw);
-                            String sStackTrace = sw.toString();
-                            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
-                        }
-                    }
-
-                } catch (Exception e) {
-//                    if (Debug == 1) {
-//                        System.out.println(e.getMessage());
-//                    }
-                    logger.warning(e.getMessage());
+                } else {
+                    Thread.sleep(1000);
+                    onChange = false;
+                }
+                
+                if (lMemSysTimeMs == 0) {
+                    lMemSysTimeMs = System.currentTimeMillis();
+                    //  continue;
+                }
+                if(bReinitialize) {
+                    logger.info("Received reinitialization command");
+                    MQTTDisconnect();
+                    //pPubAssociation = new Properties();
+                    //pSubAssociation = new Properties();
+                    Initialize();
+                    bReinitialize = false;
                 }
 
+                if (iConnected == 0) {
+                    logger.info("Connecting or reconnecting to the MQTT Broker");
+                    MQTTConnect();
+                }
+                if (iConnected == 0) {
+                    logger.warning("Failed to connect to the MQTT Broker - skipping loop step");
+                    return;
+                }
+                doPublish(onChange);
             }
-        } catch (Exception e) {
-
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.warning(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
         }
     }
     public int Pause = 0;
@@ -862,7 +926,7 @@ public class MQTTClient extends Module {
     public long lMemSysTimeMs = 0;
     public long lDelay = 0;
 
-    MqttClient mqttClient = null;
+    volatile MqttClient mqttClient = null;
     MqttMessage mqttMessage;
     String sTopic = "";
     String sContent = "";
@@ -878,7 +942,7 @@ public class MQTTClient extends Module {
     MemoryPersistence persistence = new MemoryPersistence();
     MqttConnectOptions connOpts = new MqttConnectOptions();
 
-    int iConnected = 0;
+    volatile int iConnected = 0;
     String sSubAssocAttr = "";
 
     int iNumConnections = 0;

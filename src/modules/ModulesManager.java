@@ -5,6 +5,8 @@
  */
 package modules;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -82,6 +84,7 @@ public class ModulesManager {
                     mModule.logger = Logger.getLogger(sClassName + "." + sModuleName);
                     mModule.LoadConfig();
                     if (mModule.pAttributes == null) {
+                        System.out.println(sClassName + "." + sModuleName + " FAILED to load");
                         continue;
                     }
                     mModule.sName=sModuleName;
@@ -94,7 +97,11 @@ public class ModulesManager {
                     vModulesQueue.add(mModule);
                     
                 } catch (Exception ex) {
-
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    String sStackTrace = sw.toString();
+                    logger.severe(ex.getMessage() + "\n Stacktrace: " + sStackTrace);
                 }
             }
 

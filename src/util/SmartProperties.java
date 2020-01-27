@@ -5,9 +5,12 @@
  */
 package util;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
+
+
 
 /**
  *
@@ -19,6 +22,14 @@ public class SmartProperties extends Properties {
         public String type;
     }
     Hashtable<String, Metadata> meta;
+    public interface Listener {
+        public void wakeup(Object key, Object value);
+    }
+    ArrayList<Listener> lstnrs;
+    
+    public void listen(Listener l) {
+        lstnrs.add(l);
+    }
     
     @Override
     public Object put(Object key, Object value) {
@@ -28,7 +39,22 @@ public class SmartProperties extends Properties {
         }
         m.timestamp = new Date();
         meta.put((String) key, m);
-        return super.put(key, value);
+        Object result = super.put(key, value);
+        for(Listener l : lstnrs) {
+            l.wakeup(key, value);
+        }
+        return result;
+    }
+    
+    public Object putNoLstnr(Object key, Object value) {
+        Metadata m = meta.get(key);
+        if(m == null) {
+            m = new Metadata();
+        }
+        m.timestamp = new Date();
+        meta.put((String) key, m);
+        Object result = super.put(key, value);
+        return result;
     }
     
     public Metadata getmeta(String key) {
@@ -38,6 +64,7 @@ public class SmartProperties extends Properties {
     public SmartProperties() {
         super();
         this.meta = new Hashtable();
+        this.lstnrs = new ArrayList();
     }
     public SmartProperties(Properties defaults) {
         super(defaults);
