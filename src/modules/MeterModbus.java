@@ -186,7 +186,7 @@ public class MeterModbus extends Module {
 /*
             Site: http://www.windmill.co.uk/modbussettings.html
 Bytes 1 & 2	are a transaction identifier, usually 0 0, but may be different depending on how the system has been set up.
-Bytes 3 & 4	are a protocol identifier, always 0 0.
+Bytes 3 & 4	are a protocol identiffier, always 0 0.
 Bytes 5 & 6	identify the number of bytes to follow. Byte 5 is always 0 as messages are shorter than 256 bytes
 Byte 7	identifies a unit. It is used when the Modbus device is actually several devices behind a gateway or bridge, and specifies the Slave address of one of those devices.
 Byte 8	is the Modbus function code, eg: 

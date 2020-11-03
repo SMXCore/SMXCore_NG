@@ -323,6 +323,7 @@ public class Compute extends Module {
                 }
                 if(cmd.equals("Same_Value_Processing")) {
                     // Looks for same value of a certain variable and increments a variable
+                    // It can be used for detecting that a certain vaule has the same value for a longer period of time
                     //pDataSet.put(Output.getString(0), Double.toString(new_value));
                     try {
                         String variable_string_to_compare=""; // variable to be compared
@@ -357,8 +358,13 @@ public class Compute extends Module {
                                 logger.finest("Running #Compute.Same_Value_Processing#Equal#"+variable_string_to_compare);
                                 //System.out.println("Running #Compute.Same_Value_Processing#Equal#"+variable_string_to_compare);
                                 Same_SMMTime_No++;
-                                if(Same_SMMTime_No>Same_SMMTime_No_Max) Same_SMMTime_No=0;
+                                if(Same_SMMTime_No>Same_SMMTime_No_Max) {
+                                    Same_SMMTime_No=0;
+                                    pDataSet.put(Output.getString(2), "timeout"); // Save varaible which shows that the value remains the same too long time
+                                }
                             }
+                        } else {
+                                    pDataSet.put(Output.getString(2), "ok"); // Save varaible which shows that the value is changing frequently                      
                         }
                         variable_string_to_compare_old = variable_string_to_compare; // the old valeu becomes the current value
 

@@ -12,9 +12,9 @@ M2-AttributesFile=MQTTClient2-ER.json
 #
 #	Module 4 File Storage 1
 #
-M4-Name=FileStorage1
-M4-ClassName=modules.FileStorage
-M4-AttributesFile=FileStorage1.txt
+#M4-Name=FileStorage1
+#M4-ClassName=modules.FileStorage
+#M4-AttributesFile=FileStorage1.txt
 #M4-LogLevel=SEVERE
 #M4-LogLevel=WARNING
 #M4-LogLevel=INFO

@@ -184,8 +184,8 @@ public class DataSet extends Module {
 
 
             } catch (Exception e) {
-                System.out.println("DataSet.Loop.Error");
                 if (Debug == 1) {
+                    System.out.println("DataSet.Loop.Error");
                     System.out.println(e.getMessage());
                 }
             }

@@ -133,13 +133,15 @@ public class Serial2Socket extends Module {
 
             //System.out.println(sQuery);
             if (iPortSpeedCh > 0) {
-                Thread.sleep(250);
+                Thread.sleep(2100);
+                //Thread.sleep(250);
                 SetParam(iPortSpeedCh);
             } else {
                 //             Thread.sleep(200);
 
             }
             while (System.currentTimeMillis() - lIniSysTime < iReadTimeout) {
+                //    System.out.println(System.currentTimeMillis());
                 //sCrtResp = serialPort.readString(65535, iInterCharTimeout);
                 Thread.sleep(iInterCharTimeout);
                 iAvailable = serialPort.getInputBufferBytesCount();
@@ -244,7 +246,10 @@ public class Serial2Socket extends Module {
             while (sSSBridgeMessage.length() > 0) {
 
                 //Thread.sleep(200);
+                
+                //System.out.println(sSSBridgeMessage);
                 sRec = Exchange(sSSBridgeMessage, -1);
+                //System.out.println(sSSBridgeMessage);
 
 //                if (iDebug == 1) {
 //                    System.out.println("Msg(iDebug=1): " + sRec+"\n");
